@@ -18,9 +18,10 @@ public class GameFrame extends JFrame {
 	 */
 	private static final long serialVersionUID = 3586519093165768249L;
 
-	private final int panelWidth = 300;
+	private final int panelWidth = 300;	//dimensions are fixed rn just because we can deal with that later
 	private final int panelHeight =300;
 	
+	//NOTE: Make game frame created from the main loop, model should call view
 	public GameFrame(){
 		GameRender screen = new GameRender();
 		add(screen);
@@ -38,6 +39,7 @@ public class GameFrame extends JFrame {
 		screen.setBackground(background);
 		
 		setSize(panelWidth,panelHeight);
+		
 
 		//start main loop, main loop should make the panel on constructor
 	}

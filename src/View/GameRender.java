@@ -1,6 +1,7 @@
 package View;
 
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
@@ -11,8 +12,8 @@ public class GameRender extends JPanel {
 	boolean scaled =false;	//determines if the background should be scaled
 	int panelWidth;
 	int panelHeight;
-	int offsetX;
-	int offsetY;
+	int offsetX = 0;
+	int offsetY = 0;
 	
 	//set static image
 	public void setBackground(BufferedImage img){
@@ -33,16 +34,15 @@ public class GameRender extends JPanel {
 		scaled =true;
 	}
 	
-	@Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        // paint the background image and scale it to fill the entire space
-        drawBackGround(g);
-        
-        
+	//The draw method that should be called from model
+	public void draw(){
+		Graphics g= this.getGraphics();
+		drawBackGround(g);
+		//draw other shit
 	}
 	
-	private void drawBackGround(Graphics g){
+	//Draws the background based on if it has to scale or not
+	private void drawBackGround(Graphics g){		
         if (scaled){
         	g.drawImage(backgroundImg, offsetX, offsetY,panelWidth,panelHeight, this);
         }
