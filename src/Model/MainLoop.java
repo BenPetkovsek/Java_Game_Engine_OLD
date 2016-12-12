@@ -5,6 +5,8 @@ package Model;
 
 import java.awt.image.BufferedImage;
 
+import java.util.Timer;
+
 import View.*;
 
 public class MainLoop extends Thread {
@@ -13,6 +15,8 @@ public class MainLoop extends Thread {
 	private BufferedImage background;
 	private int panelWidth;
 	private int panelHeight;
+	
+	private Player hero;
 	//initialization of game settings
 	public MainLoop(){
 		//game frame init
@@ -29,13 +33,17 @@ public class MainLoop extends Thread {
 		//non scaled background to renderer
 		renderer.setBackground(background);
 		gameframe.setSize(panelWidth,panelHeight);
+		
+		hero = new Player(0,0);
+
 	}
+	
 	
 	//main game update;
 	public void run(){
 		while(true){
-			renderer.draw();
-			System.out.println("start");
+			renderer.draw(hero);
+
 		}
 		
 	}

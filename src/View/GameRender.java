@@ -6,6 +6,8 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
+import Model.Player;
+
 public class GameRender extends JPanel {
 
 	BufferedImage backgroundImg; 	//the background img
@@ -15,9 +17,18 @@ public class GameRender extends JPanel {
 	int offsetX = 0;
 	int offsetY = 0;
 	
+	Image offImg;
+	Graphics offGraph;
+	
+	public GameRender(){
+		
+	}
+	
 	//set static image
 	public void setBackground(BufferedImage img){
 		backgroundImg =img;
+		panelWidth =backgroundImg.getWidth();
+		panelHeight =backgroundImg.getHeight();
 	}
 	
 	//set static image with offset
@@ -35,10 +46,19 @@ public class GameRender extends JPanel {
 	}
 	
 	//The draw method that should be called from model
-	public void draw(){
-		Graphics g= this.getGraphics();
-		drawBackGround(g);
+	//DOUBLE BUFFERING MAGIC YO
+	public void draw(Player hero){
+		offImg = createImage(panelWidth, panelHeight);
+		offGraph = offImg.getGraphics();
+		/***DRAWING STUFF IN ORDER***/
+		drawBackGround(offGraph);
+		drawHero(offGraph,hero);
 		//draw other shit
+		
+		//drawing to screen
+		Graphics g = this.getGraphics();
+		g.drawImage(offImg,0,0,null);
+		g.dispose();
 	}
 	
 	//Draws the background based on if it has to scale or not
@@ -49,5 +69,12 @@ public class GameRender extends JPanel {
         else{
         	g.drawImage(backgroundImg, offsetX, offsetY, this);
         }
+	}
+	//draws hero to screen
+	public void drawHero(Graphics g,Player hero){
+		//scaling if possible
+		int width =  (int) (hero.getImage().getWidth() * hero.getScale());
+		int height = (int) (hero.getImage().getHeight() * hero.getScale());
+		g.drawImage(hero.getImage(),hero.getX(),hero.getY(),width,height,this);
 	}
 }
