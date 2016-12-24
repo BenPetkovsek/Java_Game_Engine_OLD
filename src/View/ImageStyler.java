@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 
 public class ImageStyler {
 
+	//quick and easy way to load an image
 	public static BufferedImage loadImg(String filename){
 		BufferedImage img = null;
 		try {

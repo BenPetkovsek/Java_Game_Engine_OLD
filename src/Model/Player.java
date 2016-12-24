@@ -11,6 +11,8 @@ public class Player {
 	private BufferedImage art;
 	private int x,y;
 	private float scale=1;
+	private final int dx=20;
+	private final int dy=20;
 	public Player(int x, int y,String initName, int initHP, int initStr, int initDef, int initIntel ){
 		this.x= x;
 		this.y= y;
@@ -53,4 +55,29 @@ public class Player {
 	public float getScale(){ return scale; }
 	
 	
+	//SETTERS
+	public void setX(int x){
+		this.x =x;
+	}
+	
+	public void setY(int y){
+		this.y =y;
+	}
+	
+	//MOVEMENT/ CONTROLS
+	public void moveLeft(){
+		this.x-=dx;
+	}
+	
+	public void moveRight(){
+		this.x+=dx;
+	}
+	
+	public void moveUp(){
+		this.y-=dy;
+	}
+	
+	public void moveDown(){
+		this.y+=dy;
+	}
 }//end class

@@ -3,10 +3,17 @@
  */
 package Model;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import java.util.Timer;
 
+import javax.swing.AbstractAction;
+import javax.swing.JPopupMenu;
+import javax.swing.KeyStroke;
+
+import Controller.PlayerController;
 import View.*;
 
 public class MainLoop extends Thread {
@@ -17,6 +24,7 @@ public class MainLoop extends Thread {
 	private int panelHeight;
 	
 	private Player hero;
+	private PlayerController controller;
 	//initialization of game settings
 	public MainLoop(){
 		//game frame init
@@ -35,19 +43,28 @@ public class MainLoop extends Thread {
 		gameframe.setSize(panelWidth,panelHeight);
 		
 		hero = new Player(0,0);
+		controller =new PlayerController(hero);
+		renderer.addKeyListener(controller);
+		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+		renderer.setFocusable(true); 
+		renderer.addNotify();
+		renderer.grabFocus();
 
+		
 	}
 	
 	
 	//main game update;
+	//TODO Make the game run at a consistent refresh rate, this will help with stabilizing fps
+	//use timers or some shit, just google it
 	public void run(){
 		while(true){
 			renderer.draw(hero);
-
 		}
 		
 	}
 	
+	//starting main method
 	public static void main(String[] args){
 		MainLoop main = new MainLoop();
 		main.start();

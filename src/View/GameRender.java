@@ -1,3 +1,9 @@
+/*
+ * This class is responsible for the drawing in the game
+ * JPanel is the thing being drawn to so it makes the most sense to do all the rendering here
+ * Uses a double buffering system to create the image on the screen
+ * idk what im doing
+ */
 package View;
 
 import java.awt.Graphics;
