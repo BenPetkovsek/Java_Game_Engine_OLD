@@ -24,6 +24,7 @@ public class MainLoop extends Thread {
 	private int panelHeight;
 	
 	private Player hero;
+	private Player enemy;
 	private PlayerController controller;
 	//initialization of game settings
 	public MainLoop(){
@@ -43,6 +44,7 @@ public class MainLoop extends Thread {
 		gameframe.setSize(panelWidth,panelHeight);
 		
 		hero = new Player(0,0);
+		enemy =new Player(0,0);
 		controller =new PlayerController(hero);
 		renderer.addKeyListener(controller);
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
@@ -59,7 +61,10 @@ public class MainLoop extends Thread {
 	//use timers or some shit, just google it
 	public void run(){
 		while(true){
-			renderer.draw(hero);
+			hero.update();
+			System.out.println("X collision: " +hero.checkXCollision(enemy));
+			System.out.println("Y collision: " +hero.checkYCollision(enemy));
+			renderer.draw(hero,enemy); 
 		}
 		
 	}

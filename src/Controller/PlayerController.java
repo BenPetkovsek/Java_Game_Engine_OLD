@@ -45,16 +45,16 @@ public class PlayerController extends KeyAdapter {
 	public void keyReleased(KeyEvent e) {
 		int key = e.getKeyCode();
 		if(key == moveLeft){
-			
+			player.stopMovingLeft();
     	}
     	else if (key == moveRight){
-    		
+    		player.stopMovingRight();
     	}
     	else if(key == moveUp){
-    		
+    		player.stopMovingUp();
     	}
     	else if(key == moveDown){
-    		
+    		player.stopMovingDown();
     	}
 	}
 	

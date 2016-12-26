@@ -4,33 +4,49 @@ import java.awt.image.BufferedImage;
 
 import View.*;
 
-public class Player {
+public class Player extends GameObject {
 	int HP, totalHP, str, def, intel;
 	String name;
 	private final String artDir= "Art/";
-	private BufferedImage art;
-	private int x,y;
-	private float scale=1;
-	private final int dx=20;
-	private final int dy=20;
+	
+	/*
+	 *	MOVEMENT VARIABLES
+	 */
+	private float moveSpeedX=0.75f;
+	private float moveSpeedY=0.75f;
+	//max speed variables
+	private float maxXSpeed= 1f; 
+	private float maxYSpeed =1f;
+	//delta variables
+	//NOTE: I have no idea what im doing
+	private float dx;
+	private float dy;
+	
+	//complicated constructor for future releases with stats
 	public Player(int x, int y,String initName, int initHP, int initStr, int initDef, int initIntel ){
-		this.x= x;
-		this.y= y;
+		this(x,y);
 		HP = initHP;
 		totalHP = initHP;
 		str = initStr;
 		def = initDef;
 		intel = initIntel;
 		name = initName;
-		art= ImageStyler.loadImg(artDir + "hero.png");
-		scale= 0.01f;
+		isCollidable = true;
 	}
-
+	
+	//constructor for simple people like me
 	public Player(int x,int y){
 		this.x= x;
 		this.y= y;
-		art= ImageStyler.loadImg(artDir + "hero.png");
+		sprite= ImageStyler.loadImg(artDir + "hero.png");
 		scale= 0.5f;
+	}
+	
+	//main update for the object, is called every loop
+	@Override
+	public void update(){
+		x +=dx;
+		y +=dy;
 	}
 	
 	public void takeDamage(int dmg){
@@ -44,40 +60,60 @@ public class Player {
 		}
 	}
 	
-	//GETTERS
-	public BufferedImage getImage(){ return art; }
+	public float getDx(){ return dx; }
 	
-	public int getX(){ return x; }
-	
-	public int getY(){ return y; }
-	
-	//scales the image to the screen
-	public float getScale(){ return scale; }
-	
-	
-	//SETTERS
-	public void setX(int x){
-		this.x =x;
-	}
-	
-	public void setY(int y){
-		this.y =y;
-	}
-	
+	public float getDy(){ return dy; }
+
 	//MOVEMENT/ CONTROLS
 	public void moveLeft(){
-		this.x-=dx;
+		if(dx> -maxXSpeed){
+			this.dx-=moveSpeedX;
+		}
+	}
+	
+	public void stopMovingLeft(){
+		dx=0;
 	}
 	
 	public void moveRight(){
-		this.x+=dx;
+		if(dx< maxXSpeed){
+			this.dx+=moveSpeedX;
+		}
+	}
+	
+	public void stopMovingRight(){
+		dx=0;
 	}
 	
 	public void moveUp(){
-		this.y-=dy;
+		if(dy> -maxYSpeed){
+			this.dy-=moveSpeedY;
+		}
+	}
+	
+	public void stopMovingUp(){
+		dy=0;
 	}
 	
 	public void moveDown(){
-		this.y+=dy;
+		if(dy< maxYSpeed){
+			this.dy+=moveSpeedY;
+		}
+	}
+	
+	public void stopMovingDown(){
+		dy=0;
+	}
+
+	@Override
+	public void spawn() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void die() {
+		// TODO Auto-generated method stub
+		
 	}
 }//end class

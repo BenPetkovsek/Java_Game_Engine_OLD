@@ -53,12 +53,13 @@ public class GameRender extends JPanel {
 	
 	//The draw method that should be called from model
 	//DOUBLE BUFFERING MAGIC YO
-	public void draw(Player hero){
+	public void draw(Player hero, Player enemy){
 		offImg = createImage(panelWidth, panelHeight);
 		offGraph = offImg.getGraphics();
 		/***DRAWING STUFF IN ORDER***/
 		drawBackGround(offGraph);
 		drawHero(offGraph,hero);
+		drawHero(offGraph,enemy);
 		//draw other shit
 		
 		//drawing to screen
@@ -79,8 +80,10 @@ public class GameRender extends JPanel {
 	//draws hero to screen
 	public void drawHero(Graphics g,Player hero){
 		//scaling if possible
-		int width =  (int) (hero.getImage().getWidth() * hero.getScale());
-		int height = (int) (hero.getImage().getHeight() * hero.getScale());
-		g.drawImage(hero.getImage(),hero.getX(),hero.getY(),width,height,this);
+		int width =  (int) (hero.getSprite().getWidth() * hero.getScale());
+		int height = (int) (hero.getSprite().getHeight() * hero.getScale());
+		//NOTE: uses Math.round to get the pixel location or some shit
+		// Im not entirely sure if we should have it round here or in the getters themselves
+		g.drawImage(hero.getSprite(),Math.round(hero.getX()),Math.round(hero.getY()),width,height,this);
 	}
 }
