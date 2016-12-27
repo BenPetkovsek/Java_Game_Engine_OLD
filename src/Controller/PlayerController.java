@@ -21,13 +21,18 @@ public class PlayerController extends KeyAdapter {
 	int moveUp = KeyEvent.VK_UP;
 	int moveDown= KeyEvent.VK_DOWN;
 	
+	int tempKey;	//TEMP DEBUGGING, IGNORE
 	public PlayerController(Player player){
 		this.player = player;
 	}
 	
 	//what to do when the key is pressed
 	public void keyPressed(KeyEvent e) {
+		
 		int key = e.getKeyCode();
+		/*if(tempKey != key && key != 10){
+			System.out.println(key+ " Pressed");
+		}*/
     	if(key == moveLeft){
     		player.moveLeft();
     	}
@@ -40,10 +45,17 @@ public class PlayerController extends KeyAdapter {
     	else if(key == moveDown){
     		player.moveDown();
     	}
+    	/*else if(key == KeyEvent.VK_ENTER){
+    		//DEBUGGING CONSOLE CLEANLINESS
+    		System.out.println("-------------");
+    	}
+    	tempKey = key;*/
+    
 	}
 	//What to do when the key is released
 	public void keyReleased(KeyEvent e) {
 		int key = e.getKeyCode();
+		//if (key != 10){System.out.println(key+ " Released");}
 		if(key == moveLeft){
 			player.stopMovingLeft();
     	}

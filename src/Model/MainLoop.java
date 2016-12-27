@@ -44,7 +44,7 @@ public class MainLoop extends Thread {
 		gameframe.setSize(panelWidth,panelHeight);
 		
 		hero = new Player(0,0);
-		enemy =new Player(0,0);
+		
 		controller =new PlayerController(hero);
 		renderer.addKeyListener(controller);
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
@@ -62,9 +62,7 @@ public class MainLoop extends Thread {
 	public void run(){
 		while(true){
 			hero.update();
-			System.out.println("X collision: " +hero.checkXCollision(enemy));
-			System.out.println("Y collision: " +hero.checkYCollision(enemy));
-			renderer.draw(hero,enemy); 
+			renderer.draw(hero); 
 		}
 		
 	}

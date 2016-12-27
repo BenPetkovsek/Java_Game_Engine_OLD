@@ -12,8 +12,8 @@ public class Player extends GameObject {
 	/*
 	 *	MOVEMENT VARIABLES
 	 */
-	private float moveSpeedX=0.75f;
-	private float moveSpeedY=0.75f;
+	private float moveSpeedX=1f;
+	private float moveSpeedY=1f;
 	//max speed variables
 	private float maxXSpeed= 1f; 
 	private float maxYSpeed =1f;
@@ -22,6 +22,8 @@ public class Player extends GameObject {
 	private float dx;
 	private float dy;
 	
+	
+	private float tempDx;
 	//complicated constructor for future releases with stats
 	public Player(int x, int y,String initName, int initHP, int initStr, int initDef, int initIntel ){
 		this(x,y);
@@ -45,8 +47,10 @@ public class Player extends GameObject {
 	//main update for the object, is called every loop
 	@Override
 	public void update(){
+		//if(tempDx != dx){ System.out.println("DX:" + dx); }
 		x +=dx;
 		y +=dy;
+		tempDx = dx;
 	}
 	
 	public void takeDamage(int dmg){
@@ -67,22 +71,33 @@ public class Player extends GameObject {
 	//MOVEMENT/ CONTROLS
 	public void moveLeft(){
 		if(dx> -maxXSpeed){
+			if(dx>0){
+				dx=0;
+			}
 			this.dx-=moveSpeedX;
 		}
 	}
 	
 	public void stopMovingLeft(){
-		dx=0;
+		if (dx <0){
+			dx=0;
+		}
+		
 	}
 	
 	public void moveRight(){
 		if(dx< maxXSpeed){
+			if(dx<0){
+				dx=0;
+			}
 			this.dx+=moveSpeedX;
 		}
 	}
 	
 	public void stopMovingRight(){
-		dx=0;
+		if (dx >0){
+			dx=0;
+		}
 	}
 	
 	public void moveUp(){

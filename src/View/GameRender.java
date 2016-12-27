@@ -53,13 +53,12 @@ public class GameRender extends JPanel {
 	
 	//The draw method that should be called from model
 	//DOUBLE BUFFERING MAGIC YO
-	public void draw(Player hero, Player enemy){
+	public void draw(Player hero){
 		offImg = createImage(panelWidth, panelHeight);
 		offGraph = offImg.getGraphics();
 		/***DRAWING STUFF IN ORDER***/
 		drawBackGround(offGraph);
 		drawHero(offGraph,hero);
-		drawHero(offGraph,enemy);
 		//draw other shit
 		
 		//drawing to screen
