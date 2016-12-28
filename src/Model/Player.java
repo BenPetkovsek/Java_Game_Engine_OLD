@@ -22,8 +22,11 @@ public class Player extends GameObject {
 	private float dx;
 	private float dy;
 	
+
 	
-	private float tempDx;
+	//Animation Variables
+	private Animation testAnim;
+	
 	//complicated constructor for future releases with stats
 	public Player(int x, int y,String initName, int initHP, int initStr, int initDef, int initIntel ){
 		this(x,y);
@@ -38,19 +41,21 @@ public class Player extends GameObject {
 	
 	//constructor for simple people like me
 	public Player(int x,int y){
+		testAnim= new Animation(true);
+		testAnim.addFrame(ImageStyler.loadImg(artDir+"cat1.png")).addFrame(ImageStyler.loadImg(artDir+"cat2.png")).addFrame(ImageStyler.loadImg(artDir+"cat3.png"));
 		this.x= x;
 		this.y= y;
 		sprite= ImageStyler.loadImg(artDir + "hero.png");
-		scale= 0.5f;
+		scale= 0.2f;
 	}
 	
 	//main update for the object, is called every loop
 	@Override
 	public void update(){
-		//if(tempDx != dx){ System.out.println("DX:" + dx); }
+		//movement updates
 		x +=dx;
 		y +=dy;
-		tempDx = dx;
+		testAnim.update();
 	}
 	
 	public void takeDamage(int dmg){
@@ -64,9 +69,12 @@ public class Player extends GameObject {
 		}
 	}
 	
+	//GETTERS
 	public float getDx(){ return dx; }
 	
 	public float getDy(){ return dy; }
+	
+	public Animation getAnim(){ return testAnim; }
 
 	//MOVEMENT/ CONTROLS
 	public void moveLeft(){
