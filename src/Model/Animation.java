@@ -62,4 +62,10 @@ public class Animation {
 		totalDuration += refreshRate;
 		return this;
 	}
+	
+	//restarting anim
+	public void stop(){
+		timeElapsed=0;
+		frameIndex=0;
+	}
 }

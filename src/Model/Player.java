@@ -22,10 +22,19 @@ public class Player extends GameObject {
 	private float dx;
 	private float dy;
 	
-
+	private boolean facingRight=true;
 	
 	//Animation Variables
-	private Animation testAnim;
+	private BufferedImage[] walkRight= {ImageStyler.loadImg(artDir+"cat1.png"),ImageStyler.loadImg(artDir+"cat2.png"),ImageStyler.loadImg(artDir+"cat3.png")};
+	private BufferedImage[] walkLeft = ImageStyler.flipImgs(walkRight);
+	private BufferedImage[] idleRight = {ImageStyler.loadImg(artDir+"cat2.png")};
+	private BufferedImage[] idleLeft = ImageStyler.flipImgs(idleRight);
+	private Animation walkRightAnim;
+	private Animation walkLeftAnim;
+	private Animation idleRightAnim;
+	private Animation idleLeftAnim;
+	
+	private Animation currentAnim;
 	
 	//complicated constructor for future releases with stats
 	public Player(int x, int y,String initName, int initHP, int initStr, int initDef, int initIntel ){
@@ -41,21 +50,44 @@ public class Player extends GameObject {
 	
 	//constructor for simple people like me
 	public Player(int x,int y){
-		testAnim= new Animation(true);
-		testAnim.addFrame(ImageStyler.loadImg(artDir+"cat1.png")).addFrame(ImageStyler.loadImg(artDir+"cat2.png")).addFrame(ImageStyler.loadImg(artDir+"cat3.png"));
+		animInit();
 		this.x= x;
 		this.y= y;
-		sprite= ImageStyler.loadImg(artDir + "hero.png");
-		scale= 0.2f;
+		scale= 5f;
 	}
-	
+	//init for all anims
+	private void animInit(){
+		walkRightAnim= new Animation(true);
+		walkRightAnim.addFrame(walkRight[0]).addFrame(walkRight[1]).addFrame(walkRight[2]);
+		walkLeftAnim= new Animation(true);
+		walkLeftAnim.addFrame(walkLeft[0]).addFrame(walkLeft[1]).addFrame(walkLeft[2]);
+		idleRightAnim = new Animation(true);
+		idleRightAnim.addFrame(idleRight[0]);
+		idleLeftAnim = new Animation(true);
+		idleLeftAnim.addFrame(idleLeft[0]);
+		
+	}
 	//main update for the object, is called every loop
 	@Override
 	public void update(){
 		//movement updates
 		x +=dx;
 		y +=dy;
-		testAnim.update();
+		if(dx <0){
+			currentAnim = walkLeftAnim;
+		}
+		else if(dx >0){
+			currentAnim = walkRightAnim;
+		}
+		else if(dx==0){
+			if(facingRight){
+				currentAnim =idleRightAnim;
+			}
+			else{
+				currentAnim = idleLeftAnim;
+			}
+		}
+		currentAnim.update();
 	}
 	
 	public void takeDamage(int dmg){
@@ -74,7 +106,7 @@ public class Player extends GameObject {
 	
 	public float getDy(){ return dy; }
 	
-	public Animation getAnim(){ return testAnim; }
+	public Animation getAnim(){ return currentAnim; }
 
 	//MOVEMENT/ CONTROLS
 	public void moveLeft(){
@@ -82,6 +114,7 @@ public class Player extends GameObject {
 			if(dx>0){
 				dx=0;
 			}
+			facingRight=false;
 			this.dx-=moveSpeedX;
 		}
 	}
@@ -98,6 +131,7 @@ public class Player extends GameObject {
 			if(dx<0){
 				dx=0;
 			}
+			facingRight=true;
 			this.dx+=moveSpeedX;
 		}
 	}

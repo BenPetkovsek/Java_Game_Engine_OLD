@@ -79,8 +79,9 @@ public class GameRender extends JPanel {
 	//draws hero to screen
 	public void drawHero(Graphics g,Player hero){
 		//scaling if possible
-		int width =  (int) (hero.getSprite().getWidth() * hero.getScale());
-		int height = (int) (hero.getSprite().getHeight() * hero.getScale());
+		int width =  (int) (hero.getAnim().getCurrFrame().getWidth() * hero.getScale());
+		int height = (int) (hero.getAnim().getCurrFrame().getHeight() * hero.getScale());
+
 		//NOTE: uses Math.round to get the pixel location or some shit
 		// Im not entirely sure if we should have it round here or in the getters themselves
 		g.drawImage(hero.getAnim().getCurrFrame(),Math.round(hero.getX()),Math.round(hero.getY()),width,height,this);
