@@ -24,7 +24,7 @@ public class MainLoop extends Thread {
 	private int panelHeight;
 	
 	private Player hero;
-	private Player enemy;
+	private Rock rock;
 	private PlayerController controller;
 	//initialization of game settings
 	public MainLoop(){
@@ -50,6 +50,7 @@ public class MainLoop extends Thread {
 		
 		//main player controller init
 		hero = new Player(0,0);
+		rock= new Rock(200,200);
 		controller =new PlayerController(hero);
 		renderer.addKeyListener(controller);
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
@@ -74,7 +75,8 @@ public class MainLoop extends Thread {
 	public void run(){
 		while(true){
 			hero.update();
-			renderer.draw(hero);
+			rock.update(hero);
+			renderer.draw(hero,rock);
 		}
 		
 	}

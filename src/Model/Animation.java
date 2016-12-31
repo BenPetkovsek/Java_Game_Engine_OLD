@@ -17,6 +17,8 @@ public class Animation {
 	
 	private boolean repeating;	//if the animation loops when it is done
 	
+	private boolean singleImage=true;
+	
 	private ArrayList<BufferedImage> frames;
 	public int frameIndex=0;
 	
@@ -27,25 +29,32 @@ public class Animation {
 	}
 	
 	public void update(){
-		//if the time elapsed is on a time period to change frame
-		if(timeElapsed % refreshRate == 0){
-			if(timeElapsed == totalDuration){
-				timeElapsed=0;
-				if(repeating){
-					frameIndex =0;
+		//if the animation is only a static image than no need to update
+		if(!singleImage){
+			//if the time elapsed is on a time period to change frame
+			if(timeElapsed % refreshRate == 0){
+				if(timeElapsed == totalDuration){
+					timeElapsed=0;
+					if(repeating){
+						frameIndex =0;
+					}
+				}
+				else{
+					frameIndex = (frameIndex+1) % frames.size();
+					
 				}
 			}
-			else{
-				frameIndex = (frameIndex+1) % frames.size();
-				
-			}
+			timeElapsed++;
 		}
-		timeElapsed++;
 	}
 	
 	//gets the current image in the animation
 	//for the renderer
 	public BufferedImage getCurrFrame(){
+		//return a null image if empty
+		if (frames.size() == 0){
+			return null;
+		}
 		return frames.get(frameIndex);
 	}
 	
@@ -53,6 +62,9 @@ public class Animation {
 	public Animation addFrame(BufferedImage sprite){
 		frames.add(sprite);
 		totalDuration += refreshRate;
+		if(frames.size() > 1){
+			singleImage= false;
+		}
 		return this;
 	}
 	
@@ -60,6 +72,9 @@ public class Animation {
 	public Animation addFrame(BufferedImage sprite,int index){
 		frames.add(index, sprite);
 		totalDuration += refreshRate;
+		if(frames.size() > 1){
+			singleImage= false;
+		}
 		return this;
 	}
 	

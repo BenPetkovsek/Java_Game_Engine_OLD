@@ -1,5 +1,5 @@
 /*
- * This is the controller for the player, controls can be set handles input on key press and key release
+ * This is the controller for the player, controls can be set handles input on key press and key release	
  * TODO Okay real talk, apparently using key listeners is a bad thing. Honestly tho i have no fucken clue why its so bad
  * everyone seems to be raving about the modularity of it which is nice. But that takes a fuck load of work and right now 
  * i just want the fucken thing to work. So for now im just going to use a controller class with key bindings.

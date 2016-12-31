@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 public class GameObject {
 
 	protected float x,y;
-	protected float scale;
+	protected float scale=1;
 	protected boolean isCollidable;
 	
 	protected Animation currentAnim;
@@ -18,7 +18,8 @@ public class GameObject {
 		
 	}
 	public GameObject(float x, float y){
-		
+		this.x = x;
+		this.y =y;
 	}
 	
 	public void update(){ };
@@ -32,6 +33,7 @@ public class GameObject {
 	public float getY(){ return y; }
 	
 	public float getScale(){ return scale; }
+	
 	
 	
 	public float getWidth(){
@@ -58,8 +60,7 @@ public class GameObject {
 	
 	//checks if the object has collided at all, not to be used for movement calc, used for interactions between objects
 	public boolean checkAllCollision(GameObject otherObject){
-		boolean collided= checkXCollision(otherObject) || checkYCollision(otherObject);
-
+		boolean collided= checkXCollision(otherObject) && checkYCollision(otherObject);
 		return collided;
 	}
 	//checks if x collision is detected
@@ -70,7 +71,8 @@ public class GameObject {
 		float otherX = otherObject.getX();
 		float otherWidth = otherObject.getWidth();
 		
-		xCollide =((x <= otherX && otherX <= x+width) || (x<=otherX+otherWidth && otherX+otherWidth <= x+width));
+		//Essentially this is just a simplied way of checking if range of pixels the pictures take up intersect horizontally
+		xCollide = (x <= (otherX+otherWidth)) && (otherX <= (x+width));
 		return xCollide;
 	}
 	//checks if y collision is detected
@@ -81,7 +83,8 @@ public class GameObject {
 		float otherY = otherObject.getY();
 		float otherHeight = otherObject.getHeight();
 		
-		yCollide =((y <= otherY && otherY <= y+height) || (y<=otherY+otherHeight && otherY+otherHeight <= y+height));
+		//Essentially this is just a simplied way of checking if range of pixels the pictures take up intersect vertically
+		yCollide = (y <= (otherY+otherHeight)) && (otherY<= (y+height));
 		return yCollide;
 	}
 	
