@@ -18,7 +18,7 @@ public class Animation {
 	private boolean repeating;	//if the animation loops when it is done
 	
 	private ArrayList<BufferedImage> frames;
-	private int frameIndex=0;
+	public int frameIndex=0;
 	
 	//creates an empty animation that is duration time long
 	public Animation( boolean repeat){
@@ -64,7 +64,7 @@ public class Animation {
 	}
 	
 	//restarting anim
-	public void stop(){
+	public void reset(){
 		timeElapsed=0;
 		frameIndex=0;
 	}

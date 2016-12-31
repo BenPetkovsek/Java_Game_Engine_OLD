@@ -6,18 +6,26 @@ package Model;
 
 import java.awt.image.BufferedImage;
 
-public abstract class GameObject {
+public class GameObject {
 
 	protected float x,y;
 	protected float scale;
-	protected BufferedImage sprite;
 	protected boolean isCollidable;
 	
-	public abstract void update();
+	protected Animation currentAnim;
 	
-	public abstract void spawn();
+	public GameObject(){
+		
+	}
+	public GameObject(float x, float y){
+		
+	}
 	
-	public abstract void die();
+	public void update(){ };
+	
+	public void spawn(){ };
+	
+	public void die(){ };
 	
 	public float getX(){ return x; }
 	
@@ -25,21 +33,24 @@ public abstract class GameObject {
 	
 	public float getScale(){ return scale; }
 	
-	public BufferedImage getSprite(){ return sprite; }
 	
 	public float getWidth(){
-		if(sprite !=null){
-			return ((float) getSprite().getWidth())*scale;
+		if(currentAnim !=null){
+			return ((float) currentAnim.getCurrFrame().getWidth())*scale;
 		}
 		return 0;
 		
 	}
 	
 	public float getHeight(){
-		if (sprite != null){
-			return ((float) getSprite().getHeight())*scale;
+		if(currentAnim !=null){
+			return ((float) currentAnim.getCurrFrame().getHeight())*scale;
 		}
 		return 0;
+	}
+	
+	public Animation getAnim(){
+		return currentAnim;
 	}
 	
 	

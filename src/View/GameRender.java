@@ -17,9 +17,8 @@ import Model.Player;
 public class GameRender extends JPanel {
 
 	BufferedImage backgroundImg; 	//the background img
-	boolean scaled =false;	//determines if the background should be scaled
-	int panelWidth;
-	int panelHeight;
+	int width;
+	int height;
 	int offsetX = 0;
 	int offsetY = 0;
 	
@@ -30,11 +29,14 @@ public class GameRender extends JPanel {
 		
 	}
 	
+	public int getWidth(){ return width; }
+	public int getHeight(){ return height; }
+	
 	//set static image
 	public void setBackground(BufferedImage img){
 		backgroundImg =img;
-		panelWidth =backgroundImg.getWidth();
-		panelHeight =backgroundImg.getHeight();
+		width =backgroundImg.getWidth();
+		height =backgroundImg.getHeight();
 	}
 	
 	//set static image with offset
@@ -46,15 +48,14 @@ public class GameRender extends JPanel {
 	//set image to scale to screen
 	public void setBackground(BufferedImage img, int width, int height){
 		backgroundImg =img;
-		panelWidth = width;
-		panelHeight = height;
-		scaled =true;
+		this.width = width;
+		this.height = height;
 	}
 	
 	//The draw method that should be called from model
 	//DOUBLE BUFFERING MAGIC YO
 	public void draw(Player hero){
-		offImg = createImage(panelWidth, panelHeight);
+		offImg = createImage(width, height);
 		offGraph = offImg.getGraphics();
 		/***DRAWING STUFF IN ORDER***/
 		drawBackGround(offGraph);
@@ -67,20 +68,15 @@ public class GameRender extends JPanel {
 		g.dispose();
 	}
 	
-	//Draws the background based on if it has to scale or not
+	//Draws the background
 	private void drawBackGround(Graphics g){		
-        if (scaled){
-        	g.drawImage(backgroundImg, offsetX, offsetY,panelWidth,panelHeight, this);
-        }
-        else{
-        	g.drawImage(backgroundImg, offsetX, offsetY, this);
-        }
+        g.drawImage(backgroundImg, offsetX, offsetY,width,height, this);
 	}
 	//draws hero to screen
 	public void drawHero(Graphics g,Player hero){
 		//scaling if possible
-		int width =  (int) (hero.getAnim().getCurrFrame().getWidth() * hero.getScale());
-		int height = (int) (hero.getAnim().getCurrFrame().getHeight() * hero.getScale());
+		int width =  (int) (hero.getWidth());
+		int height = (int) (hero.getHeight());
 
 		//NOTE: uses Math.round to get the pixel location or some shit
 		// Im not entirely sure if we should have it round here or in the getters themselves
