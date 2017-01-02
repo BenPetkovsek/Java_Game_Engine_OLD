@@ -1,6 +1,7 @@
 package Model;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import View.*;
 
@@ -22,7 +23,6 @@ public class Player extends GameObject {
 	private float dx;
 	private float dy;
 	
-	private boolean facingRight=true;
 	
 	//Animation Variables
 	private BufferedImage[] walkRight= {ImageStyler.loadImg(artDir+"cat1.png"),ImageStyler.loadImg(artDir+"cat2.png"),ImageStyler.loadImg(artDir+"cat3.png")};
@@ -50,10 +50,11 @@ public class Player extends GameObject {
 	
 	//constructor for simple people like me
 	public Player(float x,float y){
+		super(x,y);
 		animInit();
-		this.x= x;
-		this.y= y;
 		scale= 5f;
+		drawBorders=true;
+		offsetInit();
 	}
 	//init for all anims
 	private void animInit(){
@@ -77,13 +78,48 @@ public class Player extends GameObject {
 		oldAnim = currentAnim;
 		
 	}
+	/*
+	 * Okay this is a little weird, basically just sets the offsets for collision
+	 * For X offsets, positive goes left and negative goes right
+	 * For Y offsets, for some reason positive is down, and negative is up lmao
+	 */
+	
+	private void offsetInit(){
+		//offSetDir is whether the offset was applied to the sprite when it was facing right or not
+		//this is important because the offset should reflect when the player also reflects
+		offsetDir = facingRight;		
+		xAOffset = getWidth() *0.2f;
+		xBOffset = -getWidth() *0.4f;
+		yAOffset = getHeight() *0.2f;
+	}
 	//main update for the object, is called every loop
-	@Override
-	public void update(){
+	public void update(ArrayList<GameObject> objs){
+		
 		//movement updates
 		x +=dx;
 		y +=dy;
 		
+		//collision updates
+		//idk if this is good practise but i just reverse the changes if it collides
+		//then i test each direction (x,y) collisions then give the player back its dx or dy if its not colliding
+		//this just translate to the player  being allowed to hitting a wall from the right but still being able to move up and down
+		for (GameObject obj: objs){
+			
+			if (this.checkAllCollision(obj)){
+				x-=dx;
+				y-=dy;
+				//THIS PIECE OF CODE ALLOWS YOU TO MOVE IN ONE DIRECTION EVEN IF U COLLIDE IN THE OTHER
+				//WITHOUT THIS IT YOU MUST RELEASE THE DIRECTION THAT IS COLLIDE AND IT SUCKS
+				//srry for yelling it just took a lot of brain power for some dumb reason
+				
+				if(this.checkYCollision(obj)){
+					x+=dx; 
+				}
+				if(this.checkXCollision(obj)){
+					y+=dy; 
+				}
+			}
+		}
 		//animation updates
 		if(dx <0){
 			currentAnim = walkLeftAnim; 

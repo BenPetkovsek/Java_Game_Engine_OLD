@@ -6,7 +6,7 @@ package Model;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-
+import java.util.ArrayList;
 import java.util.Timer;
 
 import javax.swing.AbstractAction;
@@ -20,11 +20,13 @@ public class MainLoop extends Thread {
 	
 	private GameRender renderer; 
 	private BufferedImage background;
+	
 	private int panelWidth;
 	private int panelHeight;
 	
 	private Player hero;
-	private Rock rock;
+	
+	private ArrayList<GameObject> things;	//list of objects in the scene minus the player for some reason...
 	private PlayerController controller;
 	//initialization of game settings
 	public MainLoop(){
@@ -50,13 +52,17 @@ public class MainLoop extends Thread {
 		
 		//main player controller init
 		hero = new Player(0,0);
-		rock= new Rock(200,200);
 		controller =new PlayerController(hero);
 		renderer.addKeyListener(controller);
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 		renderer.setFocusable(true); 
 		renderer.addNotify();
 		renderer.grabFocus();
+		
+		//Init stuff
+		things = new ArrayList<GameObject>();
+		things.add(new Rock(200,200));
+		things.add(new Rock(500,300));
 
 		
 	}
@@ -74,9 +80,11 @@ public class MainLoop extends Thread {
 	 */
 	public void run(){
 		while(true){
-			hero.update();
-			rock.update(hero);
-			renderer.draw(hero,rock);
+			hero.update(things);
+			for (GameObject e: things){
+				((Rock) e).update(hero);
+			}
+			renderer.draw(hero,things);
 		}
 		
 	}
