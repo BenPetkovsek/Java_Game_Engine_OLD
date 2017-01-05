@@ -88,8 +88,8 @@ public class Player extends GameObject {
 		//offSetDir is whether the offset was applied to the sprite when it was facing right or not
 		//this is important because the offset should reflect when the player also reflects
 		offsetDir = facingRight;		
-		xAOffset = getWidth() *0.2f;
-		xBOffset = -getWidth() *0.1f;
+		xAOffset = getWidth() *0.1f;
+		xBOffset = -getWidth() *0.2f;
 		yAOffset = getHeight() *0.3f;
 	}
 	//main update for the object, is called every loop
@@ -106,7 +106,6 @@ public class Player extends GameObject {
 		for (GameObject obj: objs){
 			
 			if (this.checkAllCollision(obj)){
-				System.out.println("Collision");
 				x-=dx;
 				y-=dy;
 				//THIS PIECE OF CODE ALLOWS YOU TO MOVE IN ONE DIRECTION EVEN IF U COLLIDE IN THE OTHER
@@ -173,8 +172,19 @@ public class Player extends GameObject {
 			if(dx>0){
 				dx=0;
 			}
-			facingRight=false;
+			//change direction
+			if(facingRight){
+				facingRight=false;
+				float diff = Math.abs(xAOffset) - Math.abs(xBOffset);
+				if(diff > 0){	//left offset is larger
+					x += diff;
+				}
+				else if(diff <0){	//right offset is larger
+					x += diff;
+				}
+			}
 			this.dx-=moveSpeedX;
+			
 		}
 	}
 	
@@ -190,8 +200,19 @@ public class Player extends GameObject {
 			if(dx<0){
 				dx=0;
 			}
-			facingRight=true;
+			//change direction
+			if(!facingRight){
+				facingRight=true;
+				float diff = Math.abs(xAOffset) - Math.abs(xBOffset);
+				if(diff > 0){	//left offset is larger
+					x -= diff;
+				}
+				else if(diff <0){ //right offset is larger
+					x -= diff;
+				}
+			}
 			this.dx+=moveSpeedX;
+			
 		}
 	}
 	
