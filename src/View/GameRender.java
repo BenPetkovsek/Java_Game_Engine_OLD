@@ -62,10 +62,11 @@ public class GameRender extends JPanel {
 		offGraph = offImg.getGraphics();
 		/***DRAWING STUFF IN ORDER***/
 		drawBackGround(offGraph);
-		drawHero(offGraph,hero);
+		
 		for (GameObject e: things){
 			drawObj(offGraph,e);
 		}
+		drawObj(offGraph,hero);
 		//draw other shit
 		
 		//drawing to screen
@@ -79,31 +80,31 @@ public class GameRender extends JPanel {
         g.drawImage(backgroundImg, offsetX, offsetY,width,height, this);
 	}
 	//draws hero to screen
-	public void drawHero(Graphics g,Player hero){
+	public void drawObj(Graphics g,GameObject obj){
 		//scaling if possible
-		int width =  (int) (hero.getWidth());
-		int height = (int) (hero.getHeight());
+		int width =  (int) (obj.getWidth());
+		int height = (int) (obj.getHeight());
 
 		//NOTE: uses Math.round to get the pixel location or some shit
 		// Im not entirely sure if we should have it round here or in the getters themselves
-		g.drawImage(hero.getAnim().getCurrFrame(),Math.round(hero.getX()),Math.round(hero.getY()),width,height,this);
-		if(hero.debug()){
-			int xA =(int) (hero.getX() + hero.getOffsets()[0]);
-			int xB =(int) (hero.getX() + width + hero.getOffsets()[1]);
-			int yA =(int) (hero.getY() + hero.getOffsets()[2]);
-			int yB =(int) (hero.getY() + height + hero.getOffsets()[3]); 
+		g.drawImage(obj.getAnim().getCurrFrame(),Math.round(obj.getX()),Math.round(obj.getY()),width,height,this);
+		if(obj.debug()){
+			int xA =(int) (obj.getX() + obj.getOffsets()[0]);
+			int xB =(int) (obj.getX() + width + obj.getOffsets()[1]);
+			int yA =(int) (obj.getY() + obj.getOffsets()[2]);
+			int yB =(int) (obj.getY() + height + obj.getOffsets()[3]); 
 			int borderWidth = Math.abs(xB - xA);
 			int borderHeight = Math.abs(yB - yA);
 			//if the player is facing the direction that the offset was intended for, do it regular,
 			//if not then reverse it
-			if(hero.offSetDir() == hero.facingRight()){
+			if(obj.offSetDir() == obj.facingRight()){
 				
 				g.draw3DRect(xA, yA, borderWidth, borderHeight, true);
 			}
 			else{
 				//reversing x offset
-				xA =(int) (hero.getX() - hero.getOffsets()[1]);
-				xB =(int) (hero.getX() + width - hero.getOffsets()[0]);
+				xA =(int) (obj.getX() - obj.getOffsets()[1]);
+				xB =(int) (obj.getX() + width - obj.getOffsets()[0]);
 				borderWidth = Math.abs(xB - xA);
 				borderHeight = Math.abs(yB - yA);
 				g.draw3DRect(xA, yA, borderWidth, borderHeight, true);
@@ -111,8 +112,8 @@ public class GameRender extends JPanel {
 			
 		}
 	}
-	
-	public void drawObj(Graphics g,GameObject obj){
+	//idk if this is even gonna be used
+	public void drawObjFAIL(Graphics g,GameObject obj){
 		//scaling if possible
 		//if animation is not empty then draw, else dont bother drawing
 		if(obj.getAnim().getCurrFrame() != null){

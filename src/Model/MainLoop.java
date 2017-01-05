@@ -28,6 +28,9 @@ public class MainLoop extends Thread {
 	
 	private ArrayList<GameObject> things;	//list of objects in the scene minus the player for some reason...
 	private PlayerController controller;
+	
+	private boolean gameRunning=false;
+	
 	//initialization of game settings
 	public MainLoop(){
 		//game frame init
@@ -60,6 +63,7 @@ public class MainLoop extends Thread {
 		renderer.grabFocus();
 		
 		//Init stuff
+		gameRunning =true;
 		things = new ArrayList<GameObject>();
 		things.add(new Rock(200,200));
 		things.add(new Rock(500,300));
@@ -77,16 +81,50 @@ public class MainLoop extends Thread {
 	 * Like the while loop would run twice as fast if the background was smaller,
 	 * now you might think why is this bad? Well if the loop runs twice as fast, the update runs twice as fast, therefore the animation is twice as fast,
 	 * therefore everything is fucked. We REALLY need to stabilize the loop so it runs consistently at x milli/nano seconds per loop.
+	 * 
+	 * UPDATE: I have no idea what im doing but i have somewhat standardized so that each loop is essentially 10 milliseconds...i think idk
+	 * This is a very crude way of doing it but it prevents the loop from running fast if the processing is easier etc.
 	 */
 	public void run(){
-		while(true){
-			hero.update(things);
+		long now;
+		long before;
+		long diff;
+		long varWait;
+		long fixedWaitTime= 10;
+		int i=0;
+		while(gameRunning){
+			
+			before=System.nanoTime();	//time before
+			
+			gameUpdate();
+			
+			now=System.nanoTime();	//time after
+			diff= now -before;	//difference between two times
+			varWait = fixedWaitTime - (int) diff/1000000;	//the time to wait additionally in milliseconds (1ms =10^-9 ns)
+			//System.out.println("diff:" + diff);
+			//System.out.println("var Wait:"+varWait);
+			try {
+				if(varWait >=0){
+					this.sleep(varWait);	//I dont want to use thread.sleep because of its inaccuracies but im sure its good enough...i think
+				}
+				
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		
+	}
+	/*
+	 * The main game update, updates objects and renders
+	 */
+	public void gameUpdate(){
+		hero.update(things);
 			for (GameObject e: things){
 				((Rock) e).update(hero);
 			}
 			renderer.draw(hero,things);
-		}
-		
 	}
 	
 	//starting main method

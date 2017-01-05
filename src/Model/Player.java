@@ -13,11 +13,11 @@ public class Player extends GameObject {
 	/*
 	 *	MOVEMENT VARIABLES
 	 */
-	private float moveSpeedX=1f;
-	private float moveSpeedY=1f;
+	private float moveSpeedX=3f;
+	private float moveSpeedY=3f;
 	//max speed variables
-	private float maxXSpeed= 1f; 
-	private float maxYSpeed =1f;
+	private float maxXSpeed= 3f; 
+	private float maxYSpeed =3f;
 	//delta variables
 	//NOTE: I have no idea what im doing
 	private float dx;
@@ -89,8 +89,8 @@ public class Player extends GameObject {
 		//this is important because the offset should reflect when the player also reflects
 		offsetDir = facingRight;		
 		xAOffset = getWidth() *0.2f;
-		xBOffset = -getWidth() *0.4f;
-		yAOffset = getHeight() *0.2f;
+		xBOffset = -getWidth() *0.1f;
+		yAOffset = getHeight() *0.3f;
 	}
 	//main update for the object, is called every loop
 	public void update(ArrayList<GameObject> objs){
@@ -106,16 +106,17 @@ public class Player extends GameObject {
 		for (GameObject obj: objs){
 			
 			if (this.checkAllCollision(obj)){
+				System.out.println("Collision");
 				x-=dx;
 				y-=dy;
 				//THIS PIECE OF CODE ALLOWS YOU TO MOVE IN ONE DIRECTION EVEN IF U COLLIDE IN THE OTHER
 				//WITHOUT THIS IT YOU MUST RELEASE THE DIRECTION THAT IS COLLIDE AND IT SUCKS
 				//srry for yelling it just took a lot of brain power for some dumb reason
 				
-				if(this.checkYCollision(obj)){
+				if(this.checkYCollision(obj) && !this.checkXCollision(obj)){
 					x+=dx; 
 				}
-				if(this.checkXCollision(obj)){
+				if(this.checkXCollision(obj) && !this.checkYCollision(obj)){
 					y+=dy; 
 				}
 			}

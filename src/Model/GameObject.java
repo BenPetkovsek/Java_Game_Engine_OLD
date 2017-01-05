@@ -21,15 +21,14 @@ public class GameObject {
 	protected float yBOffset =0;	//bottom offset
 	protected boolean offsetDir = true;
 	
+	//direction of sprite
 	protected boolean facingRight =true;
 	
 	protected boolean drawBorders=false;	//FOR DEBUGGING TO SEE COLLISION BORDERS
 	
+	//current animation
 	protected Animation currentAnim;	
 	
-	public GameObject(){
-		
-	}
 	public GameObject(float x, float y){
 		this.x = x;
 		this.y =y;
@@ -41,6 +40,8 @@ public class GameObject {
 	
 	public void die(){ };
 	
+	
+	//GETTERS
 	public float getX(){ return x; }
 	
 	public float getY(){ return y; }
@@ -83,9 +84,18 @@ public class GameObject {
 	}
 	
 	
+	//SETTERS
+	public void setScale(float newScale) { scale = newScale; }
+	
+	//COLLISION
 	public boolean isCollidable(){ return isCollidable; }
 	
 	//checks if the object has collided at all, not to be used for movement calc, used for interactions between objects
+	/*
+	 * UPDATE: This is a problem, when you flip sides, the collision box flips as expected but you can position it
+	 * so that the flip causes the collision box to collide inside with another collision box and the player gets stuck
+	 * and they have to back up, might wanna push them to the side if that happens so they dont get stuck
+	 */
 	public boolean checkAllCollision(GameObject otherObject){
 		boolean collided= checkXCollision(otherObject) && checkYCollision(otherObject);
 		return collided;

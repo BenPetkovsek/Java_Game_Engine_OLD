@@ -15,6 +15,7 @@ public class Rock extends GameObject{
 		idleAnim.addFrame(idle);
 		currentAnim  = idleAnim;
 		scale=0.5f;
+		drawBorders=true;
 	}
 	
 	public void update(Player hero){

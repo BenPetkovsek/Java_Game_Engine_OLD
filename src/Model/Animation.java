@@ -10,7 +10,7 @@ import java.util.ArrayList;
 //So many options, and i have no idea what it best 
 public class Animation {
 	
-	private final long refreshRate= 50;	//The time between each animation frame, not sure how to do this lol
+	private final long refreshRate= 20;	//The time between each animation frame, not sure how to do this lol
 	
 	private long totalDuration;
 	private long timeElapsed;
