@@ -1,9 +1,13 @@
 /*
  * This is the controller for the player, controls can be set handles input on key press and key release	
+ * 
  * TODO Okay real talk, apparently using key listeners is a bad thing. Honestly tho i have no fucken clue why its so bad
  * everyone seems to be raving about the modularity of it which is nice. But that takes a fuck load of work and right now 
  * i just want the fucken thing to work. So for now im just going to use a controller class with key bindings.
  * In the future we will/should convert this to a java swing key bindings type module. But for now this can suck my dick.
+ * 
+ * UPDATE: So i found a problem with this, but its not affecting the game, apparently the OS prevents the key listener from sending a constant stream
+ * of key presses for the first half second or so it thats bad. Using a variable +timer will combo will fix this i think
  */
 package Controller;
 

@@ -85,23 +85,34 @@ public class GameObject {
 	
 	
 	//SETTERS
+	/*
+	 * Sets the scale of the images of the game object
+	 */
 	public void setScale(float newScale) { scale = newScale; }
+	
+	/*
+	 * sets the offsets of the collision of the object
+	 * Okay this is a little weird, basically just sets the offsets for collision
+	 * For X offsets, positive goes left and negative goes right
+	 * For Y offsets, for some reason positive is down, and negative is up lmao
+	 * NOTE: This doesn't check if offsets are negatively too big and inverts and fucks everything up. Im sure you can handle this guys
+	 */
+	public void setOffsets(float xAOffset, float xBOffset, float yAOffset, float yBOffset ){
+		this.xAOffset =xAOffset;
+		this.xBOffset = xBOffset;
+		this.yAOffset = yAOffset;
+		this.yBOffset = yBOffset;
+	}
 	
 	//COLLISION
 	public boolean isCollidable(){ return isCollidable; }
 	
 	//checks if the object has collided at all, not to be used for movement calc, used for interactions between objects
-	/*
-	 * UPDATE: This is a problem, when you flip sides, the collision box flips as expected but you can position it
-	 * so that the flip causes the collision box to collide inside with another collision box and the player gets stuck
-	 * and they have to back up, might wanna push them to the side if that happens so they dont get stuck
-	 */
 	public boolean checkAllCollision(GameObject otherObject){
 		boolean collided= checkXCollision(otherObject) && checkYCollision(otherObject);
 		return collided;
 	}
 	//checks if y collision is detected
-	//NOTE: Does not check collision offset of colliding object yet
 	//The calculations are kinda misleading but to check if there is a collision on the left or right, you must actually
 	// check if the y coordinates are intersecting
 	//just trust me
@@ -109,6 +120,7 @@ public class GameObject {
 	public boolean checkYCollision(GameObject otherObject){
 		boolean xCollide = false;
 		float width = getWidth();
+		
 		float otherX = otherObject.getX();
 		float otherWidth = otherObject.getWidth();
 		
@@ -117,12 +129,14 @@ public class GameObject {
 		float xA  = (facingRight == offsetDir) ? (x +xAOffset): (x-xBOffset);
 		float xB =  (facingRight == offsetDir) ? (x +width +xBOffset): (x +width -xAOffset);
 		
+		float otherXA = (otherObject.facingRight() == otherObject.offSetDir()) ? (otherX + otherObject.getOffsets()[0]) : (otherX - otherObject.getOffsets()[1]);
+		float otherXB = (otherObject.facingRight() == otherObject.offSetDir()) ? (otherX +otherWidth+ otherObject.getOffsets()[1]) : (otherX +otherWidth - otherObject.getOffsets()[0]);
+		
 		//Essentially this is just a simplied way of checking if range of pixels the pictures take up intersect horizontally
-		xCollide = (xA <= (otherX+otherWidth)) && (otherX <= xB);
+		xCollide = (xA <= otherXB) && (otherXA <= xB);
 		return xCollide;
 	}
 	//checks if x collision is detected
-	//NOTE: Does not check for percentage of collision or offsets YET
 	//The calculations are kinda misleading but to check if there is a collision on the top or bottom, you must actually
 	// check if the x coordinates are intersecting
 	//just trust me
@@ -133,8 +147,14 @@ public class GameObject {
 		float otherY = otherObject.getY();
 		float otherHeight = otherObject.getHeight();
 		
+		float yA  =y +yAOffset;
+		float yB = y +height +yBOffset;
+		
+		float otherYA = otherY + otherObject.getOffsets()[2];
+		float otherYB = otherY +otherHeight+ otherObject.getOffsets()[3];
+		
 		//Essentially this is just a simplied way of checking if range of pixels the pictures take up intersect vertically
-		yCollide = (y + yAOffset <= (otherY+otherHeight)) && (otherY<= (y+height + yBOffset));
+		yCollide = (yA <= otherYB) && (otherYA<= yB);
 		return yCollide;
 	}
 	

@@ -28,22 +28,5 @@ public class Enemy extends GameObject {
 		}	
 	}
 
-	@Override
-	public void update() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void spawn() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void die() {
-		// TODO Auto-generated method stub
-		
-	}
 	
 }//end class

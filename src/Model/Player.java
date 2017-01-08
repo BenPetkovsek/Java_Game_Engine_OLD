@@ -45,12 +45,14 @@ public class Player extends GameObject {
 		def = initDef;
 		intel = initIntel;
 		name = initName;
-		isCollidable = true;
+		
 	}
 	
 	//constructor for simple people like me
 	public Player(float x,float y){
 		super(x,y);
+		HP =100;
+		isCollidable = true;
 		animInit();
 		scale= 5f;
 		drawBorders=true;
@@ -78,19 +80,12 @@ public class Player extends GameObject {
 		oldAnim = currentAnim;
 		
 	}
-	/*
-	 * Okay this is a little weird, basically just sets the offsets for collision
-	 * For X offsets, positive goes left and negative goes right
-	 * For Y offsets, for some reason positive is down, and negative is up lmao
-	 */
 	
 	private void offsetInit(){
 		//offSetDir is whether the offset was applied to the sprite when it was facing right or not
 		//this is important because the offset should reflect when the player also reflects
-		offsetDir = facingRight;		
-		xAOffset = getWidth() *0.1f;
-		xBOffset = -getWidth() *0.2f;
-		yAOffset = getHeight() *0.3f;
+		offsetDir = facingRight;
+		setOffsets(getWidth() *0.3f,-getWidth() *0.1f,getHeight() *0.3f,0);
 	}
 	//main update for the object, is called every loop
 	public void update(ArrayList<GameObject> objs){
@@ -175,19 +170,13 @@ public class Player extends GameObject {
 			//change direction
 			if(facingRight){
 				facingRight=false;
-				float diff = Math.abs(xAOffset) - Math.abs(xBOffset);
-				if(diff > 0){	//left offset is larger
-					x += diff;
-				}
-				else if(diff <0){	//right offset is larger
-					x += diff;
-				}
+				offsetXFix(false);
 			}
 			this.dx-=moveSpeedX;
 			
 		}
 	}
-	
+	//stops the player from moving left
 	public void stopMovingLeft(){
 		if (dx <0){
 			dx=0;
@@ -195,6 +184,7 @@ public class Player extends GameObject {
 		
 	}
 	
+	//stops the player from moving right
 	public void moveRight(){
 		if(dx< maxXSpeed){
 			if(dx<0){
@@ -203,13 +193,8 @@ public class Player extends GameObject {
 			//change direction
 			if(!facingRight){
 				facingRight=true;
-				float diff = Math.abs(xAOffset) - Math.abs(xBOffset);
-				if(diff > 0){	//left offset is larger
-					x -= diff;
-				}
-				else if(diff <0){ //right offset is larger
-					x -= diff;
-				}
+				offsetXFix(true);
+				
 			}
 			this.dx+=moveSpeedX;
 			
@@ -221,27 +206,43 @@ public class Player extends GameObject {
 			dx=0;
 		}
 	}
-	
+	//WIP
 	public void moveUp(){
 		if(dy> -maxYSpeed){
 			this.dy-=moveSpeedY;
 		}
 	}
-	
+	//WIP
 	public void stopMovingUp(){
 		dy=0;
 	}
-	
+	//WIP
 	public void moveDown(){
 		if(dy< maxYSpeed){
 			this.dy+=moveSpeedY;
 		}
 	}
-	
+	//WIP
 	public void stopMovingDown(){
 		dy=0;
 	}
 
+	/**
+	 * Calculates the offset in x when changing direction
+	 * based on difference of offset
+	 * @param right - if the player is switching to left and right direction (right == true)
+	 * TODO - account for difference cases of offset: both negative, both positive, one positive one negative etc.
+	 */
+	private void offsetXFix(boolean right){
+		float diff = Math.abs(xAOffset) - Math.abs(xBOffset);
+		if(right){	//switch direction to right
+			x-=diff;
+		}
+		else{	//switch direction to left
+
+			x+=diff;
+		}
+	}
 	@Override
 	public void spawn() {
 		// TODO Auto-generated method stub
