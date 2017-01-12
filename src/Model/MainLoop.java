@@ -67,6 +67,7 @@ public class MainLoop extends Thread {
 		things = new ArrayList<GameObject>();
 		things.add(new Rock(200,200));
 		things.add(new Rock(500,300));
+		things.add(new Enemy(300,300));
 
 		
 	}
@@ -76,12 +77,7 @@ public class MainLoop extends Thread {
 	//TODO Make the game run at a consistent refresh rate, this will help with stabilizing fps
 	//use timers or some shit, just google it
 
-	/* OKAY OKAY THIS IS A BIGGER DEAL THAN I THOUGHT
-	 * Bigger backgrounds were causing the game to run literally slower,
-	 * Like the while loop would run twice as fast if the background was smaller,
-	 * now you might think why is this bad? Well if the loop runs twice as fast, the update runs twice as fast, therefore the animation is twice as fast,
-	 * therefore everything is fucked. We REALLY need to stabilize the loop so it runs consistently at x milli/nano seconds per loop.
-	 * 
+	/* 
 	 * UPDATE: I have no idea what im doing but i have somewhat standardized so that each loop is essentially 10 milliseconds...i think idk
 	 * This is a very crude way of doing it but it prevents the loop from running fast if the processing is easier etc.
 	 */
@@ -121,10 +117,16 @@ public class MainLoop extends Thread {
 	 */
 	public void gameUpdate(){
 		hero.update(things);
-			for (GameObject e: things){
-				((Rock) e).update(hero);
+		for (GameObject e: things){
+			if(e instanceof Enemy){
+				((Enemy) e).update(hero);
 			}
-			renderer.draw(hero,things);
+			else{
+				((Rock) e).update();
+			}
+			
+		}
+		renderer.draw(hero,things);
 	}
 	
 	//starting main method

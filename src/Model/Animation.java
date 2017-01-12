@@ -10,22 +10,29 @@ import java.util.ArrayList;
 //So many options, and i have no idea what it best 
 public class Animation {
 	
-	private final long refreshRate= 20;	//The time between each animation frame, not sure how to do this lol
+	private long refreshRate= 20;	//The time between each animation frame, not sure how to do this lol
 	
 	private long totalDuration;
 	private long timeElapsed;
 	
 	private boolean repeating;	//if the animation loops when it is done
 	
+	private boolean interruptable=true;
+	
 	private boolean singleImage=true;
 	
 	private ArrayList<BufferedImage> frames;
 	public int frameIndex=0;
 	
-	//creates an empty animation that is duration time long
+	//creates an empty animation and if it repeats
 	public Animation( boolean repeat){
 		repeating = repeat;
 		frames= new ArrayList<BufferedImage>();
+	}
+	//creates an empty animation and if it repeats and interruptable
+	public Animation(boolean repeat, boolean interruptable){
+		this(repeat);
+		this.interruptable =interruptable;
 	}
 	
 	public void update(){
@@ -83,4 +90,12 @@ public class Animation {
 		timeElapsed=0;
 		frameIndex=0;
 	}
+	
+	public boolean interruptable(){ return interruptable(); }
+	
+	/**
+	 * Sets the refresh rate
+	 * @param refreshRate - new refresh rate
+	 */
+	public void setRefreshRate(int refreshRate){ this.refreshRate = refreshRate; }
 }

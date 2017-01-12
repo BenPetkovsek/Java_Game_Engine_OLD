@@ -16,11 +16,11 @@ public class Rock extends GameObject{
 		currentAnim  = idleAnim;
 		scale=0.5f;
 		drawBorders=true;
-		setOffsets(0,0,20,-20);
 		
 	}
 	
-	public void update(Player hero){
+	@Override
+	public void update(){
 		currentAnim.update();
 	}
 	

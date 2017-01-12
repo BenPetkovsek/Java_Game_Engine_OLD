@@ -36,6 +36,10 @@ public class Player extends GameObject {
 	
 	private Animation oldAnim;
 	
+	private Invulnerability grace;	//this is when the player gets hit, it allows them to be invincible for a second to prevent insta death
+	
+	private KnockBack knockback;
+	
 	//complicated constructor for future releases with stats
 	public Player(int x, int y,String initName, int initHP, int initStr, int initDef, int initIntel ){
 		this(x,y);
@@ -57,6 +61,9 @@ public class Player extends GameObject {
 		scale= 5f;
 		drawBorders=true;
 		offsetInit();
+		
+		//sets the grace period for the player
+		grace= new Invulnerability(140, 20);
 	}
 	//init for all anims
 	private void animInit(){
@@ -100,7 +107,7 @@ public class Player extends GameObject {
 		//this just translate to the player  being allowed to hitting a wall from the right but still being able to move up and down
 		for (GameObject obj: objs){
 			
-			if (this.checkAllCollision(obj)){
+			if (this.checkAllCollision(obj) && obj.isCollidable()){
 				x-=dx;
 				y-=dy;
 				//THIS PIECE OF CODE ALLOWS YOU TO MOVE IN ONE DIRECTION EVEN IF U COLLIDE IN THE OTHER
@@ -138,16 +145,45 @@ public class Player extends GameObject {
 		oldAnim = currentAnim;
 		
 		currentAnim.update();
+		
+		//grace updates
+		if(grace.going()){
+			grace.update();
+		}
+		
+		//knockback updates
+		if(knockback !=null){
+			if(knockback.getStatus()){
+				knockback.update();
+				dx += knockback.getKnockback()[0];
+				dy += knockback.getKnockback()[1];
+			}
+			else{	//reset unless already moving
+				knockback=null;
+				if(dx != 0){
+					dx =0;
+				}
+				if(dy != 0){
+					dy =0;
+				}
+			}
+		}
 	}
 	
-	public void takeDamage(int dmg){
-		HP -= dmg;
-		checkDeath();
+	//player takes dmg if they arent in grace mode
+	public void takeDamage(int dmg, Enemy enemy){
+		if(!grace.going()){
+			grace.start();
+			HP -= dmg;
+			checkDeath();
+			knockback = new KnockBack(enemy,this,160,20);
+		}
+		
 	}
 	
 	private void checkDeath(){
 		if(HP <= 0){
-			System.out.println(name + " has died!");
+			System.out.println("Hero has died!");
 		}
 	}
 	
@@ -155,6 +191,8 @@ public class Player extends GameObject {
 	public float getDx(){ return dx; }
 	
 	public float getDy(){ return dy; }
+	
+	public boolean isBlinked(){ return grace.getBlink(); }
 	
 	//SETTERS
 	public void setDx(float dx){ this.dx = dx;}

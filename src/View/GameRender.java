@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
+import Model.Enemy;
 import Model.GameObject;
 import Model.Player;
 import Model.Rock;
@@ -62,11 +63,17 @@ public class GameRender extends JPanel {
 		offGraph = offImg.getGraphics();
 		/***DRAWING STUFF IN ORDER***/
 		drawBackGround(offGraph);
-		
+		drawHero(offGraph,hero);
 		for (GameObject e: things){
 			drawObj(offGraph,e);
+			if(e instanceof Enemy){
+				offGraph.drawLine(Math.round(hero.getX() + hero.getWidth()/2),Math.round(hero.getY()+hero.getHeight()/2) ,Math.round(e.getX() + e.getWidth()/2),Math.round(e.getY() + e.getHeight()/2));
+			}
+			
 		}
-		drawObj(offGraph,hero);
+		
+		
+		
 		//draw other shit
 		
 		//drawing to screen
@@ -79,7 +86,13 @@ public class GameRender extends JPanel {
 	private void drawBackGround(Graphics g){		
         g.drawImage(backgroundImg, offsetX, offsetY,width,height, this);
 	}
-	//draws hero to screen
+	
+	public void drawHero(Graphics g, Player hero){
+		if(!hero.isBlinked()){
+			drawObj(g,hero);
+		}
+	}
+	//draws game objects to screen
 	public void drawObj(Graphics g,GameObject obj){
 		//scaling if possible
 		int width =  (int) (obj.getWidth());
@@ -88,43 +101,34 @@ public class GameRender extends JPanel {
 		//NOTE: uses Math.round to get the pixel location or some shit
 		// Im not entirely sure if we should have it round here or in the getters themselves
 		g.drawImage(obj.getAnim().getCurrFrame(),Math.round(obj.getX()),Math.round(obj.getY()),width,height,this);
-		if(obj.debug()){
-			int xA =(int) (obj.getX() + obj.getOffsets()[0]);
-			int xB =(int) (obj.getX() + width + obj.getOffsets()[1]);
-			int yA =(int) (obj.getY() + obj.getOffsets()[2]);
-			int yB =(int) (obj.getY() + height + obj.getOffsets()[3]); 
-			int borderWidth = Math.abs(xB - xA);
-			int borderHeight = Math.abs(yB - yA);
-			//if the player is facing the direction that the offset was intended for, do it regular,
-			//if not then reverse it
-			if(obj.offSetDir() == obj.facingRight()){
-				
-				g.draw3DRect(xA, yA, borderWidth, borderHeight, true);
-			}
-			else{
-				//reversing x offset
-				xA =(int) (obj.getX() - obj.getOffsets()[1]);
-				xB =(int) (obj.getX() + width - obj.getOffsets()[0]);
-				borderWidth = Math.abs(xB - xA);
-				borderHeight = Math.abs(yB - yA);
-				g.draw3DRect(xA, yA, borderWidth, borderHeight, true);
-			}
+		if(obj.debug()){ 
+			drawCollisionBox(g,obj);
 			
 		}
 	}
-	//idk if this is even gonna be used
-	public void drawObjFAIL(Graphics g,GameObject obj){
-		//scaling if possible
-		//if animation is not empty then draw, else dont bother drawing
-		if(obj.getAnim().getCurrFrame() != null){
-			
-			int width =  (int) (obj.getWidth());
-			int height = (int) (obj.getHeight());
-			
-			//NOTE: uses Math.round to get the pixel location or some shit
-			// Im not entirely sure if we should have it round here or in the getters themselves
-			g.drawImage(obj.getAnim().getCurrFrame(),Math.round(obj.getX()),Math.round(obj.getY()),width,height,this);
-		}
+	private void drawCollisionBox(Graphics g, GameObject obj){
+		int width =  (int) (obj.getWidth());
+		int height = (int) (obj.getHeight());
 		
+		int xA =(int) (obj.getX() + obj.getOffsets()[0]);
+		int xB =(int) (obj.getX() + width + obj.getOffsets()[1]);
+		int yA =(int) (obj.getY() + obj.getOffsets()[2]);
+		int yB =(int) (obj.getY() + height + obj.getOffsets()[3]); 
+		int borderWidth = Math.abs(xB - xA);
+		int borderHeight = Math.abs(yB - yA);
+		//if the player is facing the direction that the offset was intended for, do it regular,
+		//if not then reverse it
+		if(obj.offSetDir() == obj.facingRight()){
+			
+			g.draw3DRect(xA, yA, borderWidth, borderHeight, true);
+		}
+		else{
+			//reversing x offset
+			xA =(int) (obj.getX() - obj.getOffsets()[1]);
+			xB =(int) (obj.getX() + width - obj.getOffsets()[0]);
+			borderWidth = Math.abs(xB - xA);
+			borderHeight = Math.abs(yB - yA);
+			g.draw3DRect(xA, yA, borderWidth, borderHeight, true);
+		}
 	}
 }
