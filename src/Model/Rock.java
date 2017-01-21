@@ -7,7 +7,7 @@ import View.ImageStyler;
 public class Rock extends GameObject{
 
 	private Animation idleAnim;
-	private BufferedImage idle = ImageStyler.loadImg("Art/rock.png");
+	private BufferedImage idle = ImageStyler.loadImg("rock.png");
 	
 	public Rock(float x, float y){
 		super(x,y);

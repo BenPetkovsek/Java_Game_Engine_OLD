@@ -1,5 +1,6 @@
 package Model;
 
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -8,7 +9,6 @@ import View.*;
 public class Player extends GameObject {
 	int HP, totalHP, str, def, intel;
 	String name;
-	private final String artDir= "Art/";
 	
 	/*
 	 *	MOVEMENT VARIABLES
@@ -23,22 +23,43 @@ public class Player extends GameObject {
 	private float dx;
 	private float dy;
 	
+	//movement booleans
+	private boolean movingLeft=false;
+	private boolean movingRight=false;
+	private boolean movingUp=false;
+	private boolean movingDown=false;
+	
+	private boolean noMovement=false;	//if the player can't move
 	
 	//Animation Variables
-	private BufferedImage[] walkRight= {ImageStyler.loadImg(artDir+"cat1.png"),ImageStyler.loadImg(artDir+"cat2.png"),ImageStyler.loadImg(artDir+"cat3.png")};
+	private BufferedImage[] walkRight= {ImageStyler.loadImg("cat1.png"),ImageStyler.loadImg("cat2.png"),ImageStyler.loadImg("cat3.png")};
 	private BufferedImage[] walkLeft = ImageStyler.flipImgs(walkRight);
-	private BufferedImage[] idleRight = {ImageStyler.loadImg(artDir+"cat2.png")};
-	private BufferedImage[] idleLeft = ImageStyler.flipImgs(idleRight);
+	
 	private Animation walkRightAnim;
 	private Animation walkLeftAnim;
+	
+	private BufferedImage[] idleRight = {ImageStyler.loadImg("cat2.png")};
+	private BufferedImage[] idleLeft = ImageStyler.flipImgs(idleRight);
+	
 	private Animation idleRightAnim;
 	private Animation idleLeftAnim;
 	
+	private BufferedImage[] attackRight = {ImageStyler.loadImg("catAttack.png")};
+	private BufferedImage[] attackLeft =ImageStyler.flipImgs(attackRight);
+	
+	private Animation attackRAnim;
+	private Animation attackLAnim;
+	
 	private Animation oldAnim;
 	
+	//effects variables
 	private Invulnerability grace;	//this is when the player gets hit, it allows them to be invincible for a second to prevent insta death
 	
 	private KnockBack knockback;
+	
+	//attacking variables
+	private boolean attacking=false;
+	private Attack currentAttack;	//TODO make a list of attacks , right now htere will be one
 	
 	//complicated constructor for future releases with stats
 	public Player(int x, int y,String initName, int initHP, int initStr, int initDef, int initIntel ){
@@ -57,13 +78,14 @@ public class Player extends GameObject {
 		super(x,y);
 		HP =100;
 		isCollidable = true;
-		animInit();
 		scale= 5f;
 		drawBorders=true;
+		animInit();
+		attackInit();
 		offsetInit();
 		
 		//sets the grace period for the player
-		grace= new Invulnerability(140, 20);
+		grace= new Invulnerability(70, 10);
 	}
 	//init for all anims
 	private void animInit(){
@@ -76,6 +98,11 @@ public class Player extends GameObject {
 		idleRightAnim.addFrame(idleRight[0]);
 		idleLeftAnim = new Animation(true);
 		idleLeftAnim.addFrame(idleLeft[0]);
+		attackRAnim = new Animation(false).addFrame(attackRight[0]).addFrame(attackRight[0]).addFrame(attackRight[0]).addFrame(attackRight[0]);
+		attackRAnim.setInterruptable(false);
+		attackLAnim = new Animation(false).addFrame(attackLeft[0]).addFrame(attackLeft[0]).addFrame(attackLeft[0]).addFrame(attackLeft[0]);
+		attackLAnim.setInterruptable(false);
+		
 		
 		//init first anim
 		if (facingRight){
@@ -88,6 +115,9 @@ public class Player extends GameObject {
 		
 	}
 	
+	private void attackInit(){
+		currentAttack = new Attack(this, 30, new Rectangle2D.Double(this.x,this.y,30,this.getHeight()));
+	}
 	private void offsetInit(){
 		//offSetDir is whether the offset was applied to the sprite when it was facing right or not
 		//this is important because the offset should reflect when the player also reflects
@@ -96,6 +126,9 @@ public class Player extends GameObject {
 	}
 	//main update for the object, is called every loop
 	public void update(ArrayList<GameObject> objs){
+		
+		//LARGE UPDATE OF MOVEMENT 
+		updateMovement();
 		
 		//movement updates
 		x +=dx;
@@ -123,27 +156,28 @@ public class Player extends GameObject {
 			}
 		}
 		//animation updates
-		if(dx <0){
-			currentAnim = walkLeftAnim; 
-		}
-		else if(dx >0){
-			currentAnim = walkRightAnim;
-		}
-		else if(dx==0){
-			if(facingRight){
-				currentAnim =idleRightAnim;
+		if(currentAnim.interruptable() || (!currentAnim.interruptable() && currentAnim.isFinished())){
+			if(dx <0){
+				currentAnim = walkLeftAnim; 
 			}
-			else{
-				currentAnim = idleLeftAnim;
+			else if(dx >0){
+				currentAnim = walkRightAnim;
 			}
+			else if(dx==0){
+				currentAnim = (facingRight) ? idleRightAnim : idleLeftAnim;
+			}
+			
+			if(attacking){
+				attacking=false;
+				currentAnim = (facingRight) ? attackRAnim: attackLAnim;
+			}
+			//This just resets the current animation to start at the begining
+			//if the animation changes
+			if(oldAnim != currentAnim){
+				currentAnim.reset();
+			}
+			oldAnim = currentAnim;
 		}
-		//This just resets the current animation to start at the begining
-		//if the animation changes
-		if(oldAnim != currentAnim){
-			currentAnim.reset();
-		}
-		oldAnim = currentAnim;
-		
 		currentAnim.update();
 		
 		//grace updates
@@ -158,113 +192,80 @@ public class Player extends GameObject {
 				dx += knockback.getKnockback()[0];
 				dy += knockback.getKnockback()[1];
 			}
-			else{	//reset unless already moving
-				knockback=null;
+			else{	
+				//reset unless already moving
 				if(dx != 0){
 					dx =0;
 				}
 				if(dy != 0){
 					dy =0;
 				}
+				knockback=null;	//reset
+				noMovement=false;	//reset
 			}
 		}
 	}
 	
-	//player takes dmg if they arent in grace mode
-	public void takeDamage(int dmg, Enemy enemy){
-		if(!grace.going()){
-			grace.start();
-			HP -= dmg;
-			checkDeath();
-			knockback = new KnockBack(enemy,this,160,20);
+	/**
+	 * movement update based on user input
+	 * Now runs on main update loop as opposed to own button listener thread or some shit
+	 * i fixed some bugs for the knockback and i have no idea why :D
+	 */
+	private void updateMovement(){
+		//LEFT press
+		if(movingLeft){
+			if(dx> -maxXSpeed && !noMovement){
+				if(dx>0){
+					dx=0;
+				}
+				//change direction
+				if(facingRight){
+					facingRight=false;
+					offsetXFix(false);
+				}
+				this.dx-=moveSpeedX;
+			}
 		}
 		
-	}
-	
-	private void checkDeath(){
-		if(HP <= 0){
-			System.out.println("Hero has died!");
-		}
-	}
-	
-	//GETTERS
-	public float getDx(){ return dx; }
-	
-	public float getDy(){ return dy; }
-	
-	public boolean isBlinked(){ return grace.getBlink(); }
-	
-	//SETTERS
-	public void setDx(float dx){ this.dx = dx;}
-	public void setDy(float dy){ this.dy = dy;}
-	
-
-	//MOVEMENT/ CONTROLS
-	public void moveLeft(){
-		if(dx> -maxXSpeed){
-			if(dx>0){
-				dx=0;
+		//RIGHT press
+		if(movingRight){
+			if(dx< maxXSpeed && !noMovement){
+				if(dx<0){
+					dx=0;
+				}
+				//change direction
+				if(!facingRight){
+					facingRight=true;
+					offsetXFix(true);
+					
+				}
+				this.dx+=moveSpeedX;
 			}
-			//change direction
-			if(facingRight){
-				facingRight=false;
-				offsetXFix(false);
-			}
-			this.dx-=moveSpeedX;
-			
 		}
-	}
-	//stops the player from moving left
-	public void stopMovingLeft(){
-		if (dx <0){
-			dx=0;
+		//stop dx if no buttons are pressed and movement is allowed
+		if(!movingRight && !movingLeft && !noMovement){
+			dx =0;
+		}
+		//UP press
+		if(movingUp){
+			if(dy> -maxYSpeed && !noMovement){
+				this.dy-=moveSpeedY;
+			}	
 		}
 		
-	}
-	
-	//stops the player from moving right
-	public void moveRight(){
-		if(dx< maxXSpeed){
-			if(dx<0){
-				dx=0;
-			}
-			//change direction
-			if(!facingRight){
-				facingRight=true;
-				offsetXFix(true);
-				
-			}
-			this.dx+=moveSpeedX;
-			
+		//DOWN press
+		if(movingDown){
+			if(dy< maxYSpeed && !noMovement){
+				this.dy+=moveSpeedY;
+			}	
+		}
+		
+		//stop dy if no buttons are pressed and movement is allowed
+		if(!movingDown && !movingUp && !noMovement){
+			dy=0;
 		}
 	}
 	
-	public void stopMovingRight(){
-		if (dx >0){
-			dx=0;
-		}
-	}
-	//WIP
-	public void moveUp(){
-		if(dy> -maxYSpeed){
-			this.dy-=moveSpeedY;
-		}
-	}
-	//WIP
-	public void stopMovingUp(){
-		dy=0;
-	}
-	//WIP
-	public void moveDown(){
-		if(dy< maxYSpeed){
-			this.dy+=moveSpeedY;
-		}
-	}
-	//WIP
-	public void stopMovingDown(){
-		dy=0;
-	}
-
 	/**
 	 * Calculates the offset in x when changing direction
 	 * based on difference of offset
@@ -280,6 +281,82 @@ public class Player extends GameObject {
 
 			x+=diff;
 		}
+	}
+	
+	
+	//player takes dmg if they arent in grace mode
+	//TODO Make it more modular so it takes in an attack or something
+	public void takeDamage(int dmg, Enemy enemy){
+		if(!grace.going()){
+			grace.start();
+			HP -= dmg;
+			checkDeath();
+			knockback = new KnockBack(enemy,this,150,8);
+			noMovement =true;
+		}
+	}
+	
+	private void checkDeath(){
+		if(HP <= 0){
+			//System.out.println("Hero has died!");
+		}
+	}
+	
+	//GETTERS
+	public float getDx(){ return dx; }
+	
+	public float getDy(){ return dy; }
+	
+	public boolean isAttacking(){ return attacking; }
+
+	public Attack getAttack(){ return currentAttack; }
+	
+	public boolean isBlinked(){ return grace.getBlink(); }
+	
+	//SETTERS
+	public void setDx(float dx){ this.dx = dx;}
+	public void setDy(float dy){ this.dy = dy;}
+	
+
+	//MOVEMENT/ CONTROLS
+	public void moveLeft(){
+		movingLeft=true;
+	}
+	//stops the player from moving left
+	public void stopMovingLeft(){
+		movingLeft=false;
+
+	}
+	
+	//stops the player from moving right
+	public void moveRight(){
+		movingRight=true;
+	}
+	
+	public void stopMovingRight(){
+		movingRight=false;
+	}
+	
+	//WIP
+	public void moveUp(){
+		movingUp=true;
+	}
+	//WIP
+	public void stopMovingUp(){
+		movingUp= false;
+	}
+	//WIP
+	public void moveDown(){
+		movingDown=true;
+	}
+	//WIP
+	public void stopMovingDown(){
+		movingDown =false;
+	}
+
+	
+	public void attack(){
+		attacking=true;
 	}
 	@Override
 	public void spawn() {

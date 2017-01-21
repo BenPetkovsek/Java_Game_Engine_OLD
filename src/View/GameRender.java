@@ -67,7 +67,8 @@ public class GameRender extends JPanel {
 		for (GameObject e: things){
 			drawObj(offGraph,e);
 			if(e instanceof Enemy){
-				offGraph.drawLine(Math.round(hero.getX() + hero.getWidth()/2),Math.round(hero.getY()+hero.getHeight()/2) ,Math.round(e.getX() + e.getWidth()/2),Math.round(e.getY() + e.getHeight()/2));
+				//debug
+				//offGraph.drawLine(Math.round(hero.getX() + hero.getWidth()/2),Math.round(hero.getY()+hero.getHeight()/2) ,Math.round(e.getX() + e.getWidth()/2),Math.round(e.getY() + e.getHeight()/2));
 			}
 			
 		}

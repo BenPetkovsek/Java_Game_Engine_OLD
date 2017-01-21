@@ -11,7 +11,7 @@ public class Enemy extends GameObject {
 	
 	public Enemy(float x, float y){
 		super(x,y);
-		idle = new Animation(false).addFrame(ImageStyler.loadImg("Art/dog.png"));
+		idle = new Animation(false).addFrame(ImageStyler.loadImg("dog.png"));
 		currentAnim = idle;
 		scale = 5f;
 		drawBorders=true;
@@ -41,7 +41,10 @@ public class Enemy extends GameObject {
 	
 	public void update(Player hero){
 		currentAnim.update();
-		if(checkAllCollision(hero)){
+		if(checkAllCollision(hero.getAttack())){
+			System.out.println("buh");
+		}
+		else if(checkAllCollision(hero)){
 			hero.takeDamage(20,this);
 		}
 	}

@@ -10,7 +10,7 @@ public class KnockBack {
 	private float pushDistance=0f;
 	
 	private double[] xy;	//push power in x and y
-	
+	private double[] accumXY;
 	private float sourceX;
 	private float sourceY;
 	private GameObject actor;		//thing to push
@@ -63,9 +63,7 @@ public class KnockBack {
 		double yComponent = -pushDistance*Math.sin(angle);		//same tings
 		xy[0] = (float) (xComponent/Math.pow(length, 2));
 		xy[1] = (float) (yComponent/Math.pow(length, 2));
-		System.out.println(xy[0]);
-		System.out.println(xy[1]);
-		
+		accumXY = new double[2];
 		
 	}
 	
@@ -73,6 +71,8 @@ public class KnockBack {
 		if(running){
 			currTime+=1;
 			if(currTime >= length){
+				accumXY[0] += xy[0];
+				accumXY[1] += xy[1];
 				running=false;
 			}
 		}
@@ -82,4 +82,6 @@ public class KnockBack {
 	public boolean getStatus(){ return running; }
 	
 	public double[] getKnockback(){ return xy; }
+	
+	public double[] getAccum() { return accumXY; }
 }

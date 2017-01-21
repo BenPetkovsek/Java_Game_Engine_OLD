@@ -22,17 +22,14 @@ public class Animation {
 	private boolean singleImage=true;
 	
 	private ArrayList<BufferedImage> frames;
-	public int frameIndex=0;
+	private int frameIndex=0;
+	
+	private boolean finished =false;
 	
 	//creates an empty animation and if it repeats
 	public Animation( boolean repeat){
 		repeating = repeat;
 		frames= new ArrayList<BufferedImage>();
-	}
-	//creates an empty animation and if it repeats and interruptable
-	public Animation(boolean repeat, boolean interruptable){
-		this(repeat);
-		this.interruptable =interruptable;
 	}
 	
 	public void update(){
@@ -44,6 +41,9 @@ public class Animation {
 					timeElapsed=0;
 					if(repeating){
 						frameIndex =0;
+					}
+					else{
+						finished=true;
 					}
 				}
 				else{
@@ -91,7 +91,15 @@ public class Animation {
 		frameIndex=0;
 	}
 	
-	public boolean interruptable(){ return interruptable(); }
+	public void setInterruptable(boolean val){ 
+		if(repeating && !val){
+			System.out.println("BEWARE this animation is infinite and can't be interrupted");
+		}
+		interruptable =val; 
+	}
+	public boolean interruptable(){ return interruptable; }
+	
+	public boolean isFinished(){ return finished; }
 	
 	/**
 	 * Sets the refresh rate

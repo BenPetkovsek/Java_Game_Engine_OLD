@@ -39,7 +39,7 @@ public class MainLoop extends Thread {
 		gameframe.add(renderer);
 		
 		//setting background of game
-		background = ImageStyler.loadImg("Art/background1.png");
+		background = ImageStyler.loadImg("background1.png");
 		
 		
 		//scaled background
@@ -65,8 +65,8 @@ public class MainLoop extends Thread {
 		//Init stuff
 		gameRunning =true;
 		things = new ArrayList<GameObject>();
-		things.add(new Rock(200,200));
-		things.add(new Rock(500,300));
+		//things.add(new Rock(200,200));
+		//things.add(new Rock(500,300));
 		things.add(new Enemy(300,300));
 
 		

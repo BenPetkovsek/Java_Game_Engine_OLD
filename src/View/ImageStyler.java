@@ -12,8 +12,11 @@ import javax.imageio.ImageIO;
 
 public class ImageStyler {
 
+	private final static String artDir = "Art/";
+	
 	//quick and easy way to load an image
 	public static BufferedImage loadImg(String filename){
+		filename = artDir + filename;
 		BufferedImage img = null;
 		try {
 		    img = ImageIO.read(new File(filename));
