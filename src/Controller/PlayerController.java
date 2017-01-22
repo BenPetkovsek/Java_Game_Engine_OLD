@@ -38,7 +38,6 @@ public class PlayerController extends KeyAdapter {
 		/*if(tempKey != key && key != 10){
 			System.out.println(key+ " Pressed");
 		}*/
-		System.out.println(key);
     	if(key == moveLeft){
     		player.moveLeft();
     	}

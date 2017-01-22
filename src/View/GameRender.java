@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
+import Model.Attack;
 import Model.Enemy;
 import Model.GameObject;
 import Model.Player;
@@ -66,10 +67,6 @@ public class GameRender extends JPanel {
 		drawHero(offGraph,hero);
 		for (GameObject e: things){
 			drawObj(offGraph,e);
-			if(e instanceof Enemy){
-				//debug
-				//offGraph.drawLine(Math.round(hero.getX() + hero.getWidth()/2),Math.round(hero.getY()+hero.getHeight()/2) ,Math.round(e.getX() + e.getWidth()/2),Math.round(e.getY() + e.getHeight()/2));
-			}
 			
 		}
 		
@@ -91,6 +88,10 @@ public class GameRender extends JPanel {
 	public void drawHero(Graphics g, Player hero){
 		if(!hero.isBlinked()){
 			drawObj(g,hero);
+			if (hero.isAttacking()){
+				Attack a = hero.getAttack();
+				g.draw3DRect((int) a.getX(),(int) a.getY(),(int) a.getWidth(),(int) a.getHeight(), true);
+			}
 		}
 	}
 	//draws game objects to screen
@@ -107,6 +108,7 @@ public class GameRender extends JPanel {
 			
 		}
 	}
+	
 	private void drawCollisionBox(Graphics g, GameObject obj){
 		int width =  (int) (obj.getWidth());
 		int height = (int) (obj.getHeight());

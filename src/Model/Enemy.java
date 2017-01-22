@@ -42,7 +42,7 @@ public class Enemy extends GameObject {
 	public void update(Player hero){
 		currentAnim.update();
 		if(checkAllCollision(hero.getAttack())){
-			System.out.println("buh");
+			System.out.println("enemy attacked");
 		}
 		else if(checkAllCollision(hero)){
 			hero.takeDamage(20,this);

@@ -4,6 +4,7 @@
 package Model;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class MainLoop extends Thread {
 	private PlayerController controller;
 	
 	private boolean gameRunning=false;
+	public boolean freeze = false;	//debugging pause
 	
 	//initialization of game settings
 	public MainLoop(){
@@ -56,7 +58,9 @@ public class MainLoop extends Thread {
 		//main player controller init
 		hero = new Player(0,0);
 		controller =new PlayerController(hero);
+		GameListener debugController = new GameListener();
 		renderer.addKeyListener(controller);
+		renderer.addKeyListener(debugController);
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 		renderer.setFocusable(true); 
 		renderer.addNotify();
@@ -67,16 +71,13 @@ public class MainLoop extends Thread {
 		things = new ArrayList<GameObject>();
 		//things.add(new Rock(200,200));
 		//things.add(new Rock(500,300));
-		things.add(new Enemy(300,300));
+		//things.add(new Enemy(300,300));
 
 		
 	}
 	
 	
 	//main game update;
-	//TODO Make the game run at a consistent refresh rate, this will help with stabilizing fps
-	//use timers or some shit, just google it
-
 	/* 
 	 * UPDATE: I have no idea what im doing but i have somewhat standardized so that each loop is essentially 10 milliseconds...i think idk
 	 * This is a very crude way of doing it but it prevents the loop from running fast if the processing is easier etc.
@@ -90,25 +91,28 @@ public class MainLoop extends Thread {
 		int i=0;
 		while(gameRunning){
 			
-			before=System.nanoTime();	//time before
-			
-			gameUpdate();
-			
-			now=System.nanoTime();	//time after
-			diff= now -before;	//difference between two times
-			varWait = fixedWaitTime - (int) diff/1000000;	//the time to wait additionally in milliseconds (1ms =10^-9 ns)
-			//System.out.println("diff:" + diff);
-			//System.out.println("var Wait:"+varWait);
-			try {
-				if(varWait >=0){
-					this.sleep(varWait);	//I dont want to use thread.sleep because of its inaccuracies but im sure its good enough...i think
+				before=System.nanoTime();	//time before
+				
+				//update game if not paused
+				if(!freeze){
+					gameUpdate();
 				}
 				
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
+				
+				now=System.nanoTime();	//time after
+				diff= now -before;	//difference between two times
+				varWait = fixedWaitTime - (int) diff/1000000;	//the time to wait additionally in milliseconds (1ms =10^-9 ns)
+				//System.out.println("diff:" + diff);
+				//System.out.println("var Wait:"+varWait);
+				try {
+					if(varWait >=0){
+						this.sleep(varWait);	//I dont want to use thread.sleep because of its inaccuracies but im sure its good enough...i think
+					}
+					
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
 		
 	}
@@ -129,9 +133,32 @@ public class MainLoop extends Thread {
 		renderer.draw(hero,things);
 	}
 	
+	public boolean isRunning(){ return gameRunning; }
+	
+	public void setRunning(boolean state) { gameRunning= state; }
+	
 	//starting main method
 	public static void main(String[] args){
 		MainLoop main = new MainLoop();
 		main.start();
+	}
+	
+	//debugger listner
+	// z to pause
+	// hold or press x to go frame by frame
+	//ty mario man
+	private class GameListener extends KeyAdapter {
+		public void keyPressed(KeyEvent e) {
+			int key = e.getKeyCode();
+			if (key == KeyEvent.VK_Z) { // pause
+				MainLoop.this.freeze = !MainLoop.this.freeze;
+	        }
+			if (key == KeyEvent.VK_X){
+				if(MainLoop.this.freeze){
+					MainLoop.this.gameUpdate();
+				}
+			}
+		}
+
 	}
 }

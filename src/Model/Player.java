@@ -98,10 +98,12 @@ public class Player extends GameObject {
 		idleRightAnim.addFrame(idleRight[0]);
 		idleLeftAnim = new Animation(true);
 		idleLeftAnim.addFrame(idleLeft[0]);
-		attackRAnim = new Animation(false).addFrame(attackRight[0]).addFrame(attackRight[0]).addFrame(attackRight[0]).addFrame(attackRight[0]);
+		attackRAnim = new Animation(false).addFrame(attackRight[0]).addFrame(attackRight[0]);
 		attackRAnim.setInterruptable(false);
-		attackLAnim = new Animation(false).addFrame(attackLeft[0]).addFrame(attackLeft[0]).addFrame(attackLeft[0]).addFrame(attackLeft[0]);
+		attackRAnim.setRefreshRate(20);
+		attackLAnim = new Animation(false).addFrame(attackLeft[0]).addFrame(attackLeft[0]);
 		attackLAnim.setInterruptable(false);
+		attackLAnim.setRefreshRate(2);
 		
 		
 		//init first anim
@@ -116,7 +118,7 @@ public class Player extends GameObject {
 	}
 	
 	private void attackInit(){
-		currentAttack = new Attack(this, 30, new Rectangle2D.Double(this.x,this.y,30,this.getHeight()));
+		currentAttack = new Attack(this,getWidth(),0f,30,100f,100f, (int) attackLAnim.getDuration());
 	}
 	private void offsetInit(){
 		//offSetDir is whether the offset was applied to the sprite when it was facing right or not
@@ -155,30 +157,7 @@ public class Player extends GameObject {
 				}
 			}
 		}
-		//animation updates
-		if(currentAnim.interruptable() || (!currentAnim.interruptable() && currentAnim.isFinished())){
-			if(dx <0){
-				currentAnim = walkLeftAnim; 
-			}
-			else if(dx >0){
-				currentAnim = walkRightAnim;
-			}
-			else if(dx==0){
-				currentAnim = (facingRight) ? idleRightAnim : idleLeftAnim;
-			}
-			
-			if(attacking){
-				attacking=false;
-				currentAnim = (facingRight) ? attackRAnim: attackLAnim;
-			}
-			//This just resets the current animation to start at the begining
-			//if the animation changes
-			if(oldAnim != currentAnim){
-				currentAnim.reset();
-			}
-			oldAnim = currentAnim;
-		}
-		currentAnim.update();
+		
 		
 		//grace updates
 		if(grace.going()){
@@ -204,12 +183,58 @@ public class Player extends GameObject {
 				noMovement=false;	//reset
 			}
 		}
+		
+		//attacking updates
+		if(currentAttack != null){
+			//if currently attacking, update else dont
+			if(attacking){
+				if(!currentAttack.isActive()){
+					//x+=14*scale;
+					attacking =false;
+				}
+				currentAttack.update();
+			}
+			
+		}
+		
+		//animation updates
+		//should do last
+		if(currentAnim.interruptable() || currentAnim.isFinished()){		//dont change animation unless its interruptable or done
+			
+			if(dx <0){
+				currentAnim = walkLeftAnim; 
+			}
+			else if(dx >0){
+				currentAnim = walkRightAnim;
+			}
+			else if(dx==0){
+				currentAnim = (facingRight) ? idleRightAnim : idleLeftAnim;
+			}
+			
+			//attacking overrides movement animation
+			if(attacking){
+				currentAnim = (facingRight) ? attackRAnim: attackLAnim;
+			}
+			//This just resets the current animation to start at the begining
+			//if the animation changes
+			
+			if(oldAnim != currentAnim){
+				currentAnim.reset();
+				/*if(facingRight && attacking){
+					System.out.println("good");
+					x-= Math.abs(currentAnim.getCurrFrame().getWidth() - oldAnim.getCurrFrame().getWidth());
+				}*/
+			}
+			oldAnim = currentAnim;
+			
+		}
+		
+		currentAnim.update();
 	}
 	
 	/**
 	 * movement update based on user input
 	 * Now runs on main update loop as opposed to own button listener thread or some shit
-	 * i fixed some bugs for the knockback and i have no idea why :D
 	 */
 	private void updateMovement(){
 		//LEFT press
@@ -356,7 +381,14 @@ public class Player extends GameObject {
 
 	
 	public void attack(){
-		attacking=true;
+		//cant attack if already attacking
+		//might change this idk
+		if(!attacking){
+			attacking=true;
+			//x-=14*scale;
+			currentAttack.activate();
+		}
+		
 	}
 	@Override
 	public void spawn() {

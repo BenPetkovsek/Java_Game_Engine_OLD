@@ -13,7 +13,7 @@ public class Animation {
 	private long refreshRate= 20;	//The time between each animation frame, not sure how to do this lol
 	
 	private long totalDuration;
-	private long timeElapsed;
+	private long timeElapsed=0;
 	
 	private boolean repeating;	//if the animation loops when it is done
 	
@@ -89,6 +89,7 @@ public class Animation {
 	public void reset(){
 		timeElapsed=0;
 		frameIndex=0;
+		finished=false;
 	}
 	
 	public void setInterruptable(boolean val){ 
@@ -105,5 +106,10 @@ public class Animation {
 	 * Sets the refresh rate
 	 * @param refreshRate - new refresh rate
 	 */
-	public void setRefreshRate(int refreshRate){ this.refreshRate = refreshRate; }
+	public void setRefreshRate(int refreshRate){ 
+		this.refreshRate = refreshRate;
+		totalDuration = frames.size() *refreshRate;	//change the duration of animation since refresh time was changed
+	}
+	
+	public long getDuration(){ return totalDuration; }
 }
