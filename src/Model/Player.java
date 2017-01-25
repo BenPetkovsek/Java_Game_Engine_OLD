@@ -100,10 +100,10 @@ public class Player extends GameObject {
 		idleLeftAnim.addFrame(idleLeft[0]);
 		attackRAnim = new Animation(false).addFrame(attackRight[0]).addFrame(attackRight[0]);
 		attackRAnim.setInterruptable(false);
-		attackRAnim.setRefreshRate(20);
+		attackRAnim.setRefreshRate(10);
 		attackLAnim = new Animation(false).addFrame(attackLeft[0]).addFrame(attackLeft[0]);
 		attackLAnim.setInterruptable(false);
-		attackLAnim.setRefreshRate(2);
+		attackLAnim.setRefreshRate(10);
 		
 		
 		//init first anim
@@ -125,6 +125,10 @@ public class Player extends GameObject {
 		//this is important because the offset should reflect when the player also reflects
 		offsetDir = facingRight;
 		setOffsets(getWidth() *0.3f,-getWidth() *0.1f,getHeight() *0.3f,0);
+		
+		//animation custom offsets
+		attackRAnim.setOffsets(getOffsets()[0], -14*scale + getOffsets()[1] , getOffsets()[2], getOffsets()[3]);
+		attackLAnim.setOffsets(getOffsets()[0], -14*scale + getOffsets()[1], getOffsets()[2], getOffsets()[3]);
 	}
 	//main update for the object, is called every loop
 	public void update(ArrayList<GameObject> objs){
@@ -189,7 +193,9 @@ public class Player extends GameObject {
 			//if currently attacking, update else dont
 			if(attacking){
 				if(!currentAttack.isActive()){
-					//x+=14*scale;
+					if(!facingRight){
+						x+=14*scale;
+					}
 					attacking =false;
 				}
 				currentAttack.update();
@@ -385,7 +391,10 @@ public class Player extends GameObject {
 		//might change this idk
 		if(!attacking){
 			attacking=true;
-			//x-=14*scale;
+			if(!facingRight){
+				x-=14*scale;
+			}
+			
 			currentAttack.activate();
 		}
 		

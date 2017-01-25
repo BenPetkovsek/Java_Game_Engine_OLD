@@ -26,6 +26,8 @@ public class Animation {
 	
 	private boolean finished =false;
 	
+	private float[] offsets;
+	
 	//creates an empty animation and if it repeats
 	public Animation( boolean repeat){
 		repeating = repeat;
@@ -112,4 +114,10 @@ public class Animation {
 	}
 	
 	public long getDuration(){ return totalDuration; }
+	
+	public float[] getOffsets() { return offsets; }
+	
+	public void setOffsets(float x1, float x2, float y1, float y2){ 
+		offsets = new float[]{x1,x2,y1,y2};
+	}
 }

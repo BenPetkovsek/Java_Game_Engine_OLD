@@ -105,18 +105,23 @@ public class GameRender extends JPanel {
 		g.drawImage(obj.getAnim().getCurrFrame(),Math.round(obj.getX()),Math.round(obj.getY()),width,height,this);
 		if(obj.debug()){ 
 			drawCollisionBox(g,obj);
-			
 		}
 	}
 	
 	private void drawCollisionBox(Graphics g, GameObject obj){
 		int width =  (int) (obj.getWidth());
 		int height = (int) (obj.getHeight());
+		float xAO = obj.getOffsets()[0];
+		float xBO = obj.getOffsets()[1];
+		float yAO = obj.getOffsets()[2];
+		float yBO = obj.getOffsets()[3];
 		
-		int xA =(int) (obj.getX() + obj.getOffsets()[0]);
-		int xB =(int) (obj.getX() + width + obj.getOffsets()[1]);
-		int yA =(int) (obj.getY() + obj.getOffsets()[2]);
-		int yB =(int) (obj.getY() + height + obj.getOffsets()[3]); 
+		//System.out.println(xBO);
+		
+		int xA =(int) (obj.getX() + xAO);
+		int xB =(int) (obj.getX() + width + xBO);
+		int yA =(int) (obj.getY() +yAO);
+		int yB =(int) (obj.getY() + height + yBO); 
 		int borderWidth = Math.abs(xB - xA);
 		int borderHeight = Math.abs(yB - yA);
 		//if the player is facing the direction that the offset was intended for, do it regular,
@@ -127,8 +132,8 @@ public class GameRender extends JPanel {
 		}
 		else{
 			//reversing x offset
-			xA =(int) (obj.getX() - obj.getOffsets()[1]);
-			xB =(int) (obj.getX() + width - obj.getOffsets()[0]);
+			xA =(int) (obj.getX() - xBO);
+			xB =(int) (obj.getX() + width - xAO);
 			borderWidth = Math.abs(xB - xA);
 			borderHeight = Math.abs(yB - yA);
 			g.draw3DRect(xA, yA, borderWidth, borderHeight, true);

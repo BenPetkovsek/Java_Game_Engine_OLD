@@ -59,8 +59,15 @@ public class GameObject {
 	 * @return float array: 0 - xAOffset, 1 - xBOffset , 2 - yAOffset, 3 - yBOffset
 	 */
 	public float[] getOffsets(){
-		float[] offs = {xAOffset,xBOffset, yAOffset,yBOffset};
-		return offs;
+		if(currentAnim !=null && currentAnim.getOffsets() != null){
+			return currentAnim.getOffsets();
+			
+		}
+		else{
+			float[] offs = {xAOffset,xBOffset, yAOffset,yBOffset};
+			return offs;
+		}
+		
 	}
 	
 	
@@ -126,8 +133,8 @@ public class GameObject {
 		
 		//offset collision detection, im a god
 		
-		float xA  = (facingRight == offsetDir) ? (x +xAOffset): (x-xBOffset);
-		float xB =  (facingRight == offsetDir) ? (x +width +xBOffset): (x +width -xAOffset);
+		float xA  = (facingRight == offsetDir) ? (x +xAOffset): (x-getOffsets()[1]);
+		float xB =  (facingRight == offsetDir) ? (x +width +getOffsets()[1]): (x +width -getOffsets()[0]);
 		
 		float otherXA = (otherObject.facingRight() == otherObject.offSetDir()) ? (otherX + otherObject.getOffsets()[0]) : (otherX - otherObject.getOffsets()[1]);
 		float otherXB = (otherObject.facingRight() == otherObject.offSetDir()) ? (otherX +otherWidth+ otherObject.getOffsets()[1]) : (otherX +otherWidth - otherObject.getOffsets()[0]);
@@ -147,8 +154,8 @@ public class GameObject {
 		float otherY = otherObject.getY();
 		float otherHeight = otherObject.getHeight();
 		
-		float yA  =y +yAOffset;
-		float yB = y +height +yBOffset;
+		float yA  =y +getOffsets()[2];
+		float yB = y +height +getOffsets()[3];
 		
 		float otherYA = otherY + otherObject.getOffsets()[2];
 		float otherYB = otherY +otherHeight+ otherObject.getOffsets()[3];

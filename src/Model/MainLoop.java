@@ -71,7 +71,7 @@ public class MainLoop extends Thread {
 		things = new ArrayList<GameObject>();
 		//things.add(new Rock(200,200));
 		//things.add(new Rock(500,300));
-		//things.add(new Enemy(300,300));
+		things.add(new Enemy(300,300));
 
 		
 	}
