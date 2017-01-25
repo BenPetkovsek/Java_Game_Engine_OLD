@@ -7,6 +7,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
 
@@ -67,11 +71,8 @@ public class MainLoop extends Thread {
 		renderer.grabFocus();
 		
 		//Init stuff
+		generateMap();
 		gameRunning =true;
-		things = new ArrayList<GameObject>();
-		//things.add(new Rock(200,200));
-		//things.add(new Rock(500,300));
-		things.add(new Enemy(300,300));
 
 		
 	}
@@ -131,6 +132,44 @@ public class MainLoop extends Thread {
 			
 		}
 		renderer.draw(hero,things);
+	}
+	
+	public void generateMap(){
+		String fileName = "mapFile";
+		String line = null;
+		things = new ArrayList<GameObject>();
+		
+		try{
+			FileReader fileReader = new FileReader(fileName);
+			BufferedReader bufferedReader = new BufferedReader(fileReader);
+			
+			while((line = bufferedReader.readLine()) != null){
+				System.out.println(line);
+				
+				String[] mapObjects = line.split("\\|");
+				
+				for(int i = 0; i < mapObjects.length; i++){
+					System.out.println("Load Game Object: " + mapObjects[i]);
+					
+					String[] objectInfo = mapObjects[i].split(",");
+					
+					
+					if(objectInfo[0].equals("rock")){
+						things.add(new Rock(Integer.parseInt(objectInfo[1]), Integer.parseInt(objectInfo[2])));
+					}
+					else if(objectInfo[0].equals("enemy")){
+						things.add(new Enemy(Integer.parseInt(objectInfo[1]), Integer.parseInt(objectInfo[2])));
+					}
+				}
+			}
+			bufferedReader.close();
+		}
+		catch(FileNotFoundException ex){
+			ex.printStackTrace();
+		}
+		catch(IOException ex){
+			ex.printStackTrace();
+		}
 	}
 	
 	public boolean isRunning(){ return gameRunning; }
