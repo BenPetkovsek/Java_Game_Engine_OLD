@@ -36,6 +36,10 @@ public class MainLoop extends Thread {
 	
 	private boolean gameRunning=false;
 	public boolean freeze = false;	//debugging pause
+	static LevelManager levelManager = new LevelManager();
+	public static Level currentLevel;
+	public static Level previousLevel;
+	
 	
 	//initialization of game settings
 	public MainLoop(){
@@ -44,8 +48,14 @@ public class MainLoop extends Thread {
 		renderer = new GameRender();
 		gameframe.add(renderer);
 		
+		//Map init stuff
+		//load maps, set current map
+		levelManager.initializeLevels();
+		currentLevel = levelManager.getLevel("Test1");
+		System.out.println(currentLevel.fileName);
+		
 		//setting background of game
-		background = ImageStyler.loadImg("background1.png");
+		background = ImageStyler.loadImg(currentLevel.background);
 		
 		
 		//scaled background
@@ -71,7 +81,6 @@ public class MainLoop extends Thread {
 		renderer.grabFocus();
 		
 		//Init stuff
-		generateMap();
 		gameRunning =true;
 
 		
@@ -121,60 +130,31 @@ public class MainLoop extends Thread {
 	 * The main game update, updates objects and renders
 	 */
 	public void gameUpdate(){
-		hero.update(things);
-		for (GameObject e: things){
+		hero.update(currentLevel.levelObjects);
+		for (GameObject e: currentLevel.levelObjects){
 			if(e instanceof Enemy){
 				((Enemy) e).update(hero);
 			}
-			else{
+			else if (e instanceof LoadTrigger){
+				((LoadTrigger) e).update(hero);
+			}else{
 				((Rock) e).update();
 			}
 			
 		}
-		renderer.draw(hero,things);
-	}
-	
-	public void generateMap(){
-		String fileName = "mapFile";
-		String line = null;
-		things = new ArrayList<GameObject>();
-		
-		try{
-			FileReader fileReader = new FileReader(fileName);
-			BufferedReader bufferedReader = new BufferedReader(fileReader);
-			
-			while((line = bufferedReader.readLine()) != null){
-				System.out.println(line);
-				
-				String[] mapObjects = line.split("\\|");
-				
-				for(int i = 0; i < mapObjects.length; i++){
-					System.out.println("Load Game Object: " + mapObjects[i]);
-					
-					String[] objectInfo = mapObjects[i].split(",");
-					
-					
-					if(objectInfo[0].equals("rock")){
-						things.add(new Rock(Integer.parseInt(objectInfo[1]), Integer.parseInt(objectInfo[2])));
-					}
-					else if(objectInfo[0].equals("enemy")){
-						things.add(new Enemy(Integer.parseInt(objectInfo[1]), Integer.parseInt(objectInfo[2])));
-					}
-				}
-			}
-			bufferedReader.close();
-		}
-		catch(FileNotFoundException ex){
-			ex.printStackTrace();
-		}
-		catch(IOException ex){
-			ex.printStackTrace();
-		}
+		renderer.draw(hero,currentLevel.levelObjects);
 	}
 	
 	public boolean isRunning(){ return gameRunning; }
 	
 	public void setRunning(boolean state) { gameRunning= state; }
+	
+	public static void changeCurrentLevel(String newLevelName){
+		Level newLevel = levelManager.getLevel(newLevelName);
+		previousLevel = currentLevel;
+		currentLevel = newLevel;
+	}
+	
 	
 	//starting main method
 	public static void main(String[] args){
@@ -200,4 +180,6 @@ public class MainLoop extends Thread {
 		}
 
 	}
+	
+	
 }
