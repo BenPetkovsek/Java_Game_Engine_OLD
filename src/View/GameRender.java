@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import Model.Attack;
 import Model.Enemy;
 import Model.GameObject;
+import Model.LoadTrigger;
 import Model.Player;
 import Model.Rock;
 
@@ -67,7 +68,10 @@ public class GameRender extends JPanel {
 		drawBackGround(offGraph);
 		drawHero(offGraph,hero);
 		for (GameObject e: things){
-			drawObj(offGraph,e);
+			if(!(e instanceof LoadTrigger)){
+				drawObj(offGraph,e);
+			}
+			
 			
 		}
 		

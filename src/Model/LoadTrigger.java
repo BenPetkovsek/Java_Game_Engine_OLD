@@ -1,5 +1,7 @@
 package Model;
 
+import java.awt.geom.Rectangle2D;
+
 public class LoadTrigger extends GameObject {
 	String destination;
 	public LoadTrigger(float x, float y, String initDestination) {
@@ -7,10 +9,11 @@ public class LoadTrigger extends GameObject {
 		this.destination = initDestination;
 		drawBorders = true;
 		isCollidable = false;
+		collisionBox = new Rectangle2D.Double(x,y,50,50);
 	}
 	
 	public void update(Player hero){
-		if(checkAllCollision(hero)){
+		if(checkCollision(hero)){
 			MainLoop.changeCurrentLevel(destination);
 			System.out.println("Changed level to: " + destination);
 		}
