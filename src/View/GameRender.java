@@ -71,6 +71,9 @@ public class GameRender extends JPanel {
 			if(!(e instanceof LoadTrigger)){
 				drawObj(offGraph,e);
 			}
+			else{
+				drawCollisionBox(offGraph,e);
+			}
 			
 			
 		}
