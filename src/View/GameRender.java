@@ -7,6 +7,7 @@
 package View;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class GameRender extends JPanel {
 	int offsetY = 0;
 	
 	Image offImg;
-	Graphics offGraph;
+	Graphics2D offGraph;
 	
 	public GameRender(){
 		
@@ -61,7 +62,7 @@ public class GameRender extends JPanel {
 	//DOUBLE BUFFERING MAGIC YO
 	public void draw(Player hero,ArrayList<GameObject> things){
 		offImg = createImage(width, height);
-		offGraph = offImg.getGraphics();
+		offGraph = (Graphics2D) offImg.getGraphics();
 		/***DRAWING STUFF IN ORDER***/
 		drawBackGround(offGraph);
 		drawHero(offGraph,hero);
@@ -75,17 +76,17 @@ public class GameRender extends JPanel {
 		//draw other shit
 		
 		//drawing to screen
-		Graphics g = this.getGraphics();
+		Graphics2D g = (Graphics2D) this.getGraphics();
 		g.drawImage(offImg,0,0,null);
 		g.dispose();
 	}
 	
 	//Draws the background
-	private void drawBackGround(Graphics g){		
+	private void drawBackGround(Graphics2D g){		
         g.drawImage(backgroundImg, offsetX, offsetY,width,height, this);
 	}
 	
-	public void drawHero(Graphics g, Player hero){
+	public void drawHero(Graphics2D g, Player hero){
 		if(!hero.isBlinked()){
 			drawObj(g,hero);
 			if (hero.isAttacking()){
@@ -95,7 +96,7 @@ public class GameRender extends JPanel {
 		}
 	}
 	//draws game objects to screen
-	public void drawObj(Graphics g,GameObject obj){
+	public void drawObj(Graphics2D g,GameObject obj){
 		//scaling if possible
 		int width =  (int) (obj.getWidth());
 		int height = (int) (obj.getHeight());
@@ -108,8 +109,14 @@ public class GameRender extends JPanel {
 		}
 	}
 	
-	private void drawCollisionBox(Graphics g, GameObject obj){
-		int width =  (int) (obj.getWidth());
+	//lmao see how easy it is with shapes
+	private void drawCollisionBox(Graphics2D g, GameObject obj){
+		//some objects dont have col boxs so dont do it
+		if(obj.getCollisionBox() != null){
+			g.draw(obj.getCollisionBox());
+		}
+		
+		/*int width =  (int) (obj.getWidth());
 		int height = (int) (obj.getHeight());
 		float xAO = obj.getOffsets()[0];
 		float xBO = obj.getOffsets()[1];
@@ -137,6 +144,6 @@ public class GameRender extends JPanel {
 			borderWidth = Math.abs(xB - xA);
 			borderHeight = Math.abs(yB - yA);
 			g.draw3DRect(xA, yA, borderWidth, borderHeight, true);
-		}
+		}*/
 	}
 }
