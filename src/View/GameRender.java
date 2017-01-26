@@ -24,8 +24,8 @@ import Model.Rock;
 public class GameRender extends JPanel {
 
 	BufferedImage backgroundImg; 	//the background img
-	int width;
-	int height;
+	public static int width;
+	public static int height;
 	static int offsetX = 0;
 	static int offsetY = 0;
 	

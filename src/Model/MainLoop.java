@@ -26,8 +26,8 @@ public class MainLoop extends Thread {
 	private static GameRender renderer; 
 	private static BufferedImage background;
 	
-	private int panelWidth;
-	private int panelHeight;
+	private static int panelWidth;
+	private static int panelHeight;
 	
 	private Player hero;
 	
@@ -65,12 +65,12 @@ public class MainLoop extends Thread {
 		//setting the panel size based on background
 		//this can change as the game might not have the background fully cover
 		//yolo
-		gameframe.setSize(900,700);
+		gameframe.setSize(800,600);
 		panelWidth =gameframe.getWidth();
 		panelHeight = gameframe.getHeight();
 		
 		//main player controller init
-		hero = new Player(350,250);
+		hero = new Player(350,300);
 		controller =new PlayerController(hero);
 		GameListener debugController = new GameListener();
 		renderer.addKeyListener(controller);
@@ -143,6 +143,12 @@ public class MainLoop extends Thread {
 			
 		}
 		renderer.draw(hero,currentLevel.levelObjects);
+	}
+	public static  int getWindowWidth(){
+		return panelWidth;
+	}
+	public  static int getWindowHeight(){
+		return panelHeight;
 	}
 	
 	public boolean isRunning(){ return gameRunning; }

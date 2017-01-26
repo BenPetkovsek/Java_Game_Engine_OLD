@@ -15,6 +15,7 @@ public class LoadTrigger extends GameObject {
 	public void update(Player hero){
 		if(checkCollision(hero)){
 			MainLoop.changeCurrentLevel(destination);
+			Player.updateWindowVars();
 			System.out.println("Changed level to: " + destination);
 		}
 	}
