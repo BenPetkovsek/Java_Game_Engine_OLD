@@ -129,14 +129,19 @@ public class Player extends GameObject {
 		collisionBox = new Rectangle2D.Double(x, y, getWidth(), getHeight());
 	}
 	//main update for the object, is called every loop
+	float bgX =  x;
+	float bgY =  y;
 	public void update(ArrayList<GameObject> objs){
 		
 		//LARGE UPDATE OF MOVEMENT 
 		updateMovement();
 		
 		//movement updates
-		x +=dx;
-		y +=dy;
+		//x +=dx;
+		//y +=dy;
+		bgX += dx;
+		bgY += dy;
+		
 		
 		//collision updates
 		//idk if this is good practise but i just reverse the changes if it collides
@@ -145,20 +150,27 @@ public class Player extends GameObject {
 		for (GameObject obj: objs){
 			
 			if (this.checkCollision(obj) && obj.isCollidable()){
-				x-=dx;
-				y-=dy;
+				//x-=dx;
+				//y-=dy;
+				bgX -=dx;
+				bgY -=dy;
 				//THIS PIECE OF CODE ALLOWS YOU TO MOVE IN ONE DIRECTION EVEN IF U COLLIDE IN THE OTHER
 				//WITHOUT THIS IT YOU MUST RELEASE THE DIRECTION THAT IS COLLIDE AND IT SUCKS
 				//srry for yelling it just took a lot of brain power for some dumb reason
 				
 				if(this.checkLRCollision(obj) && !this.checkTBCollision(obj)){
-					x+=dx; 
+					//x+=dx; 
+					bgX +=dx;
 				}
 				if(this.checkTBCollision(obj) && !this.checkLRCollision(obj)){
-					y+=dy; 
+					//y+=dy; 
+					bgY +=dy;
 				}
+			
 			}
+			GameRender.setBackgroundOffset(-Math.round(bgX), -Math.round(bgY));
 		}
+		
 		
 		
 		//grace updates
@@ -206,15 +218,15 @@ public class Player extends GameObject {
 		if(currentAnim.interruptable() || currentAnim.isFinished()){		//dont change animation unless its interruptable or done
 			
 			if(dx <0){
-				System.out.println("walkL");
+				//System.out.println("walkL");
 				currentAnim = walkLeftAnim; 
 			}
 			else if(dx >0){
-				System.out.println("walkR");
+				//System.out.println("walkR");
 				currentAnim = walkRightAnim;
 			}
 			else if(dx==0){
-				System.out.println("idle");
+				//System.out.println("idle");
 				//currentAnim = walkLeftAnim;
 				currentAnim = (facingRight) ? idleRightAnim : idleLeftAnim;
 			}
@@ -227,7 +239,7 @@ public class Player extends GameObject {
 			//if the animation changes
 			
 			if(oldAnim != currentAnim){
-				System.out.println("reset");
+				//System.out.println("reset");
 				currentAnim.reset();
 				/*if(facingRight && attacking){
 					System.out.println("good");

@@ -48,14 +48,14 @@ public class Animation {
 					}
 				}
 				else{
-					System.out.println("increase frame with mod");
+					//System.out.println("increase frame with mod");
 					frameIndex = (frameIndex+1) % frames.size();
 					
 				}
 			}
 			timeElapsed++;
-			System.out.println("time: "+timeElapsed);
-			System.out.println("frameIndex: " +frameIndex);
+			//System.out.println("time: "+timeElapsed);
+			//System.out.println("frameIndex: " +frameIndex);
 		}
 	}
 	

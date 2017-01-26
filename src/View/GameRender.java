@@ -26,8 +26,8 @@ public class GameRender extends JPanel {
 	BufferedImage backgroundImg; 	//the background img
 	int width;
 	int height;
-	int offsetX = 0;
-	int offsetY = 0;
+	static int offsetX = 0;
+	static int offsetY = 0;
 	
 	Image offImg;
 	Graphics2D offGraph;
@@ -47,9 +47,9 @@ public class GameRender extends JPanel {
 	}
 	
 	//set static image with offset
-	public void setBackgroundOffset(int x, int y){
+	public static void setBackgroundOffset(int x, int y){
 		offsetX = x;
-		offsetY =x;
+		offsetY =y;
 	}
 	
 	//set image to scale to screen
@@ -95,7 +95,14 @@ public class GameRender extends JPanel {
 	
 	public void drawHero(Graphics2D g, Player hero){
 		if(!hero.isBlinked()){
-			drawObj(g,hero);
+			int width =  (int) (hero.getWidth());
+			int height = (int) (hero.getHeight());
+
+			//same as drawObj method
+			g.drawImage(hero.getAnim().getCurrFrame(),Math.round(hero.getX()),Math.round(hero.getY()),width,height,this);
+			if(hero.debug()){ 
+				drawCollisionBox(g,hero);
+			}
 			if (hero.isAttacking()){
 				Attack a = hero.getAttack();
 				g.draw3DRect((int) a.getX(),(int) a.getY(),(int) a.getWidth(),(int) a.getHeight(), true);
@@ -110,7 +117,9 @@ public class GameRender extends JPanel {
 
 		//NOTE: uses Math.round to get the pixel location or some shit
 		// Im not entirely sure if we should have it round here or in the getters themselves
-		g.drawImage(obj.getAnim().getCurrFrame(),Math.round(obj.getX()),Math.round(obj.getY()),width,height,this);
+		obj.setXOffset(offsetX);
+		obj.setYOffset(offsetY);
+		g.drawImage(obj.getAnim().getCurrFrame(),Math.round(obj.getX() + offsetX),Math.round(obj.getY() + offsetY),width,height,this);
 		if(obj.debug()){ 
 			drawCollisionBox(g,obj);
 		}

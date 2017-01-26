@@ -25,7 +25,7 @@ public class Attack extends GameObject{
 
 	
 	//state
-	private boolean active;
+	private boolean active = false;
 	
 	private int duration;
 	private int time;
@@ -51,7 +51,6 @@ public class Attack extends GameObject{
 		this.height =height;
 		this.duration  =duration;
 		time = 0;
-		active=true;
 		collisionBox = new Rectangle2D.Double(x,y,getWidth(),getHeight());
 
 	}
