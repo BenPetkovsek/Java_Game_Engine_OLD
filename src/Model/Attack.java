@@ -52,6 +52,7 @@ public class Attack extends GameObject{
 		this.duration  =duration;
 		time = 0;
 		active=true;
+		collisionBox = new Rectangle2D.Double(x,y,getWidth(),getHeight());
 
 	}
 	

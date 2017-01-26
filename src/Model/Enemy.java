@@ -1,5 +1,7 @@
 package Model;
 
+import java.awt.geom.Rectangle2D;
+
 import View.ImageStyler;
 
 public class Enemy extends GameObject {
@@ -30,6 +32,7 @@ public class Enemy extends GameObject {
 		isCollidable =false;
 		HP =100;
 		grace= new Invulnerability(80, 10);
+		collisionBox = new Rectangle2D.Double(x,y,getWidth(),getHeight());
 		
 	}
 /*	public Enemy(String initName, int initHP, int initStr, int initDef, int initIntel ){
@@ -85,14 +88,14 @@ public class Enemy extends GameObject {
 			}
 		}
 		
-		if(checkAllCollision(hero.getAttack()) && hero.getAttack().isActive()){
+		if(checkCollision(hero.getAttack()) && hero.getAttack().isActive()){
 			if(!grace.going()){
 				playerHit = new KnockBack(hero.getX(), hero.getY(), this, 75, 1);
 			}
 			
 			
 		}
-		else if(checkAllCollision(hero)){
+		else if(checkCollision(hero)){
 			hero.takeDamage(20,this);
 		}
 		//animation updates

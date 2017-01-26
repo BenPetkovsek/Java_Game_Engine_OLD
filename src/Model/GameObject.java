@@ -4,6 +4,8 @@
  */
 package Model;
 
+import java.awt.Shape;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 public class GameObject {
@@ -21,10 +23,12 @@ public class GameObject {
 	protected float yBOffset =0;	//bottom offset
 	protected boolean offsetDir = true;
 	
+	protected Rectangle2D.Double collisionBox;
+	
 	//direction of sprite
 	protected boolean facingRight =true;
 	
-	protected boolean drawBorders=false;	//FOR DEBUGGING TO SEE COLLISION BORDERS
+	protected boolean drawBorders=true;	//FOR DEBUGGING TO SEE COLLISION BORDERS
 	
 	//current animation
 	protected Animation currentAnim;	
@@ -54,10 +58,10 @@ public class GameObject {
 	
 	public boolean debug(){ return drawBorders; }
 	
-	/**
+/*	*//**
 	 * 
 	 * @return float array: 0 - xAOffset, 1 - xBOffset , 2 - yAOffset, 3 - yBOffset
-	 */
+	 *//*
 	public float[] getOffsets(){
 		if(currentAnim !=null && currentAnim.getOffsets() != null){
 			return currentAnim.getOffsets();
@@ -68,8 +72,14 @@ public class GameObject {
 			return offs;
 		}
 		
-	}
+	}*/
 	
+	//returns collision box set 
+	public Rectangle2D.Double getCollisionBox(){
+		collisionBox.x =x;
+		collisionBox.y =y;
+		return collisionBox;
+	}
 	
 	public float getWidth(){
 		if(currentAnim !=null){
@@ -111,22 +121,31 @@ public class GameObject {
 		this.yBOffset = yBOffset;
 	}
 	
+	
 	//COLLISION
 	public boolean isCollidable(){ return isCollidable; }
 	
-	//checks if the object has collided at all, not to be used for movement calc, used for interactions between objects
-	public boolean checkAllCollision(GameObject otherObject){
-		boolean collided= checkXCollision(otherObject) && checkYCollision(otherObject);
-		return collided;
+	//checks if the object has collided at all, used for interactions between objects
+	//Uses built in intersect functions
+	public boolean checkCollision(GameObject otherObject){
+		/*boolean collided= checkXCollision(otherObject) && checkYCollision(otherObject);
+		return collided;*/
+		return getCollisionBox().intersects(otherObject.getCollisionBox());
 	}
-	//checks if y collision is detected
-	//The calculations are kinda misleading but to check if there is a collision on the left or right, you must actually
-	// check if the y coordinates are intersecting
-	//just trust me
-	//pls
-	public boolean checkYCollision(GameObject otherObject){
+	//checks collision from (L)eft and (R)ight side
+	//uses intersecting number ranges
+	//currently only works for rectangles
+	public boolean checkLRCollision(GameObject otherObject){
 		boolean xCollide = false;
-		float width = getWidth();
+		Double colX = getCollisionBox().getX();
+		Double colWidth = getCollisionBox().getWidth();
+		
+		Double otherX = otherObject.getCollisionBox().getX();
+		Double otherColWidth = otherObject.getCollisionBox().getWidth();
+		
+		xCollide = (colX <= otherX+otherColWidth) && (otherX <= colX+colWidth);
+	
+		/*float width = getWidth();
 		
 		float otherX = otherObject.getX();
 		float otherWidth = otherObject.getWidth();
@@ -140,16 +159,23 @@ public class GameObject {
 		float otherXB = (otherObject.facingRight() == otherObject.offSetDir()) ? (otherX +otherWidth+ otherObject.getOffsets()[1]) : (otherX +otherWidth - otherObject.getOffsets()[0]);
 		
 		//Essentially this is just a simplied way of checking if range of pixels the pictures take up intersect horizontally
-		xCollide = (xA <= otherXB) && (otherXA <= xB);
+		xCollide = (xA <= otherXB) && (otherXA <= xB);*/
 		return xCollide;
 	}
-	//checks if x collision is detected
-	//The calculations are kinda misleading but to check if there is a collision on the top or bottom, you must actually
-	// check if the x coordinates are intersecting
-	//just trust me
-	//pls
-	public boolean checkXCollision(GameObject otherObject){
+	//checks collision from (T)op and (B)ottom side
+	//uses intersecting number ranges
+	//currently only works for rectangles
+	public boolean checkTBCollision(GameObject otherObject){
 		boolean yCollide = false;
+		Double colY = getCollisionBox().getY();
+		Double colHeight = getCollisionBox().getHeight();
+		
+		Double otherY = otherObject.getCollisionBox().getY();
+		Double otherColHeight = otherObject.getCollisionBox().getHeight();
+		
+		yCollide = (colY <= otherY+otherColHeight) && (otherY <= colY+colHeight);
+		return yCollide;
+		/*boolean yCollide = false;
 		float height = getHeight();
 		float otherY = otherObject.getY();
 		float otherHeight = otherObject.getHeight();
@@ -162,7 +188,7 @@ public class GameObject {
 		
 		//Essentially this is just a simplied way of checking if range of pixels the pictures take up intersect vertically
 		yCollide = (yA <= otherYB) && (otherYA<= yB);
-		return yCollide;
+		return yCollide;*/
 	}
 	
 	

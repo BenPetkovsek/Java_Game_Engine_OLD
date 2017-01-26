@@ -26,7 +26,6 @@ public class Animation {
 	
 	private boolean finished =false;
 	
-	private float[] offsets;
 	
 	//creates an empty animation and if it repeats
 	public Animation( boolean repeat){
@@ -38,7 +37,7 @@ public class Animation {
 		//if the animation is only a static image than no need to update
 		if(!singleImage){
 			//if the time elapsed is on a time period to change frame
-			if(timeElapsed % refreshRate == 0){
+			if(timeElapsed % refreshRate == 0 && timeElapsed != 0){		//if not at starting position and at refresh mark, then do shit
 				if(timeElapsed == totalDuration){
 					timeElapsed=0;
 					if(repeating){
@@ -49,11 +48,14 @@ public class Animation {
 					}
 				}
 				else{
+					System.out.println("increase frame with mod");
 					frameIndex = (frameIndex+1) % frames.size();
 					
 				}
 			}
 			timeElapsed++;
+			System.out.println("time: "+timeElapsed);
+			System.out.println("frameIndex: " +frameIndex);
 		}
 	}
 	
@@ -115,9 +117,4 @@ public class Animation {
 	
 	public long getDuration(){ return totalDuration; }
 	
-	public float[] getOffsets() { return offsets; }
-	
-	public void setOffsets(float x1, float x2, float y1, float y2){ 
-		offsets = new float[]{x1,x2,y1,y2};
-	}
 }

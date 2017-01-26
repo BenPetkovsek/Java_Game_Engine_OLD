@@ -1,5 +1,6 @@
 package Model;
 
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 import View.ImageStyler;
@@ -16,6 +17,7 @@ public class Rock extends GameObject{
 		currentAnim  = idleAnim;
 		scale=0.5f;
 		drawBorders=true;
+		collisionBox = new Rectangle2D.Double(x,y,getWidth(),getHeight());
 		
 	}
 	

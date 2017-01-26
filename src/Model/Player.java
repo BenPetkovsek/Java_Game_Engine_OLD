@@ -32,19 +32,19 @@ public class Player extends GameObject {
 	private boolean noMovement=false;	//if the player can't move
 	
 	//Animation Variables
-	private BufferedImage[] walkRight= {ImageStyler.loadImg("cat1.png"),ImageStyler.loadImg("cat2.png"),ImageStyler.loadImg("cat3.png")};
+	private BufferedImage[] walkRight= {ImageStyler.loadImg("heroWalk1.png"),ImageStyler.loadImg("heroWalk2.png"),ImageStyler.loadImg("heroWalk3.png")};
 	private BufferedImage[] walkLeft = ImageStyler.flipImgs(walkRight);
 	
 	private Animation walkRightAnim;
 	private Animation walkLeftAnim;
 	
-	private BufferedImage[] idleRight = {ImageStyler.loadImg("cat2.png")};
+	private BufferedImage[] idleRight = {ImageStyler.loadImg("heroIdle.png")};
 	private BufferedImage[] idleLeft = ImageStyler.flipImgs(idleRight);
 	
 	private Animation idleRightAnim;
 	private Animation idleLeftAnim;
 	
-	private BufferedImage[] attackRight = {ImageStyler.loadImg("catAttack.png")};
+	private BufferedImage[] attackRight = {ImageStyler.loadImg("heroAttack.png")};
 	private BufferedImage[] attackLeft =ImageStyler.flipImgs(attackRight);
 	
 	private Animation attackRAnim;
@@ -59,9 +59,9 @@ public class Player extends GameObject {
 	
 	//attacking variables
 	private boolean attacking=false;
-	private Attack currentAttack;	//TODO make a list of attacks , right now htere will be one
+	private Attack currentAttack;	//TODO make a list of attacks , right now there will be one
 	
-	//complicated constructor for future releases with stats
+/*	//complicated constructor for future releases with stats
 	public Player(int x, int y,String initName, int initHP, int initStr, int initDef, int initIntel ){
 		this(x,y);
 		HP = initHP;
@@ -71,7 +71,7 @@ public class Player extends GameObject {
 		intel = initIntel;
 		name = initName;
 		
-	}
+	}*/
 	
 	//constructor for simple people like me
 	public Player(float x,float y){
@@ -124,11 +124,9 @@ public class Player extends GameObject {
 		//offSetDir is whether the offset was applied to the sprite when it was facing right or not
 		//this is important because the offset should reflect when the player also reflects
 		offsetDir = facingRight;
-		setOffsets(getWidth() *0.3f,-getWidth() *0.1f,getHeight() *0.3f,0);
+		/*setOffsets(getWidth() *0.3f,-getWidth() *0.1f,getHeight() *0.3f,0);*/
 		
-		//animation custom offsets
-		attackRAnim.setOffsets(getOffsets()[0], -14*scale + getOffsets()[1] , getOffsets()[2], getOffsets()[3]);
-		attackLAnim.setOffsets(getOffsets()[0], -14*scale + getOffsets()[1], getOffsets()[2], getOffsets()[3]);
+		collisionBox = new Rectangle2D.Double(x, y, getWidth(), getHeight());
 	}
 	//main update for the object, is called every loop
 	public void update(ArrayList<GameObject> objs){
@@ -146,17 +144,17 @@ public class Player extends GameObject {
 		//this just translate to the player  being allowed to hitting a wall from the right but still being able to move up and down
 		for (GameObject obj: objs){
 			
-			if (this.checkAllCollision(obj) && obj.isCollidable()){
+			if (this.checkCollision(obj) && obj.isCollidable()){
 				x-=dx;
 				y-=dy;
 				//THIS PIECE OF CODE ALLOWS YOU TO MOVE IN ONE DIRECTION EVEN IF U COLLIDE IN THE OTHER
 				//WITHOUT THIS IT YOU MUST RELEASE THE DIRECTION THAT IS COLLIDE AND IT SUCKS
 				//srry for yelling it just took a lot of brain power for some dumb reason
 				
-				if(this.checkYCollision(obj) && !this.checkXCollision(obj)){
+				if(this.checkLRCollision(obj) && !this.checkTBCollision(obj)){
 					x+=dx; 
 				}
-				if(this.checkXCollision(obj) && !this.checkYCollision(obj)){
+				if(this.checkTBCollision(obj) && !this.checkLRCollision(obj)){
 					y+=dy; 
 				}
 			}
@@ -208,12 +206,16 @@ public class Player extends GameObject {
 		if(currentAnim.interruptable() || currentAnim.isFinished()){		//dont change animation unless its interruptable or done
 			
 			if(dx <0){
+				System.out.println("walkL");
 				currentAnim = walkLeftAnim; 
 			}
 			else if(dx >0){
+				System.out.println("walkR");
 				currentAnim = walkRightAnim;
 			}
 			else if(dx==0){
+				System.out.println("idle");
+				//currentAnim = walkLeftAnim;
 				currentAnim = (facingRight) ? idleRightAnim : idleLeftAnim;
 			}
 			
@@ -225,6 +227,7 @@ public class Player extends GameObject {
 			//if the animation changes
 			
 			if(oldAnim != currentAnim){
+				System.out.println("reset");
 				currentAnim.reset();
 				/*if(facingRight && attacking){
 					System.out.println("good");
@@ -252,7 +255,7 @@ public class Player extends GameObject {
 				//change direction
 				if(facingRight){
 					facingRight=false;
-					offsetXFix(false);
+					//offsetXFix(false);
 				}
 				this.dx-=moveSpeedX;
 			}
@@ -267,7 +270,7 @@ public class Player extends GameObject {
 				//change direction
 				if(!facingRight){
 					facingRight=true;
-					offsetXFix(true);
+					//offsetXFix(true);
 					
 				}
 				this.dx+=moveSpeedX;
@@ -302,7 +305,7 @@ public class Player extends GameObject {
 	 * based on difference of offset
 	 * @param right - if the player is switching to left and right direction (right == true)
 	 * TODO - account for difference cases of offset: both negative, both positive, one positive one negative etc.
-	 */
+	 *//*
 	private void offsetXFix(boolean right){
 		float diff = Math.abs(xAOffset) - Math.abs(xBOffset);
 		if(right){	//switch direction to right
@@ -312,7 +315,7 @@ public class Player extends GameObject {
 
 			x+=diff;
 		}
-	}
+	}*/
 	
 	
 	//player takes dmg if they arent in grace mode
