@@ -72,6 +72,8 @@ public class GameRender extends JPanel {
 				drawObj(offGraph,e);
 			}
 			else{
+				e.setXOffset(offsetX);
+				e.setYOffset(offsetY);
 				drawCollisionBox(offGraph,e);
 			}
 			
