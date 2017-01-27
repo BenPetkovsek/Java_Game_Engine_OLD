@@ -22,6 +22,7 @@ public class Attack extends GameObject{
 	//the local x,y position
 	private float xDiff;
 	private float yDiff;
+
 	
 	//extension of attack sprite	//idk if this is even still valid but yolo
 	float xOffset;
@@ -59,7 +60,6 @@ public class Attack extends GameObject{
 		
 		
 		time = 0;
-		
 		collisionBox = new Rectangle2D.Double(x,y,getWidth(),getHeight());
 
 	}

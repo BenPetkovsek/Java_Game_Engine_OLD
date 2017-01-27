@@ -1,1 +1,1 @@
-rock,400,0|rock,400,100|rock,400,200|rock,400,300|rock,400,400|enemy,100,300|loadTrigger,600,100,Test1
+enemy,150,100|loadTrigger,640,200,Test1

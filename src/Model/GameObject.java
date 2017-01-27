@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 public class GameObject {
 
 	protected float x,y;
+	protected float xOffset, yOffset;
 	protected float scale=1;
 	protected boolean isCollidable=true;
 	
@@ -79,8 +80,8 @@ public class GameObject {
 	//returns collision box set
 	//updates the x and y of the collision box whenever this is called as thats when it actually matters
 	public Rectangle2D.Double getCollisionBox(){
-		collisionBox.x = x;
-		collisionBox.y = y;
+		collisionBox.x =x + xOffset;
+		collisionBox.y =y + yOffset;
 		return collisionBox;
 	}
 	
@@ -101,6 +102,12 @@ public class GameObject {
 	
 	public Animation getAnim(){
 		return currentAnim;
+	}
+	public void setXOffset(float newX){
+		xOffset = newX;
+	}
+	public void setYOffset(float newY){
+		yOffset = newY;
 	}
 	
 	
