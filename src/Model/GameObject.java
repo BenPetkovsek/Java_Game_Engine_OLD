@@ -17,13 +17,15 @@ public class GameObject {
 	//Collision offset Variables
 	//Since the collision system uses the sprites height and width,
 	//this allows it to make the collision detect either smaller or larger or offset boundaries, helps with sprites that have like a tail or some shit
-	protected float xAOffset =0;	//left offset
+/*	protected float xAOffset =0;	//left offset
 	protected float xBOffset =0;	//right offset
 	protected float yAOffset =0;	//top offset
 	protected float yBOffset =0;	//bottom offset
-	protected boolean offsetDir = true;
+*/	protected boolean offsetDir = true;
 	
 	protected Rectangle2D.Double collisionBox;
+	
+	protected boolean collisionOverride=false;
 	
 	//direction of sprite
 	protected boolean facingRight =true;
@@ -74,10 +76,11 @@ public class GameObject {
 		
 	}*/
 	
-	//returns collision box set 
+	//returns collision box set
+	//updates the x and y of the collision box whenever this is called as thats when it actually matters
 	public Rectangle2D.Double getCollisionBox(){
-		collisionBox.x =x;
-		collisionBox.y =y;
+		collisionBox.x = x;
+		collisionBox.y = y;
 		return collisionBox;
 	}
 	
@@ -114,12 +117,12 @@ public class GameObject {
 	 * For Y offsets, for some reason positive is down, and negative is up lmao
 	 * NOTE: This doesn't check if offsets are negatively too big and inverts and fucks everything up. Im sure you can handle this guys
 	 */
-	public void setOffsets(float xAOffset, float xBOffset, float yAOffset, float yBOffset ){
+	/*public void setOffsets(float xAOffset, float xBOffset, float yAOffset, float yBOffset ){
 		this.xAOffset =xAOffset;
 		this.xBOffset = xBOffset;
 		this.yAOffset = yAOffset;
 		this.yBOffset = yBOffset;
-	}
+	}*/
 	
 	
 	//COLLISION

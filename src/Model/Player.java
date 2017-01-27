@@ -98,12 +98,10 @@ public class Player extends GameObject {
 		idleRightAnim.addFrame(idleRight[0]);
 		idleLeftAnim = new Animation(true);
 		idleLeftAnim.addFrame(idleLeft[0]);
-		attackRAnim = new Animation(false).addFrame(attackRight[0]).addFrame(attackRight[0]);
+		attackRAnim = new Animation(false).addFrame(attackRight[0]);
 		attackRAnim.setInterruptable(false);
-		attackRAnim.setRefreshRate(10);
-		attackLAnim = new Animation(false).addFrame(attackLeft[0]).addFrame(attackLeft[0]);
+		attackLAnim = new Animation(false).addFrame(attackLeft[0]);
 		attackLAnim.setInterruptable(false);
-		attackLAnim.setRefreshRate(10);
 		
 		
 		//init first anim
@@ -118,7 +116,10 @@ public class Player extends GameObject {
 	}
 	
 	private void attackInit(){
-		currentAttack = new Attack(this,getWidth(),0f,30,100f,100f, (int) attackLAnim.getDuration());
+		//current punch attack
+		//xOffset is the difference in the sprite compared to idle animation
+		float offset = scale*(attackRight[0].getWidth() - idleRight[0].getWidth());
+		currentAttack = new Attack(this,getWidth(),0f,30,offset,getHeight(), (int) attackLAnim.getDuration(),offset);
 	}
 	private void offsetInit(){
 		//offSetDir is whether the offset was applied to the sprite when it was facing right or not
@@ -130,13 +131,9 @@ public class Player extends GameObject {
 	}
 	//main update for the object, is called every loop
 	public void update(ArrayList<GameObject> objs){
-		
 		//LARGE UPDATE OF MOVEMENT 
 		updateMovement();
 		
-		//movement updates
-		x +=dx;
-		y +=dy;
 		
 		//collision updates
 		//idk if this is good practise but i just reverse the changes if it collides
@@ -147,15 +144,19 @@ public class Player extends GameObject {
 			if (this.checkCollision(obj) && obj.isCollidable()){
 				x-=dx;
 				y-=dy;
+				getCollisionBox().x -=dx;
+				getCollisionBox().y -=dy;
 				//THIS PIECE OF CODE ALLOWS YOU TO MOVE IN ONE DIRECTION EVEN IF U COLLIDE IN THE OTHER
 				//WITHOUT THIS IT YOU MUST RELEASE THE DIRECTION THAT IS COLLIDE AND IT SUCKS
 				//srry for yelling it just took a lot of brain power for some dumb reason
 				
 				if(this.checkLRCollision(obj) && !this.checkTBCollision(obj)){
 					x+=dx; 
+					getCollisionBox().x +=dx;
 				}
 				if(this.checkTBCollision(obj) && !this.checkLRCollision(obj)){
 					y+=dy; 
+					getCollisionBox().y +=dy;
 				}
 			}
 		}
@@ -167,6 +168,8 @@ public class Player extends GameObject {
 		}
 		
 		//knockback updates
+		//TODO have it so the knockback class does the movement for the source object
+		//		only problem is that the collision updates must now be a method that gets called by that type of stuff so the integrity still applies
 		if(knockback !=null){
 			if(knockback.getStatus()){
 				knockback.update();
@@ -192,7 +195,7 @@ public class Player extends GameObject {
 			if(attacking){
 				if(!currentAttack.isActive()){
 					if(!facingRight){
-						x+=14*scale;
+						x+=currentAttack.getOffset();
 					}
 					attacking =false;
 				}
@@ -202,19 +205,16 @@ public class Player extends GameObject {
 		}
 		
 		//animation updates
-		//should do last
+		//TODO have priority animations that will override, get rid of interruptable shit
 		if(currentAnim.interruptable() || currentAnim.isFinished()){		//dont change animation unless its interruptable or done
 			
 			if(dx <0){
-				System.out.println("walkL");
 				currentAnim = walkLeftAnim; 
 			}
 			else if(dx >0){
-				System.out.println("walkR");
 				currentAnim = walkRightAnim;
 			}
 			else if(dx==0){
-				System.out.println("idle");
 				//currentAnim = walkLeftAnim;
 				currentAnim = (facingRight) ? idleRightAnim : idleLeftAnim;
 			}
@@ -227,12 +227,7 @@ public class Player extends GameObject {
 			//if the animation changes
 			
 			if(oldAnim != currentAnim){
-				System.out.println("reset");
 				currentAnim.reset();
-				/*if(facingRight && attacking){
-					System.out.println("good");
-					x-= Math.abs(currentAnim.getCurrFrame().getWidth() - oldAnim.getCurrFrame().getWidth());
-				}*/
 			}
 			oldAnim = currentAnim;
 			
@@ -254,9 +249,9 @@ public class Player extends GameObject {
 				}
 				//change direction
 				if(facingRight){
-					facingRight=false;
-					//offsetXFix(false);
+					flip();
 				}
+				
 				this.dx-=moveSpeedX;
 			}
 		}
@@ -269,10 +264,9 @@ public class Player extends GameObject {
 				}
 				//change direction
 				if(!facingRight){
-					facingRight=true;
-					//offsetXFix(true);
-					
+					flip();
 				}
+				
 				this.dx+=moveSpeedX;
 			}
 		}
@@ -298,8 +292,20 @@ public class Player extends GameObject {
 		if(!movingDown && !movingUp && !noMovement){
 			dy=0;
 		}
+		
+		//movement updates
+		x +=dx;
+		y +=dy;
+		getCollisionBox().x +=dx;
+		getCollisionBox().y +=dy;
 	}
 	
+	//flips image
+	private void flip(){
+		if(!attacking){
+			facingRight = !facingRight;
+		}
+	}
 	/**
 	 * Calculates the offset in x when changing direction
 	 * based on difference of offset
@@ -340,6 +346,11 @@ public class Player extends GameObject {
 	public float getDx(){ return dx; }
 	
 	public float getDy(){ return dy; }
+	
+	@Override
+	public Rectangle2D.Double getCollisionBox(){
+		return collisionBox;
+	}
 	
 	public boolean isAttacking(){ return attacking; }
 
@@ -395,7 +406,8 @@ public class Player extends GameObject {
 		if(!attacking){
 			attacking=true;
 			if(!facingRight){
-				x-=14*scale;
+				//move the character the offset designated to the attack
+				x-=currentAttack.getOffset();
 			}
 			
 			currentAttack.activate();

@@ -1,7 +1,8 @@
 /**
- * This class models a knockback action 	
+ * This class models a knockback action 		
  * Given a source, the knock back is modelled so that the actor (not part of the class, idk why) can move its dx and dy
  * from the source, with a certain power
+ * TODO Have all movement done from the knockback done in this class, as opposed to the source using the values
  */
 package Model;
 
@@ -9,8 +10,8 @@ public class KnockBack {
 
 	private float pushDistance=0f;
 	
-	private double[] xy;	//push power in x and y
-	private double[] accumXY;
+	private double[] xy;	//push power in dx and dy
+	
 	private float sourceX;
 	private float sourceY;
 	private GameObject actor;		//thing to push
@@ -63,7 +64,6 @@ public class KnockBack {
 		double yComponent = -pushDistance*Math.sin(angle);		//same tings
 		xy[0] = (float) (xComponent/Math.pow(length, 2));
 		xy[1] = (float) (yComponent/Math.pow(length, 2));
-		accumXY = new double[2];
 		
 	}
 	
@@ -71,8 +71,6 @@ public class KnockBack {
 		if(running){
 			currTime+=1;
 			if(currTime >= length){
-				accumXY[0] += xy[0];
-				accumXY[1] += xy[1];
 				running=false;
 			}
 		}
@@ -83,5 +81,4 @@ public class KnockBack {
 	
 	public double[] getKnockback(){ return xy; }
 	
-	public double[] getAccum() { return accumXY; }
 }

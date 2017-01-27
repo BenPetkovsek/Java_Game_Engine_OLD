@@ -22,25 +22,29 @@ public class Attack extends GameObject{
 	//the local x,y position
 	private float xDiff;
 	private float yDiff;
-
+	
+	//extension of attack sprite	//idk if this is even still valid but yolo
+	float xOffset;
 	
 	//state
-	private boolean active;
+	private boolean active=false;
 	
 	private int duration;
 	private int time;
 	
 	/**
-	 * 
-	 * @param source
-	 * @param x	local x pos. in ref to source mid point
-	 * @param y local y pos. in ref to source mid point
-	 * @param DMG
-	 * @param width
-	 * @param height
+	 * @brief creates an attack object with certain specs
+	 * @param source object that spawns the attack
+	 * @param x local x pos
+	 * @param y local y pos
+	 * @param DMG damage of attack
+	 * @param width collision width of attack
+	 * @param height collision height of attack
+	 * @param duration duration in time of attack
+	 * @param xOffset how much the attack sprite extends the regular sprite	//deprecated or some shit
 	 */
-	public Attack(GameObject source,float x, float y,int DMG, float width, float height, int duration){
-		super((source.getX() +source.getWidth())/2+x,source.getY()+y);
+	public Attack(GameObject source,float x, float y,int DMG, float width, float height, int duration, float xOffset){
+		super(source.getX()+x,source.getY()+y);	//init the attack at the same x,y as player then local axis
 		this.xDiff = x;
 		this.yDiff =y;
 		
@@ -50,8 +54,12 @@ public class Attack extends GameObject{
 		this.width = width;
 		this.height =height;
 		this.duration  =duration;
+		
+		this.xOffset = xOffset;
+		
+		
 		time = 0;
-		active=true;
+		
 		collisionBox = new Rectangle2D.Double(x,y,getWidth(),getHeight());
 
 	}
@@ -68,6 +76,8 @@ public class Attack extends GameObject{
 	
 	public int getDmg(){ return damage; }
 	
+	public float getOffset(){ return xOffset; }
+	
 	//activates the attack
 	public void activate(){ 
 		active =true;
@@ -77,16 +87,18 @@ public class Attack extends GameObject{
 	public boolean isActive(){
 		return active;
 	}
-	//updates the attack
+	//updates the attack's position and internal timer
 	public void update(){
 		//timer for attack
 		if(active){
 			//matchs it with right side of border;
-			// TODO do this better lmao
-			x = holder.getX() + xDiff;
 			if(!holder.facingRight()){
-				x= holder.getX() - getWidth() + 14*holder.getScale()+20;		//14 is the difference, its really shit rn so bare with  me lmao
+				x= holder.getX();
 			}
+			else{
+				x = holder.getX() + xDiff;
+			}
+			//no need for y-dir yet
 			y = holder.getY() + yDiff;
 			if(time == duration){
 				active =false;

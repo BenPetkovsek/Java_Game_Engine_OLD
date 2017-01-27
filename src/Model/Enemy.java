@@ -13,7 +13,7 @@ public class Enemy extends GameObject {
 	private Animation hurt;
 	private Animation dead;
 	
-	private KnockBack playerHit;
+	private KnockBack hit;
 	
 	private Invulnerability grace;
 	
@@ -69,12 +69,12 @@ public class Enemy extends GameObject {
 		x += dx;
 		y += dy;
 		//knockback updates
-		if(playerHit !=null){
-			if(playerHit.getStatus()){
-				playerHit.update();
+		if(hit !=null){
+			if(hit.getStatus()){
+				hit.update();
 				takeDamage(hero.getAttack().getDmg());
-				dx += playerHit.getKnockback()[0];
-				dy += playerHit.getKnockback()[1];
+				dx += hit.getKnockback()[0];
+				dy += hit.getKnockback()[1];
 			}
 			else{	
 				//reset unless already moving
@@ -84,13 +84,13 @@ public class Enemy extends GameObject {
 				if(dy != 0){
 					dy =0;
 				}
-				playerHit=null;	//reset
+				hit=null;	//reset
 			}
 		}
 		
 		if(checkCollision(hero.getAttack()) && hero.getAttack().isActive()){
 			if(!grace.going()){
-				playerHit = new KnockBack(hero.getX(), hero.getY(), this, 75, 1);
+				hit = new KnockBack(hero.getX(), hero.getY(), this, 75, 1);
 			}
 			
 			
@@ -103,6 +103,8 @@ public class Enemy extends GameObject {
 			currentAnim = idle;
 		}
 		currentAnim.update();
+		
+		//grace updates
 		if(grace.going()){
 			grace.update();
 		}

@@ -14,6 +14,7 @@ public class Animation {
 	
 	private long totalDuration;
 	private long timeElapsed=0;
+	private int frameElapsedTime;
 	
 	private boolean repeating;	//if the animation loops when it is done
 	
@@ -21,7 +22,8 @@ public class Animation {
 	
 	private boolean singleImage=true;
 	
-	private ArrayList<BufferedImage> frames;
+	private ArrayList<BufferedImage> frames;	//list of images in order of the animation
+	private ArrayList<Integer> framesLengths;	//list of frame lengths in order of the animation
 	private int frameIndex=0;
 	
 	private boolean finished =false;
@@ -31,32 +33,30 @@ public class Animation {
 	public Animation( boolean repeat){
 		repeating = repeat;
 		frames= new ArrayList<BufferedImage>();
+		framesLengths = new ArrayList<Integer>();
 	}
 	
 	public void update(){
-		//if the animation is only a static image than no need to update
-		if(!singleImage){
-			//if the time elapsed is on a time period to change frame
-			if(timeElapsed % refreshRate == 0 && timeElapsed != 0){		//if not at starting position and at refresh mark, then do shit
-				if(timeElapsed == totalDuration){
-					timeElapsed=0;
-					if(repeating){
-						frameIndex =0;
-					}
-					else{
-						finished=true;
-					}
+		
+		//if the time elapsed is on a time period to change frame
+		if(frameElapsedTime == framesLengths.get(frameIndex) && timeElapsed != 0){		//if not at starting position and at refresh mark, then do shit
+			frameElapsedTime =0;
+			if(timeElapsed == totalDuration){
+				timeElapsed=0;
+				if(repeating){
+					frameIndex =0;
 				}
 				else{
-					System.out.println("increase frame with mod");
-					frameIndex = (frameIndex+1) % frames.size();
-					
+					finished=true;
 				}
 			}
-			timeElapsed++;
-			System.out.println("time: "+timeElapsed);
-			System.out.println("frameIndex: " +frameIndex);
+			else{
+				frameIndex = (frameIndex+1) % frames.size();
+				
+			}
 		}
+		timeElapsed++;
+		frameElapsedTime++;
 	}
 	
 	//gets the current image in the animation
@@ -66,32 +66,68 @@ public class Animation {
 		if (frames.size() == 0){
 			return null;
 		}
-		return frames.get(frameIndex);
+		else{
+			return frames.get(frameIndex);
+		}
 	}
 	
 	//adds a frame to the animation
 	public Animation addFrame(BufferedImage sprite){
 		frames.add(sprite);
+		framesLengths.add((int) refreshRate);
 		totalDuration += refreshRate;
-		if(frames.size() > 1){
-			singleImage= false;
-		}
+		addFrameBackEnd();
 		return this;
 	}
 	
 	//adds a frame to the animation at a certain index
 	public Animation addFrame(BufferedImage sprite,int index){
 		frames.add(index, sprite);
+		framesLengths.add((int) refreshRate);
+		addFrameBackEnd();
+		return this;
+	}
+	//adds a frame to the animation with certain length
+	public Animation addFrameWithLength(BufferedImage sprite,int length){
+		frames.add(sprite);
+		//cant have length 0
+		if(length != 0){
+			framesLengths.add(length);
+		}
+		else{
+			System.out.println(this + " attempted to add a frame with length 0");
+			framesLengths.add(1);
+		}
+		addFrameBackEnd();
+		return this;
+	}
+	
+	//adds a frame to the animation at a certain index with certain length
+	public Animation addFrameWithLength(BufferedImage sprite,int index, int length){
+		frames.add(index, sprite);
+		if(length != 0){
+			framesLengths.add(index,length);
+		}
+		else{
+			System.out.println(this + " attempted to add a frame with length 0");
+			framesLengths.add(index,1);
+		}
+		addFrameBackEnd();
+		return this;
+	}
+	
+	//to make it so code isnt repeated, called by all four of the add frame methods
+	private void addFrameBackEnd(){
 		totalDuration += refreshRate;
 		if(frames.size() > 1){
 			singleImage= false;
 		}
-		return this;
 	}
 	
 	//restarting anim
 	public void reset(){
 		timeElapsed=0;
+		frameElapsedTime = 0;
 		frameIndex=0;
 		finished=false;
 	}
@@ -111,6 +147,12 @@ public class Animation {
 	 * @param refreshRate - new refresh rate
 	 */
 	public void setRefreshRate(int refreshRate){ 
+		//go through each frame and update length if not modified 
+		for (int e: framesLengths){
+			if(e ==this.refreshRate){
+				e=refreshRate;
+			}
+		}
 		this.refreshRate = refreshRate;
 		totalDuration = frames.size() *refreshRate;	//change the duration of animation since refresh time was changed
 	}
