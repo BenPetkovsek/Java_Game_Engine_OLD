@@ -159,8 +159,11 @@ public class GameObject {
 		
 		Double otherX = otherObject.getCollisionBox().getX();
 		Double otherColWidth = otherObject.getCollisionBox().getWidth();
-		
-		xCollide = (colX <= otherX+otherColWidth) && (otherX <= colX+colWidth);
+		System.out.println("x1A:"+colX);
+		System.out.println("x1B:"+(colX+colWidth));
+		System.out.println("x2A:"+otherX);
+		System.out.println("x2B:"+(otherX+otherColWidth));
+		xCollide = (colX < (otherX+otherColWidth)) && (otherX < (colX+colWidth));
 		return xCollide;
 		/*float width = getWidth();
 		
@@ -190,7 +193,7 @@ public class GameObject {
 		Double otherY = otherObject.getCollisionBox().getY();
 		Double otherColHeight = otherObject.getCollisionBox().getHeight();
 		
-		yCollide = (colY <= otherY+otherColHeight) && (otherY <= colY+colHeight);
+		yCollide = (colY < (otherY+otherColHeight)) && (otherY < (colY+colHeight));
 		
 		return yCollide;
 		/*boolean yCollide = false;

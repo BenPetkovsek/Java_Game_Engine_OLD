@@ -170,24 +170,28 @@ public class Player extends GameObject {
 			y +=dy;
 			getCollisionBox().x +=dx;
 			getCollisionBox().y +=dy;
+			//System.out.println("NO Dead Zone");
 		}else{
 			if((maxXHit && facingRight) || (minXHit && !facingRight)){
 				x += dx;
 				getCollisionBox().x +=dx;
+				//System.out.println("NO Dead Zone LR");
 			}else{
 				bgX += dx;
+				//System.out.println("Dead Zone LR");
 			}
 			
 			if((maxYHit && dy >0) || (minYHit && dy < 0)){
 				y += dy;
 				getCollisionBox().y +=dy;
+				//System.out.println("NO Dead Zone LR");
 			}else{
 				bgY += dy;
+				//System.out.println("Dead Zone TB");
 			}
 				
 				
 		}
-
 
 		
 		
@@ -198,20 +202,31 @@ public class Player extends GameObject {
 		for (GameObject obj: objs){
 			
 			if (this.checkCollision(obj) && obj.isCollidable()){
+				
 				if(checkDeadzoneX() && checkDeadzoneY()){
 					x -=dx;
 					y -=dy;
 					getCollisionBox().x -=dx;
 					getCollisionBox().y -=dy;
+					//System.out.println("reverse x,y");
 				}else{
-						bgX -= dx;
-						bgY -= dy;	
+					bgX -= dx;
+					bgY -= dy;	
+					//System.out.println("reverse bg x,y");
 				}
+			/*	boolean onLR = !checkLRCollision(obj);
+				boolean onTB = !checkTBCollision(obj);
+				System.out.println("On L or R:" +onLR);
+				System.out.println("On T or B:" +onTB);*/
 				//THIS PIECE OF CODE ALLOWS YOU TO MOVE IN ONE DIRECTION EVEN IF U COLLIDE IN THE OTHER
 				//WITHOUT THIS IT YOU MUST RELEASE THE DIRECTION THAT IS COLLIDE AND IT SUCKS
 				//srry for yelling it just took a lot of brain power for some dumb reason
 				
-				if(this.checkLRCollision(obj) && !this.checkTBCollision(obj)){
+				/*checks if the player is hitting the object from the top or bottom
+				 * This means the player can still move in left or right direction
+				 */
+				if(!this.checkTBCollision(obj)){	
+					System.out.println("colliding from LR");
 					if(checkDeadzoneX()){
 						x +=dx;
 						getCollisionBox().x +=dx;
@@ -220,20 +235,26 @@ public class Player extends GameObject {
 						
 					}
 				}
-				if(this.checkTBCollision(obj) && !this.checkLRCollision(obj)){
+				/*checks if the player is hitting the object from the right or left
+				 * This means the player can still move in up or down direction
+				 */
+				if(!this.checkLRCollision(obj)){
+					System.out.println("colliding from TB");
 					if(checkDeadzoneY()){
 						y +=dy;
 						getCollisionBox().y +=dy;
 					}else{
-						
 						bgY += dy;
+						
 					}
 				}
+				
 			
 			}
 			GameRender.setBackgroundOffset(-Math.round(bgX), -Math.round(bgY));
 		}
-		
+		System.out.println("__________________");
+		System.out.println("__________________");
 		
 		
 		//grace updates

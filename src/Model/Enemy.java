@@ -90,7 +90,7 @@ public class Enemy extends GameObject {
 		
 		if(checkCollision(hero.getAttack()) && hero.getAttack().isActive()){
 			if(!grace.going()){
-				hit = new KnockBack(hero.getX(), hero.getY(), this, 150, 5);
+				hit = new KnockBack(hero.getX(), hero.getY(), this, 150, 3);
 			}
 			
 			

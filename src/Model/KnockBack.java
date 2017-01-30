@@ -70,7 +70,7 @@ public class KnockBack {
 	//knockback now deals with dx and dy
 	public void update(){
 		if(running){
-			currTime+=1;
+			
 			actor.setDx(actor.getDx()+xy[0]);
 			actor.setDy(actor.getDy()+xy[1]);
 			if(currTime >= length){
@@ -82,6 +82,7 @@ public class KnockBack {
 					actor.setDy(0);
 				}
 			}
+			currTime+=1;
 		}
 	}
 	
