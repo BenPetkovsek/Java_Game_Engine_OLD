@@ -69,10 +69,15 @@ public class Player extends GameObject {
 	static int windowWidth = MainLoop.getWindowWidth();
 	static int windowHeight = MainLoop.getWindowHeight();
 	
-	static float deadzoneMaxX = windowWidth - 150;
-	static float deadzoneMinX = 100;
-	static float deadzoneMaxY = windowHeight - 200;
-	static float deadzoneMinY = 100;
+	static float deadzoneXOffset = 300;
+	static float deadzoneYOffset = 200;
+	
+	static float deadzoneMaxX = windowWidth - deadzoneXOffset-40;
+	static float deadzoneMinX = deadzoneXOffset;
+	static float deadzoneMaxY = windowHeight - deadzoneYOffset - 150;
+	static float deadzoneMinY = deadzoneYOffset;
+	
+
 	
 	boolean maxXHit = false;
 	boolean minXHit = false;
@@ -464,10 +469,10 @@ public class Player extends GameObject {
 		windowWidth = MainLoop.getWindowWidth();
 		windowHeight = MainLoop.getWindowHeight();
 		
-		deadzoneMaxX = windowWidth - 150;
-		deadzoneMinX = 100;
-		deadzoneMaxY = windowHeight - 200;
-		deadzoneMinY = 100;
+		deadzoneMaxX = windowWidth - deadzoneXOffset - 40;
+		deadzoneMinX = deadzoneXOffset;
+		deadzoneMaxY = windowHeight - deadzoneYOffset - 150;
+		deadzoneMinY = deadzoneYOffset;
 		
 	}
 	//GETTERS
