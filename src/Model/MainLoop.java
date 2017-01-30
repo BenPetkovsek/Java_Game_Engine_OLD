@@ -65,7 +65,7 @@ public class MainLoop extends Thread {
 		//setting the panel size based on background
 		//this can change as the game might not have the background fully cover
 		//yolo
-		gameframe.setSize(1000,800);
+		gameframe.setSize(500,500);
 		panelWidth =gameframe.getWidth();
 		panelHeight = gameframe.getHeight();
 		

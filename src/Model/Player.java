@@ -168,15 +168,19 @@ public class Player extends GameObject {
 		if(checkDeadzoneX() && checkDeadzoneY()){
 			x +=dx;
 			y +=dy;
+			getCollisionBox().x +=dx;
+			getCollisionBox().y +=dy;
 		}else{
 			if((maxXHit && facingRight) || (minXHit && !facingRight)){
 				x += dx;
+				getCollisionBox().x +=dx;
 			}else{
 				bgX += dx;
 			}
 			
 			if((maxYHit && dy >0) || (minYHit && dy < 0)){
 				y += dy;
+				getCollisionBox().y +=dy;
 			}else{
 				bgY += dy;
 			}
@@ -197,6 +201,8 @@ public class Player extends GameObject {
 				if(checkDeadzoneX() && checkDeadzoneY()){
 					x -=dx;
 					y -=dy;
+					getCollisionBox().x -=dx;
+					getCollisionBox().y -=dy;
 				}else{
 						bgX -= dx;
 						bgY -= dy;	
@@ -208,6 +214,7 @@ public class Player extends GameObject {
 				if(this.checkLRCollision(obj) && !this.checkTBCollision(obj)){
 					if(checkDeadzoneX()){
 						x +=dx;
+						getCollisionBox().x +=dx;
 					}else{
 						bgX += dx;
 						
@@ -216,6 +223,7 @@ public class Player extends GameObject {
 				if(this.checkTBCollision(obj) && !this.checkLRCollision(obj)){
 					if(checkDeadzoneY()){
 						y +=dy;
+						getCollisionBox().y +=dy;
 					}else{
 						
 						bgY += dy;
