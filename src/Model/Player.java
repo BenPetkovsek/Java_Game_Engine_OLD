@@ -69,10 +69,15 @@ public class Player extends GameObject {
 	static int windowWidth = MainLoop.getWindowWidth();
 	static int windowHeight = MainLoop.getWindowHeight();
 	
-	static float deadzoneMaxX;
-	static float deadzoneMinX;
-	static float deadzoneMaxY;
-	static float deadzoneMinY;
+	static float deadzoneXOffset = 300;
+	static float deadzoneYOffset = 200;
+	
+	static float deadzoneMaxX = windowWidth - deadzoneXOffset-40;
+	static float deadzoneMinX = deadzoneXOffset;
+	static float deadzoneMaxY = windowHeight - deadzoneYOffset - 150;
+	static float deadzoneMinY = deadzoneYOffset;
+	
+
 	
 	boolean maxXHit = false;
 	boolean minXHit = false;
@@ -154,18 +159,6 @@ public class Player extends GameObject {
 	public void update(ArrayList<GameObject> objs){
 		//System.out.println("Background X: " + bgX + " Background Y: " + bgY);
 		//System.out.println("Player dx: " + dx + "Player dy: " + dy);
-		float xOld= x;
-		float yOld = y;
-		
-		float xColOld = getCollisionBox().x;
-		float yColOld = getCollisionBox().y;
-		
-		float xBGOld = bgX;
-		float yBGOld = bgY;
-/*		boolean xMove=false;
-		boolean xBGMove=false;
-		boolean yMove=false;
-		boolean yBGMove=false;*/
 		checkDeadzoneX();
 		checkDeadzoneY();
 		//LARGE UPDATE OF DELTA MOVEMENT 
@@ -175,19 +168,15 @@ public class Player extends GameObject {
 		if(checkDeadzoneX() && checkDeadzoneY()){
 			x +=dx;
 			y +=dy;
-			getCollisionBox().x +=dx;
-			getCollisionBox().y +=dy;
 		}else{
 			if((maxXHit && facingRight) || (minXHit && !facingRight)){
 				x += dx;
-				getCollisionBox().x +=dx;
 			}else{
 				bgX += dx;
 			}
 			
 			if((maxYHit && dy >0) || (minYHit && dy < 0)){
 				y += dy;
-				getCollisionBox().y +=dy;
 			}else{
 				bgY += dy;
 			}
@@ -198,36 +187,19 @@ public class Player extends GameObject {
 
 		
 		
-		
 		//collision updates
 		//idk if this is good practise but i just reverse the changes if it collides
 		//then i test each direction (x,y) collisions then give the player back its dx or dy if its not colliding
 		//this just translate to the player  being allowed to hitting a wall from the right but still being able to move up and down
 		for (GameObject obj: objs){
-			//wtf is going on
-			boolean LR =this.checkTBCollision(obj);	
-			boolean TB = this.checkLRCollision(obj);
-			if(obj.isCollidable() && checkCollision(obj)){
-				x -=dx;
-				getCollisionBox().x -=dx;
-				y -=dy;
-				getCollisionBox().y -=dy;
-				x = xOld;
-				y =yOld;
-				getCollisionBox().x = xColOld;
-				getCollisionBox().y =yColOld;
-				bgX = xBGOld;
-				bgY = yBGOld;
-			}
-			/*if (this.checkCollision(obj) && obj.isCollidable()){
+			
+			if (this.checkCollision(obj) && obj.isCollidable()){
 				if(checkDeadzoneX() && checkDeadzoneY()){
 					x -=dx;
 					y -=dy;
-					getCollisionBox().x -=dx;
-					getCollisionBox().y -=dy;
 				}else{
-					bgX -= dx;
-					bgY -= dy;	
+						bgX -= dx;
+						bgY -= dy;	
 				}
 				//THIS PIECE OF CODE ALLOWS YOU TO MOVE IN ONE DIRECTION EVEN IF U COLLIDE IN THE OTHER
 				//WITHOUT THIS IT YOU MUST RELEASE THE DIRECTION THAT IS COLLIDE AND IT SUCKS
@@ -236,24 +208,21 @@ public class Player extends GameObject {
 				if(this.checkLRCollision(obj) && !this.checkTBCollision(obj)){
 					if(checkDeadzoneX()){
 						x +=dx;
-						getCollisionBox().x +=dx;
 					}else{
 						bgX += dx;
 						
 					}
-					
 				}
 				if(this.checkTBCollision(obj) && !this.checkLRCollision(obj)){
 					if(checkDeadzoneY()){
 						y +=dy;
-						getCollisionBox().y +=dy;
 					}else{
 						
 						bgY += dy;
 					}
 				}
 			
-			}*/
+			}
 			GameRender.setBackgroundOffset(-Math.round(bgX), -Math.round(bgY));
 		}
 		
@@ -303,6 +272,7 @@ public class Player extends GameObject {
 		//animation updates
 		//TODO have priority animations that will override, get rid of interruptable shit
 		if(currentAnim.interruptable() || currentAnim.isFinished()){		//dont change animation unless its interruptable or done
+			
 			if(dx <0){
 				//System.out.println("walkL");
 				currentAnim = walkLeftAnim; 
@@ -443,16 +413,15 @@ public class Player extends GameObject {
 		if(bgX >= bgWidth - windowWidth){
 			maxXHit = true;
 			//System.out.println("MAX X = TRUE");
-		}
+			}
 		else {
 			maxXHit = false;
-		}
+			}
 		
 		if(bgX <=0){
 			minXHit = true;
 			//System.out.println("MIN X = TRUE");
-		}
-		else{
+		}else{
 			minXHit = false;
 		}
 		
@@ -460,16 +429,16 @@ public class Player extends GameObject {
 		if((x > deadzoneMinX && x < deadzoneMaxX)||(x < deadzoneMinX && facingRight || x > deadzoneMaxX && !facingRight || dx ==0)){
 			//move character
 			return true;
-		}
-		else{
+		}else{
 			if(bgX <= 0 && !facingRight || bgX >= bgWidth - windowWidth && facingRight){
 				//move character
 				return true;
-			}
-			else{
+			}else{
+				
 				//move background
 				return false;
 			}
+			
 		}
 	}
 
@@ -508,15 +477,11 @@ public class Player extends GameObject {
 		windowWidth = MainLoop.getWindowWidth();
 		windowHeight = MainLoop.getWindowHeight();
 		
+		deadzoneMaxX = windowWidth - deadzoneXOffset - 40;
+		deadzoneMinX = deadzoneXOffset;
+		deadzoneMaxY = windowHeight - deadzoneYOffset - 150;
+		deadzoneMinY = deadzoneYOffset;
 		
-/*		deadzoneMaxX = windowWidth - 150;
-		deadzoneMinX = 100;
-		deadzoneMaxY = windowHeight - 200;
-		deadzoneMinY = 100;*/
-		deadzoneMaxX = windowWidth - 300;
-		deadzoneMinX = 200;
-		deadzoneMaxY = windowHeight - 300;
-		deadzoneMinY = 200;
 	}
 	//GETTERS
 /*	public float getDx(){ return dx; }
