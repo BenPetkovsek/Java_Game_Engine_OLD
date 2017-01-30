@@ -18,8 +18,8 @@ public class Enemy extends GameObject {
 	private Invulnerability grace;
 	
 	//TODO gameobject sub class should take care of movement
-	private float dx;
-	private float dy;
+/*	private float dx;
+	private float dy;*/
 	
 	public Enemy(float x, float y){
 		super(x,y);
@@ -32,7 +32,7 @@ public class Enemy extends GameObject {
 		isCollidable =false;
 		HP =100;
 		grace= new Invulnerability(80, 10);
-		collisionBox = new Rectangle2D.Double(x,y,getWidth(),getHeight());
+		collisionBox = new Rectangle2D.Float(x,y,getWidth(),getHeight());
 		
 	}
 /*	public Enemy(String initName, int initHP, int initStr, int initDef, int initIntel ){
@@ -73,24 +73,24 @@ public class Enemy extends GameObject {
 			if(hit.getStatus()){
 				hit.update();
 				takeDamage(hero.getAttack().getDmg());
-				dx += hit.getKnockback()[0];
-				dy += hit.getKnockback()[1];
+/*				dx += hit.getKnockback()[0];
+				dy += hit.getKnockback()[1];*/
 			}
 			else{	
 				//reset unless already moving
-				if(dx != 0){
+/*				if(dx != 0){
 					dx =0;
 				}
 				if(dy != 0){
 					dy =0;
-				}
+				}*/
 				hit=null;	//reset
 			}
 		}
 		
 		if(checkCollision(hero.getAttack()) && hero.getAttack().isActive()){
 			if(!grace.going()){
-				hit = new KnockBack(hero.getX(), hero.getY(), this, 75, 1);
+				hit = new KnockBack(hero.getX(), hero.getY(), this, 150, 5);
 			}
 			
 			

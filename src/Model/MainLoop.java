@@ -52,7 +52,7 @@ public class MainLoop extends Thread {
 		//load maps, set current map
 		levelManager.initializeLevels();
 		currentLevel = levelManager.getLevel("Test1");
-		System.out.println(currentLevel.fileName);
+		//System.out.println(currentLevel.fileName);
 		
 		//setting background of game
 		background = ImageStyler.loadImg(currentLevel.background);

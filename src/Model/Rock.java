@@ -17,7 +17,7 @@ public class Rock extends GameObject{
 		currentAnim  = idleAnim;
 		scale=0.5f;
 		drawBorders=true;
-		collisionBox = new Rectangle2D.Double(x,y,getWidth(),getHeight());
+		collisionBox = new Rectangle2D.Float(x,y,getWidth(),getHeight());
 		
 	}
 	

@@ -22,7 +22,7 @@ public class Level {
 	}
 	
 	public void loadGameObjects(){
-		System.out.println("Generating game object list of " + mapName + " from file named " + fileName);
+		//System.out.println("Generating game object list of " + mapName + " from file named " + fileName);
 		String readFile = "Levels/"+ fileName;
 		String line = null;
 		
@@ -31,12 +31,12 @@ public class Level {
 			BufferedReader bufferedReader = new BufferedReader(fileReader);
 			
 			while((line = bufferedReader.readLine()) != null){
-				System.out.println(line);
+				//System.out.println(line);
 				
 				String[] mapObjects = line.split("\\|");
 				
 				for(int i = 0; i < mapObjects.length; i++){
-					System.out.println("Load Game Object: " + mapObjects[i]);
+					//System.out.println("Load Game Object: " + mapObjects[i]);
 					
 					String[] objectInfo = mapObjects[i].split(",");
 					

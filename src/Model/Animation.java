@@ -39,9 +39,9 @@ public class Animation {
 	public void update(){
 		
 		//if the time elapsed is on a time period to change frame
-		if(frameElapsedTime == framesLengths.get(frameIndex) && timeElapsed != 0){		//if not at starting position and at refresh mark, then do shit
+		if(frameElapsedTime >= framesLengths.get(frameIndex) && timeElapsed != 0){		//if not at starting position and at refresh mark, then do shit
 			frameElapsedTime =0;
-			if(timeElapsed == totalDuration){
+			if(timeElapsed >= totalDuration){
 				timeElapsed=0;
 				if(repeating){
 					frameIndex =0;
@@ -49,7 +49,7 @@ public class Animation {
 				else{
 					finished=true;
 					//System.out.println("increase frame with mod");
-					frameIndex = (frameIndex+1) % frames.size();
+					//frameIndex = (frameIndex+1) % frames.size();
 					
 				}
 			}

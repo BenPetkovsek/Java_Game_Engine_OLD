@@ -10,7 +10,7 @@ public class KnockBack {
 
 	private float pushDistance=0f;
 	
-	private double[] xy;	//push power in dx and dy
+	private float[] xy;	//push power in dx and dy
 	
 	private float sourceX;
 	private float sourceY;
@@ -53,7 +53,7 @@ public class KnockBack {
 	 * Calculates the push dx and dy to be added to the player
 	 */
 	private void calculateXY(){
-		xy = new double[2];
+		xy = new float[2];
 		//distance between mid point of each sprite
 		float diffX = sourceX - (actor.getX()+actor.getWidth()/2);		//delta x between center points
 		float diffY = sourceY - (actor.getY()+actor.getHeight()/2);		//delta y between center points
@@ -67,11 +67,20 @@ public class KnockBack {
 		
 	}
 	
+	//knockback now deals with dx and dy
 	public void update(){
 		if(running){
 			currTime+=1;
+			actor.setDx(actor.getDx()+xy[0]);
+			actor.setDy(actor.getDy()+xy[1]);
 			if(currTime >= length){
 				running=false;
+				if(actor.getDx() != 0){
+					actor.setDx(0);
+				}
+				if(actor.getDy() != 0){
+					actor.setDy(0);
+				}
 			}
 		}
 	}
@@ -79,6 +88,6 @@ public class KnockBack {
 	//returns if the knockback is still playing
 	public boolean getStatus(){ return running; }
 	
-	public double[] getKnockback(){ return xy; }
+	public float[] getKnockback(){ return xy; }
 	
 }

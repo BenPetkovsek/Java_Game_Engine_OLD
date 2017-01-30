@@ -9,7 +9,7 @@ public class LoadTrigger extends GameObject {
 		this.destination = initDestination;
 		drawBorders = true;
 		isCollidable = false;
-		collisionBox = new Rectangle2D.Double(x,y,50,50);
+		collisionBox = new Rectangle2D.Float(x,y,50,50);
 	}
 	
 	public void update(Player hero){

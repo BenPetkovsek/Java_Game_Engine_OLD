@@ -60,7 +60,7 @@ public class Attack extends GameObject{
 		
 		
 		time = 0;
-		collisionBox = new Rectangle2D.Double(x,y,getWidth(),getHeight());
+		collisionBox = new Rectangle2D.Float(x,y,getWidth(),getHeight());
 
 	}
 	
