@@ -170,24 +170,19 @@ public class Player extends GameObject {
 			y +=dy;
 			getCollisionBox().x +=dx;
 			getCollisionBox().y +=dy;
-			//System.out.println("NO Dead Zone");
 		}else{
 			if((maxXHit && facingRight) || (minXHit && !facingRight)){
 				x += dx;
 				getCollisionBox().x +=dx;
-				//System.out.println("NO Dead Zone LR");
 			}else{
 				bgX += dx;
-				//System.out.println("Dead Zone LR");
 			}
 			
 			if((maxYHit && dy >0) || (minYHit && dy < 0)){
 				y += dy;
 				getCollisionBox().y +=dy;
-				//System.out.println("NO Dead Zone LR");
 			}else{
 				bgY += dy;
-				//System.out.println("Dead Zone TB");
 			}
 				
 				
@@ -208,11 +203,25 @@ public class Player extends GameObject {
 					y -=dy;
 					getCollisionBox().x -=dx;
 					getCollisionBox().y -=dy;
-					//System.out.println("reverse x,y");
+					System.out.println("dead zone");
 				}else{
-					bgX -= dx;
-					bgY -= dy;	
-					//System.out.println("reverse bg x,y");
+					if((maxXHit && facingRight) || (minXHit && !facingRight)){
+						x -= dx;
+						getCollisionBox().x -=dx;
+						System.out.println("NO Dead Zone LR");
+					}else{
+						bgX -= dx;
+						System.out.println("Dead Zone LR");
+					}
+					
+					if((maxYHit && dy >0) || (minYHit && dy < 0)){
+						y -= dy;
+						getCollisionBox().y -=dy;
+						System.out.println("NO Dead Zone LR");
+					}else{
+						bgY -= dy;
+						System.out.println("Dead Zone TB");
+					}
 				}
 			/*	boolean onLR = !checkLRCollision(obj);
 				boolean onTB = !checkTBCollision(obj);
