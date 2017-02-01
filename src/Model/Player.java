@@ -50,6 +50,12 @@ public class Player extends GameObject {
 	private Animation attackRAnim;
 	private Animation attackLAnim;
 	
+	private BufferedImage[] hurtRight = {ImageStyler.loadImg("heroHurt.png")};
+	private BufferedImage[] hurtLeft = ImageStyler.flipImgs(hurtRight);
+	
+	private Animation hurtRightAnim;
+	private Animation hurtLeftAnim;
+	
 	private Animation oldAnim;
 	
 	//effects variables
@@ -115,18 +121,18 @@ public class Player extends GameObject {
 	//init for all anims
 	private void animInit(){
 		//initialize images for all anims
-		walkRightAnim= new Animation(true);
+		walkRightAnim= new Animation(true,0);
 		walkRightAnim.addFrame(walkRight[0]).addFrame(walkRight[1]).addFrame(walkRight[2]);
-		walkLeftAnim= new Animation(true);
+		walkLeftAnim= new Animation(true,0);
 		walkLeftAnim.addFrame(walkLeft[0]).addFrame(walkLeft[1]).addFrame(walkLeft[2]);
-		idleRightAnim = new Animation(true);
+		idleRightAnim = new Animation(true,0);
 		idleRightAnim.addFrame(idleRight[0]);
-		idleLeftAnim = new Animation(true);
+		idleLeftAnim = new Animation(true,0);
 		idleLeftAnim.addFrame(idleLeft[0]);
-		attackRAnim = new Animation(false).addFrame(attackRight[0]);
-		attackRAnim.setInterruptable(false);
-		attackLAnim = new Animation(false).addFrame(attackLeft[0]);
-		attackLAnim.setInterruptable(false);
+		attackRAnim = new Animation(false,1).addFrame(attackRight[0]);
+		attackLAnim = new Animation(false,1).addFrame(attackLeft[0]);
+		hurtRightAnim = new Animation(false,2).addFrame(hurtRight[0]);
+		hurtLeftAnim = new Animation(false,2).addFrame(hurtLeft[0]);
 		
 		
 		//init first anim
@@ -170,19 +176,26 @@ public class Player extends GameObject {
 			y +=dy;
 			getCollisionBox().x +=dx;
 			getCollisionBox().y +=dy;
+			System.out.println("dead zone");
 		}else{
 			if((maxXHit && facingRight) || (minXHit && !facingRight)){
 				x += dx;
 				getCollisionBox().x +=dx;
+
+				System.out.println("NO Dead Zone LR");
 			}else{
 				bgX += dx;
+
+				System.out.println("Dead Zone LR");
 			}
 			
 			if((maxYHit && dy >0) || (minYHit && dy < 0)){
 				y += dy;
 				getCollisionBox().y +=dy;
+				System.out.println("NO Dead Zone TB");
 			}else{
 				bgY += dy;
+				System.out.println("Dead Zone TB");
 			}
 				
 				
@@ -217,45 +230,60 @@ public class Player extends GameObject {
 					if((maxYHit && dy >0) || (minYHit && dy < 0)){
 						y -= dy;
 						getCollisionBox().y -=dy;
-						System.out.println("NO Dead Zone LR");
+						System.out.println("NO Dead Zone TB");
 					}else{
 						bgY -= dy;
 						System.out.println("Dead Zone TB");
 					}
 				}
-			/*	boolean onLR = !checkLRCollision(obj);
-				boolean onTB = !checkTBCollision(obj);
-				System.out.println("On L or R:" +onLR);
-				System.out.println("On T or B:" +onTB);*/
-				//THIS PIECE OF CODE ALLOWS YOU TO MOVE IN ONE DIRECTION EVEN IF U COLLIDE IN THE OTHER
-				//WITHOUT THIS IT YOU MUST RELEASE THE DIRECTION THAT IS COLLIDE AND IT SUCKS
-				//srry for yelling it just took a lot of brain power for some dumb reason
 				
 				/*checks if the player is hitting the object from the top or bottom
 				 * This means the player can still move in left or right direction
 				 */
 				if(!this.checkTBCollision(obj)){	
-					System.out.println("colliding from LR");
-					if(checkDeadzoneX()){
+					if(checkDeadzoneX() && checkDeadzoneY()){
+						x +=dx;
+						getCollisionBox().x +=dx;
+					}else{
+						if((maxXHit && facingRight) || (minXHit && !facingRight)){
+							x += dx;
+							getCollisionBox().x +=dx;
+						}else{
+							bgX += dx;
+						}
+					}
+					/*if(checkDeadzoneX()){
 						x +=dx;
 						getCollisionBox().x +=dx;
 					}else{
 						bgX += dx;
 						
-					}
+					}*/
 				}
 				/*checks if the player is hitting the object from the right or left
 				 * This means the player can still move in up or down direction
 				 */
 				if(!this.checkLRCollision(obj)){
-					System.out.println("colliding from TB");
+					if(checkDeadzoneX() && checkDeadzoneY()){
+						y +=dy;
+						getCollisionBox().y +=dy;
+					}else{
+						
+						if((maxYHit && dy >0) || (minYHit && dy < 0)){
+							y += dy;
+							getCollisionBox().y +=dy;
+						}else{
+							bgY += dy;
+						}
+					}
+					/*System.out.println("colliding from TB");
 					if(checkDeadzoneY()){
 						y +=dy;
 						getCollisionBox().y +=dy;
 					}else{
 						bgY += dy;
 						
-					}
+					}*/
 				}
 				
 			
@@ -272,75 +300,37 @@ public class Player extends GameObject {
 		}
 		
 		//knockback updates
-		//TODO have it so the knockback class does the movement for the source object
-		//		only problem is that the collision updates must now be a method that gets called by that type of stuff so the integrity still applies
+		//TODO have it so the knockback class is completely hidden from player
+		//possible use an external knockback manager?
 		if(knockback !=null){
 			if(knockback.getStatus()){
 				knockback.update();
-/*				dx += knockback.getKnockback()[0];
-				dy += knockback.getKnockback()[1];*/
 			}
 			else{	
-				//reset unless already moving
-				/*if(dx != 0){
-					dx =0;
-				}
-				if(dy != 0){
-					dy =0;
-				}*/
 				knockback=null;	//reset
 				noMovement=false;	//reset
 			}
 		}
 		
 		//attacking updates
+		//TODO Do attack interruption better
 		if(currentAttack != null){
 			//if currently attacking, update else dont
 			if(attacking){
-				if(!currentAttack.isActive()){
+				if(!currentAttack.isActive() || noMovement){
 					if(!facingRight){
 						x+=currentAttack.getOffset();
 					}
+					currentAttack.stop();
 					attacking =false;
 				}
 				currentAttack.update();
 			}
 			
 		}
-		//animation updates
-		//TODO have priority animations that will override, get rid of interruptable shit
-		if(currentAnim.interruptable() || currentAnim.isFinished()){		//dont change animation unless its interruptable or done
-			
-			if(dx <0){
-				//System.out.println("walkL");
-				currentAnim = walkLeftAnim; 
-			}
-			else if(dx >0){
-				//System.out.println("walkR");
-				currentAnim = walkRightAnim;
-			}
-			else if(dx==0){
-				//System.out.println("idle");
-				//currentAnim = walkLeftAnim;
-				currentAnim = (facingRight) ? idleRightAnim : idleLeftAnim;
-			}
-			
-			//attacking overrides movement animation
-			if(attacking){
-				currentAnim = (facingRight) ? attackRAnim: attackLAnim;
-			}
-			//This just resets the current animation to start at the begining
-			//if the animation changes
-			
-			if(oldAnim != currentAnim){
-				//System.out.println("reset");
-				currentAnim.reset();
-			}
-			oldAnim = currentAnim;
-			
-		}
 		
-		currentAnim.update();
+		animationUpdate();
+		
 	}
 	
 	/**
@@ -410,6 +400,48 @@ public class Player extends GameObject {
 		if(!attacking){
 			facingRight = !facingRight;
 		}
+	}
+	
+	/*
+	 * updates animation
+	 * TODO do a better job at possibleNewAnim
+	 */
+	private void animationUpdate(){
+		Animation possibleNewAnim = currentAnim;
+		
+		//these should be in the same order of the priority
+		if(dx <0){
+			possibleNewAnim = walkLeftAnim; 
+		}
+		else if(dx >0){
+			possibleNewAnim = walkRightAnim;
+		}
+		else if(dx==0){
+			possibleNewAnim = (facingRight) ? idleRightAnim : idleLeftAnim;
+		}
+		
+		//attacking overrides movement animation
+		if(attacking){
+			possibleNewAnim = (facingRight) ? attackRAnim: attackLAnim;
+		}
+		//getting attacked, do better
+		if(noMovement){
+			possibleNewAnim = (facingRight) ? hurtRightAnim : hurtLeftAnim;
+		}
+		//priority checking, animation change
+		if(possibleNewAnim.getPriority() >= currentAnim.getPriority() || currentAnim.isFinished()){
+			currentAnim = possibleNewAnim;
+			if(oldAnim != currentAnim){
+				//System.out.println("reset");
+				currentAnim.reset();
+			}
+		}
+		oldAnim = currentAnim;
+		
+		currentAnim.update();
+	
+		
+		
 	}
 	/**
 	 * Calculates the offset in x when changing direction
@@ -580,9 +612,9 @@ public class Player extends GameObject {
 
 	
 	public void attack(){
-		//cant attack if already attacking
+		//cant attack if already attacking or hurt
 		//might change this idk
-		if(!attacking){
+		if(!attacking && !noMovement){
 			attacking=true;
 			if(!facingRight){
 				//move the character the offset designated to the attack

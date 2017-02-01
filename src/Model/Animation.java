@@ -28,9 +28,12 @@ public class Animation {
 	
 	private boolean finished =false;
 	
+	private int priority=0;
+	
 	
 	//creates an empty animation and if it repeats
-	public Animation( boolean repeat){
+	public Animation( boolean repeat, int priority){
+		this.priority = priority;
 		repeating = repeat;
 		frames= new ArrayList<BufferedImage>();
 		framesLengths = new ArrayList<Integer>();
@@ -148,6 +151,7 @@ public class Animation {
 	
 	public boolean isFinished(){ return finished; }
 	
+	public int getPriority() { return priority; }
 	/**
 	 * Sets the refresh rate
 	 * @param refreshRate - new refresh rate

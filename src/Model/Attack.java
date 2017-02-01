@@ -83,6 +83,10 @@ public class Attack extends GameObject{
 		active =true;
 		time =0;
 	}
+	//force stop
+	public void stop(){
+		active=false;
+	}
 	//returns if the attack is active
 	public boolean isActive(){
 		return active;

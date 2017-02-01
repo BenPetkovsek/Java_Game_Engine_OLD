@@ -7,6 +7,7 @@ package Model;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 public class GameObject {
 
@@ -35,11 +36,13 @@ public class GameObject {
 	protected boolean drawBorders=true;	//FOR DEBUGGING TO SEE COLLISION BORDERS
 	
 	//current animation
-	protected Animation currentAnim;	
+	protected Animation currentAnim;
+	//protected ArrayList<Animation> animations;	//animation priority list, any animation can interrupt animatiosn with less index
 	
 	public GameObject(float x, float y){
 		this.x = x;
 		this.y =y;
+		//animations= new ArrayList<Animation>();
 	}
 	
 	public void update(){ };

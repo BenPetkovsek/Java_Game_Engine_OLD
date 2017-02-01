@@ -12,7 +12,7 @@ public class Rock extends GameObject{
 	
 	public Rock(float x, float y){
 		super(x,y);
-		idleAnim = new Animation(false);
+		idleAnim = new Animation(false,0);
 		idleAnim.addFrame(idle);
 		currentAnim  = idleAnim;
 		scale=0.5f;

@@ -23,8 +23,8 @@ public class Enemy extends GameObject {
 	
 	public Enemy(float x, float y){
 		super(x,y);
-		idle = new Animation(false).addFrame(ImageStyler.loadImg("dog.png"));
-		hurt = new Animation(false).addFrame(ImageStyler.loadImg("dogHurt.png")).addFrame(ImageStyler.loadImg("dogHurt.png"));
+		idle = new Animation(false,0).addFrame(ImageStyler.loadImg("dog.png"));
+		hurt = new Animation(false,1).addFrame(ImageStyler.loadImg("dogHurt.png")).addFrame(ImageStyler.loadImg("dogHurt.png"));
 		hurt.setRefreshRate(20);
 		currentAnim = idle;
 		scale = 5f;
@@ -79,14 +79,16 @@ public class Enemy extends GameObject {
 			}
 		}
 		//checks if the enemy gets hit by player, also checks if the hero is collide if so hero gets hurt then
-		if(checkCollision(hero.getAttack()) && hero.getAttack().isActive() &&!checkCollision(hero)){	
+		if(checkCollision(hero.getAttack()) && hero.getAttack().isActive() && !checkCollision(hero)){	
 			if(!grace.going()){
+				System.out.println("Enemy hit");
 				hit = new SimpleKnockBack(hero, this, 150, 3);
 			}
 			
 			
 		}
 		else if(checkCollision(hero)){
+			System.out.println("Player hit");
 			hero.takeDamage(20,this);
 		}
 		//animation updates
