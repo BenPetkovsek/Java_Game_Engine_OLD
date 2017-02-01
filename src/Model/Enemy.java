@@ -73,24 +73,15 @@ public class Enemy extends GameObject {
 			if(hit.getStatus()){
 				hit.update();
 				takeDamage(hero.getAttack().getDmg());
-/*				dx += hit.getKnockback()[0];
-				dy += hit.getKnockback()[1];*/
 			}
 			else{	
-				//reset unless already moving
-/*				if(dx != 0){
-					dx =0;
-				}
-				if(dy != 0){
-					dy =0;
-				}*/
 				hit=null;	//reset
 			}
 		}
-		
-		if(checkCollision(hero.getAttack()) && hero.getAttack().isActive()){
+		//checks if the enemy gets hit by player, also checks if the hero is collide if so hero gets hurt then
+		if(checkCollision(hero.getAttack()) && hero.getAttack().isActive() &&!checkCollision(hero)){	
 			if(!grace.going()){
-				hit = new KnockBack(hero.getX(), hero.getY(), this, 150, 3);
+				hit = new SimpleKnockBack(hero, this, 150, 3);
 			}
 			
 			

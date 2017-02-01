@@ -6,18 +6,19 @@
  */
 package Model;
 
+import java.awt.geom.Rectangle2D;
+
 public class KnockBack {
 
-	private float pushDistance=0f;
+	protected float pushDistance=0f;
 	
-	private float[] xy;	//push power in dx and dy
+	protected float[] xy;	//push power in dx and dy
 	
-	private float sourceX;
-	private float sourceY;
-	private GameObject actor;		//thing to push
-	
-	private float currTime;
-	private float length=0;
+	protected float sourceX;
+	protected float sourceY;
+	protected GameObject actor;		//thing to push
+	protected float currTime;
+	protected float length=0;
 	
 	private boolean running=false;
 	
@@ -28,8 +29,9 @@ public class KnockBack {
 	 * @param l - Length of push in time
 	 */
 	public KnockBack(GameObject s,GameObject a,float p, float l) {
-		this(s.getX()+s.getWidth()/2,s.getY()+s.getHeight()/2,a,p,l);
-	}
+		//takes the collision box coordinates as they are more accurate
+		this((float) (s.getCollisionBox().x+s.getCollisionBox().getWidth()/2),(float) (s.getCollisionBox().y+s.getCollisionBox().getHeight()/2),a,p,l);
+	} 
 	
 	/**
 	 * 
@@ -53,10 +55,11 @@ public class KnockBack {
 	 * Calculates the push dx and dy to be added to the player
 	 */
 	private void calculateXY(){
+		Rectangle2D.Float colBox = actor.getCollisionBox();
 		xy = new float[2];
 		//distance between mid point of each sprite
-		float diffX = sourceX - (actor.getX()+actor.getWidth()/2);		//delta x between center points
-		float diffY = sourceY - (actor.getY()+actor.getHeight()/2);		//delta y between center points
+		float diffX = (float) (sourceX - (colBox.x+colBox.getWidth()/2));		//delta x between center points
+		float diffY = (float) (sourceY - (colBox.y+colBox.getHeight()/2));		//delta y between center points
 		
 		double angle =  Math.atan2(diffY, diffX);	//angle in rads
 	
