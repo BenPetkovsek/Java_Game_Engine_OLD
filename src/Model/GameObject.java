@@ -13,7 +13,7 @@ public class GameObject {
 
 	protected float x,y;
 	protected float dx,dy;
-	protected float xOffset, yOffset;
+	protected float xOffset, yOffset;	//offsets of the screen caused by map scrolling by character
 	protected float scale=1;
 	protected boolean isCollidable=true;
 	
@@ -37,7 +37,7 @@ public class GameObject {
 	
 	//current animation
 	protected Animation currentAnim;
-	//protected ArrayList<Animation> animations;	//animation priority list, any animation can interrupt animatiosn with less index
+	//protected ArrayList<Animation> animations;	//animation priority list, any animation can interrupt animations with less index
 	
 	public GameObject(float x, float y){
 		this.x = x;
@@ -147,9 +147,7 @@ public class GameObject {
 	//checks if the object has collided at all, used for interactions between objects
 	//Uses built in intersect functions
 	public boolean checkCollision(GameObject otherObject){
-		/*boolean collided= checkXCollision(otherObject) && checkYCollision(otherObject);
-		return collided;*/
-		//return checkLRCollision(otherObject) && checkTBCollision(otherObject);
+
 		return getCollisionBox().intersects(otherObject.getCollisionBox());
 	}
 	//checks collision from (L)eft and (R)ight side
@@ -162,27 +160,8 @@ public class GameObject {
 		
 		Double otherX = otherObject.getCollisionBox().getX();
 		Double otherColWidth = otherObject.getCollisionBox().getWidth();
-		System.out.println("x1A:"+colX);
-		System.out.println("x1B:"+(colX+colWidth));
-		System.out.println("x2A:"+otherX);
-		System.out.println("x2B:"+(otherX+otherColWidth));
 		xCollide = (colX < (otherX+otherColWidth)) && (otherX < (colX+colWidth));
 		return xCollide;
-		/*float width = getWidth();
-		
-		float otherX = otherObject.getX();
-		float otherWidth = otherObject.getWidth();
-		
-		//offset collision detection, im a god
-		
-		float xA  = (facingRight == offsetDir) ? (x +xAOffset): (x-getOffsets()[1]);
-		float xB =  (facingRight == offsetDir) ? (x +width +getOffsets()[1]): (x +width -getOffsets()[0]);
-		
-		float otherXA = (otherObject.facingRight() == otherObject.offSetDir()) ? (otherX + otherObject.getOffsets()[0]) : (otherX - otherObject.getOffsets()[1]);
-		float otherXB = (otherObject.facingRight() == otherObject.offSetDir()) ? (otherX +otherWidth+ otherObject.getOffsets()[1]) : (otherX +otherWidth - otherObject.getOffsets()[0]);
-		
-		//Essentially this is just a simplied way of checking if range of pixels the pictures take up intersect horizontally
-		xCollide = (xA <= otherXB) && (otherXA <= xB);*/
 		
 	}
 	//checks collision from (T)op and (B)ottom side
@@ -199,20 +178,7 @@ public class GameObject {
 		yCollide = (colY < (otherY+otherColHeight)) && (otherY < (colY+colHeight));
 		
 		return yCollide;
-		/*boolean yCollide = false;
-		float height = getHeight();
-		float otherY = otherObject.getY();
-		float otherHeight = otherObject.getHeight();
-		
-		float yA  =y +getOffsets()[2];
-		float yB = y +height +getOffsets()[3];
-		
-		float otherYA = otherY + otherObject.getOffsets()[2];
-		float otherYB = otherY +otherHeight+ otherObject.getOffsets()[3];
-		
-		//Essentially this is just a simplied way of checking if range of pixels the pictures take up intersect vertically
-		yCollide = (yA <= otherYB) && (otherYA<= yB);
-		return yCollide;*/
+
 	}
 	
 	

@@ -131,8 +131,8 @@ public class Player extends GameObject {
 		idleLeftAnim.addFrame(idleLeft[0]);
 		attackRAnim = new Animation(false,1).addFrame(attackRight[0]);
 		attackLAnim = new Animation(false,1).addFrame(attackLeft[0]);
-		hurtRightAnim = new Animation(false,2).addFrame(hurtRight[0]);
-		hurtLeftAnim = new Animation(false,2).addFrame(hurtLeft[0]);
+		hurtRightAnim = new Animation(false,2).addFrameWithLength(hurtRight[0],8);
+		hurtLeftAnim = new Animation(false,2).addFrameWithLength(hurtLeft[0],8);
 		
 		
 		//init first anim
@@ -163,39 +163,33 @@ public class Player extends GameObject {
 	//main update for the object, is called every loop
 
 	public void update(ArrayList<GameObject> objs){
-		//System.out.println("Background X: " + bgX + " Background Y: " + bgY);
-		//System.out.println("Player dx: " + dx + "Player dy: " + dy);
+
 		checkDeadzoneX();
 		checkDeadzoneY();
 		//LARGE UPDATE OF DELTA MOVEMENT 
 		updateDeltaMovement();
 		
 		//movement updates
-		if(checkDeadzoneX() && checkDeadzoneY()){
+		if(checkDeadzoneX() && checkDeadzoneY()){	//in dead zone 
 			x +=dx;
 			y +=dy;
-			getCollisionBox().x +=dx;
-			getCollisionBox().y +=dy;
-			System.out.println("dead zone");
-		}else{
+			/*getCollisionBox().x +=dx;
+			getCollisionBox().y +=dy;*/
+		}else{										//not in dead zone
 			if((maxXHit && facingRight) || (minXHit && !facingRight)){
 				x += dx;
-				getCollisionBox().x +=dx;
+				//getCollisionBox().x +=dx;
 
-				System.out.println("NO Dead Zone LR");
 			}else{
-				bgX += dx;
-
-				System.out.println("Dead Zone LR");
+				bgX += dx;	//move background
+				
 			}
 			
 			if((maxYHit && dy >0) || (minYHit && dy < 0)){
 				y += dy;
-				getCollisionBox().y +=dy;
-				System.out.println("NO Dead Zone TB");
+				//getCollisionBox().y +=dy;
 			}else{
 				bgY += dy;
-				System.out.println("Dead Zone TB");
 			}
 				
 				
@@ -208,90 +202,75 @@ public class Player extends GameObject {
 		//then i test each direction (x,y) collisions then give the player back its dx or dy if its not colliding
 		//this just translate to the player  being allowed to hitting a wall from the right but still being able to move up and down
 		for (GameObject obj: objs){
-			
+			obj.setXOffset(-bgX);
+			obj.setYOffset(-bgY);
 			if (this.checkCollision(obj) && obj.isCollidable()){
 				
 				if(checkDeadzoneX() && checkDeadzoneY()){
 					x -=dx;
 					y -=dy;
-					getCollisionBox().x -=dx;
-					getCollisionBox().y -=dy;
-					System.out.println("dead zone");
+					/*getCollisionBox().x -=dx;
+					getCollisionBox().y -=dy;*/
 				}else{
 					if((maxXHit && facingRight) || (minXHit && !facingRight)){
 						x -= dx;
-						getCollisionBox().x -=dx;
-						System.out.println("NO Dead Zone LR");
+						//getCollisionBox().x -=dx;
 					}else{
 						bgX -= dx;
-						System.out.println("Dead Zone LR");
 					}
 					
 					if((maxYHit && dy >0) || (minYHit && dy < 0)){
 						y -= dy;
-						getCollisionBox().y -=dy;
-						System.out.println("NO Dead Zone TB");
+						//getCollisionBox().y -=dy;
 					}else{
 						bgY -= dy;
-						System.out.println("Dead Zone TB");
 					}
 				}
 				
 				/*checks if the player is hitting the object from the top or bottom
 				 * This means the player can still move in left or right direction
 				 */
+				obj.setXOffset(-bgX);
+				obj.setYOffset(-bgY);
 				if(!this.checkTBCollision(obj)){	
 					if(checkDeadzoneX() && checkDeadzoneY()){
 						x +=dx;
-						getCollisionBox().x +=dx;
+						//getCollisionBox().x +=dx;
 					}else{
 						if((maxXHit && facingRight) || (minXHit && !facingRight)){
 							x += dx;
-							getCollisionBox().x +=dx;
+							//getCollisionBox().x +=dx;
 						}else{
 							bgX += dx;
 						}
 					}
-					/*if(checkDeadzoneX()){
-						x +=dx;
-						getCollisionBox().x +=dx;
-					}else{
-						bgX += dx;
-						
-					}*/
 				}
 				/*checks if the player is hitting the object from the right or left
 				 * This means the player can still move in up or down direction
 				 */
+				obj.setXOffset(-bgX);
+				obj.setYOffset(-bgY);
 				if(!this.checkLRCollision(obj)){
 					if(checkDeadzoneX() && checkDeadzoneY()){
 						y +=dy;
-						getCollisionBox().y +=dy;
+						//getCollisionBox().y +=dy;
 					}else{
 						
 						if((maxYHit && dy >0) || (minYHit && dy < 0)){
 							y += dy;
-							getCollisionBox().y +=dy;
+							//getCollisionBox().y +=dy;
 						}else{
 							bgY += dy;
 						}
 					}
-					/*System.out.println("colliding from TB");
-					if(checkDeadzoneY()){
-						y +=dy;
-						getCollisionBox().y +=dy;
-					}else{
-						bgY += dy;
-						
-					}*/
+
 				}
 				
 			
 			}
 			GameRender.setBackgroundOffset(-Math.round(bgX), -Math.round(bgY));
 		}
-		System.out.println("__________________");
-		System.out.println("__________________");
+
 		
 		
 		//grace updates
@@ -560,6 +539,16 @@ public class Player extends GameObject {
 	
 	@Override
 	public Rectangle2D.Float getCollisionBox(){
+		
+		//mother of all fucking god do this better LMAO
+		if(attacking && !facingRight){
+			collisionBox.x = x+ currentAttack.getOffset();
+		}
+		else{
+			collisionBox.x = x;
+		}
+		
+		collisionBox.y = y;
 		return collisionBox;
 	}
 	

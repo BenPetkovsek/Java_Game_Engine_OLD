@@ -30,7 +30,7 @@ public class KnockBack {
 	 */
 	public KnockBack(GameObject s,GameObject a,float p, float l) {
 		//takes the collision box coordinates as they are more accurate
-		this((float) (s.getCollisionBox().x+s.getCollisionBox().getWidth()/2),(float) (s.getCollisionBox().y+s.getCollisionBox().getHeight()/2),a,p,l);
+		this((float) (s.getCollisionBox().getCenterX()),(float) (s.getCollisionBox().getCenterY()),a,p,l);
 	} 
 	
 	/**
