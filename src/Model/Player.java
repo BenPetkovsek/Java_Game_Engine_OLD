@@ -169,27 +169,42 @@ public class Player extends GameObject {
 		//LARGE UPDATE OF DELTA MOVEMENT 
 		updateDeltaMovement();
 		
+		boolean movedX=false;
+		boolean movedY=false;
+		
+		boolean movedBgX=false;
+		boolean movedBgY= false;
 		//movement updates
 		if(checkDeadzoneX() && checkDeadzoneY()){	//in dead zone 
 			x +=dx;
 			y +=dy;
+			movedX=true;
+			movedY=true;
 			/*getCollisionBox().x +=dx;
 			getCollisionBox().y +=dy;*/
 		}else{										//not in dead zone
 			if((maxXHit && facingRight) || (minXHit && !facingRight)){
 				x += dx;
+				movedX=true;
 				//getCollisionBox().x +=dx;
 
 			}else{
-				bgX += dx;	//move background
+				//System.out.println("Back ground x move before collision");
 				
+				bgX += dx;	//move background
+				movedBgX=true;
 			}
 			
 			if((maxYHit && dy >0) || (minYHit && dy < 0)){
+				
 				y += dy;
+				movedY=true;
 				//getCollisionBox().y +=dy;
 			}else{
+				//System.out.println("Back ground y move before collision");
+				
 				bgY += dy;
+				movedBgY=true;
 			}
 				
 				
@@ -205,17 +220,21 @@ public class Player extends GameObject {
 			obj.setXOffset(-bgX);
 			obj.setYOffset(-bgY);
 			if (this.checkCollision(obj) && obj.isCollidable()){
-				
-				if(checkDeadzoneX() && checkDeadzoneY()){
+				if(movedX) x-=dx;
+				if(movedY) y-=dy;
+				if(movedBgX) bgX-=dx;
+				if(movedBgY) bgY-=dy;
+				/*if(checkDeadzoneX() && checkDeadzoneY()){
 					x -=dx;
 					y -=dy;
-					/*getCollisionBox().x -=dx;
-					getCollisionBox().y -=dy;*/
+					getCollisionBox().x -=dx;
+					getCollisionBox().y -=dy;
 				}else{
 					if((maxXHit && facingRight) || (minXHit && !facingRight)){
 						x -= dx;
 						//getCollisionBox().x -=dx;
 					}else{
+						System.out.println("Back ground x move after collision");
 						bgX -= dx;
 					}
 					
@@ -223,17 +242,20 @@ public class Player extends GameObject {
 						y -= dy;
 						//getCollisionBox().y -=dy;
 					}else{
+						System.out.println("Back ground y move after collision");
 						bgY -= dy;
 					}
-				}
+				}*/
 				
 				/*checks if the player is hitting the object from the top or bottom
 				 * This means the player can still move in left or right direction
 				 */
 				obj.setXOffset(-bgX);
 				obj.setYOffset(-bgY);
-				if(!this.checkTBCollision(obj)){	
-					if(checkDeadzoneX() && checkDeadzoneY()){
+				if(!this.checkTBCollision(obj)){
+					if(movedX) x+=dx;
+					if(movedBgX) bgX+=dx;
+					/*if(checkDeadzoneX() && checkDeadzoneY()){
 						x +=dx;
 						//getCollisionBox().x +=dx;
 					}else{
@@ -241,9 +263,10 @@ public class Player extends GameObject {
 							x += dx;
 							//getCollisionBox().x +=dx;
 						}else{
+							System.out.println("Back ground x move after collision trying to move left/right");
 							bgX += dx;
 						}
-					}
+					}*/
 				}
 				/*checks if the player is hitting the object from the right or left
 				 * This means the player can still move in up or down direction
@@ -251,7 +274,9 @@ public class Player extends GameObject {
 				obj.setXOffset(-bgX);
 				obj.setYOffset(-bgY);
 				if(!this.checkLRCollision(obj)){
-					if(checkDeadzoneX() && checkDeadzoneY()){
+					if(movedY) y+=dy;
+					if(movedBgY) bgY+=dy;
+					/*if(checkDeadzoneX() && checkDeadzoneY()){
 						y +=dy;
 						//getCollisionBox().y +=dy;
 					}else{
@@ -260,9 +285,10 @@ public class Player extends GameObject {
 							y += dy;
 							//getCollisionBox().y +=dy;
 						}else{
+							System.out.println("Back ground y move after collision trying to move up/down");
 							bgY += dy;
 						}
-					}
+					}*/
 
 				}
 				
@@ -271,7 +297,7 @@ public class Player extends GameObject {
 			GameRender.setBackgroundOffset(-Math.round(bgX), -Math.round(bgY));
 		}
 
-		
+		System.out.println("__________________");
 		
 		//grace updates
 		if(grace.going()){
@@ -398,15 +424,16 @@ public class Player extends GameObject {
 		else if(dx==0){
 			possibleNewAnim = (facingRight) ? idleRightAnim : idleLeftAnim;
 		}
-		
-		//attacking overrides movement animation
-		if(attacking){
-			possibleNewAnim = (facingRight) ? attackRAnim: attackLAnim;
-		}
 		//getting attacked, do better
 		if(noMovement){
 			possibleNewAnim = (facingRight) ? hurtRightAnim : hurtLeftAnim;
 		}
+		//attacking overrides movement animation
+		if(attacking){
+			possibleNewAnim = (facingRight) ? attackRAnim: attackLAnim;
+		}
+		
+		
 		//priority checking, animation change
 		if(possibleNewAnim.getPriority() >= currentAnim.getPriority() || currentAnim.isFinished()){
 			currentAnim = possibleNewAnim;
