@@ -75,8 +75,8 @@ public class Player extends GameObject {
 	static int windowWidth = MainLoop.getWindowWidth();
 	static int windowHeight = MainLoop.getWindowHeight();
 	
-	static float deadzoneXOffset = 300;
-	static float deadzoneYOffset = 200;
+	static float deadzoneXOffset = 100;
+	static float deadzoneYOffset = 50;
 	
 	static float deadzoneMaxX = windowWidth - deadzoneXOffset-40;
 	static float deadzoneMinX = deadzoneXOffset;
@@ -175,39 +175,32 @@ public class Player extends GameObject {
 		boolean movedBgX=false;
 		boolean movedBgY= false;
 		//movement updates
-		if(checkDeadzoneX() && checkDeadzoneY()){	//in dead zone 
+		//if we hit any X-edges of background
+		if(minXHit ||maxXHit ){	
+			//move the character, not background
 			x +=dx;
-			y +=dy;
 			movedX=true;
+			//System.out.println("Moving char - x");
+			//if we are not in contact with an X-edge
+		}else{
+			//move background
+			bgX += dx;
+			movedBgX=true;	
+			//System.out.println("Moving BG - x");
+		}
+		//if we hit any Y-EDGES
+		if(minYHit ||maxYHit){
+			//move player
+			y +=dy;
 			movedY=true;
-			/*getCollisionBox().x +=dx;
-			getCollisionBox().y +=dy;*/
-		}else{										//not in dead zone
-			if((maxXHit && facingRight) || (minXHit && !facingRight)){
-				x += dx;
-				movedX=true;
-				//getCollisionBox().x +=dx;
-
-			}else{
-				//System.out.println("Back ground x move before collision");
-				
-				bgX += dx;	//move background
-				movedBgX=true;
-			}
-			
-			if((maxYHit && dy >0) || (minYHit && dy < 0)){
-				
-				y += dy;
-				movedY=true;
-				//getCollisionBox().y +=dy;
-			}else{
-				//System.out.println("Back ground y move before collision");
-				
-				bgY += dy;
-				movedBgY=true;
-			}
-				
-				
+			//System.out.println("Moving char - y");
+			//if we are not in contact with an edge
+		}else{
+			//move background
+			bgY += dy;
+			movedBgY=true;
+			//System.out.println("Moving BG - y");
+		
 		}
 
 		
@@ -336,6 +329,51 @@ public class Player extends GameObject {
 		
 		animationUpdate();
 		
+	}
+	
+	private void checkDeadzoneX(){
+		//System.out.println("PLAYER X POS: " + x);
+		//System.out.println("PLAYER Y POS: " + y);
+		//System.out.println("WINWIDTH/2: " + windowWidth/2);
+		//if window hits the right side of background
+		if(bgX >= bgWidth - windowWidth){
+			maxXHit = true;
+			//System.out.println("MAX X = TRUE");
+			//if window hits left side of background
+			}else if(bgX <=0){
+			minXHit = true;
+			//System.out.println("MIN X = TRUE");	
+		}
+		//if we hit the left side, but are now walking right and get back to the middle
+		if(minXHit & x >= windowWidth/2 & facingRight){
+			minXHit = false;
+		//if we hit the right side but are now walking left back to the middle
+		}else if(maxXHit & x <= windowWidth/2 & !facingRight){
+			maxXHit = false;
+		}
+		
+	}
+	
+
+	private void checkDeadzoneY(){
+		//if the window hits the bottom of the background
+		if(bgY >= bgHeight - windowHeight){
+			maxYHit = true;
+			//System.out.println("MAX Y = TRUE");
+			//if the window hits the top of the background
+			}else if(bgY <= 0){
+			minYHit = true;
+			//System.out.println("MIN Y = TRUE");
+			}
+		
+		//if we hit the top of the background but are now walking down to the middle
+		if(minYHit & y >= windowWidth/2 & dy >0){
+			minYHit = false;
+			//if we hit the bottom of the background but are now walking up towards the middle
+		}else if(maxYHit & y <= windowWidth/2 & dy < 0){
+			maxYHit = false;
+		}
+			
 	}
 	
 	/**
@@ -485,67 +523,8 @@ public class Player extends GameObject {
 		}
 	}
 
-	private boolean checkDeadzoneX(){
-		if(bgX >= bgWidth - windowWidth){
-			maxXHit = true;
-			//System.out.println("MAX X = TRUE");
-			}
-		else {
-			maxXHit = false;
-			}
-		
-		if(bgX <=0){
-			minXHit = true;
-			//System.out.println("MIN X = TRUE");
-		}else{
-			minXHit = false;
-		}
-		
-		
-		if((x > deadzoneMinX && x < deadzoneMaxX)||(x < deadzoneMinX && facingRight || x > deadzoneMaxX && !facingRight || dx ==0)){
-			//move character
-			return true;
-		}else{
-			if(bgX <= 0 && !facingRight || bgX >= bgWidth - windowWidth && facingRight){
-				//move character
-				return true;
-			}else{
-				
-				//move background
-				return false;
-			}
-			
-		}
-	}
-
-	private boolean checkDeadzoneY(){
-		if(bgY >= bgHeight - windowHeight){
-			maxYHit = true;
-			//System.out.println("MAX Y = TRUE");
-			}
-		else {maxYHit = false;}
-		
-		if(bgY <= 0){
-			minYHit = true;
-			//System.out.println("MIN Y = TRUE");
-			}
-		else{minYHit = false;}
-		
-		
-		if((y > deadzoneMinY && y < deadzoneMaxY) ||(y < deadzoneMinY && dy > 0 || y > deadzoneMaxY && dy < 0 || dy ==0)){
-			//move character
-			return true;
-		}else{
-			if(bgY <= 0 && dy <0 || bgY >= bgHeight - windowHeight && dy >0 ){
-				//move character
-				return true;
-			}else{
-				//move background
-				return false;
-			}
-			
-		}
-	}
+	
+	
 	
 	public static void updateWindowVars(){
 		bgWidth = GameRender.width;
