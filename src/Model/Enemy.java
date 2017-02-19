@@ -13,9 +13,7 @@ public class Enemy extends GameObject {
 	private Animation hurt;
 	private Animation dead;
 	
-	private KnockBack hit;
 	
-	private Invulnerability grace;
 	
 	//TODO gameobject sub class should take care of movement
 /*	private float dx;
@@ -31,28 +29,18 @@ public class Enemy extends GameObject {
 		drawBorders=true;
 		isCollidable =false;
 		HP =100;
-		grace= new Invulnerability(80, 10);
 		collisionBox = new Rectangle2D.Float(x,y,getWidth(),getHeight());
 		
 	}
-/*	public Enemy(String initName, int initHP, int initStr, int initDef, int initIntel ){
-		HP = initHP;
-		totalHP = initHP;
-		str = initStr;
-		def = initDef;
-		intel = initIntel;
-		name = initName;
-		
-	}*/
-	
-	
-	public void takeDamage(int dmg){
-		if(!grace.going()){
+
+	public void takeDamage(int dmg,Player hero){
+		if(!isInvulnerable()){
+			EffectManager.addEffect(new SimpleKnockBack(hero, this, 100, 5));
+			EffectManager.addEffect(new Invulnerability(80, 10,this));
 			HP -= dmg;
 			checkDeath();
 			currentAnim = hurt;
 			currentAnim.reset();
-			grace.start();
 		}
 		
 	}
@@ -68,27 +56,13 @@ public class Enemy extends GameObject {
 	public void update(Player hero){
 		x += dx;
 		y += dy;
-		//knockback updates
-		if(hit !=null){
-			if(hit.getStatus()){
-				hit.update();
-				takeDamage(hero.getAttack().getDmg());
-			}
-			else{	
-				hit=null;	//reset
-			}
-		}
 		//checks if the enemy gets hit by player, also checks if the hero is collide if so hero gets hurt then
 		if(checkCollision(hero.getAttack()) && hero.getAttack().isActive() && !checkCollision(hero)){	
-			if(!grace.going()){
-				System.out.println("Enemy hit");
-				hit = new SimpleKnockBack(hero, this, 150, 3);
-			}
+			takeDamage(20,hero);
 			
 			
 		}
 		else if(checkCollision(hero)){
-			System.out.println("Player hit");
 			hero.takeDamage(20,this);
 		}
 		//animation updates
@@ -96,14 +70,9 @@ public class Enemy extends GameObject {
 			currentAnim = idle;
 		}
 		currentAnim.update();
-		
-		//grace updates
-		if(grace.going()){
-			grace.update();
-		}
+
 	}
 	
-	public boolean isGraced(){ return grace.going(); }
 
 	
 }//end class

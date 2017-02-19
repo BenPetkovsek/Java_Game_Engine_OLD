@@ -17,6 +17,7 @@ public class GameObject {
 	protected float scale=1;
 	protected boolean isCollidable=true;
 	
+	private boolean invulnerable=false;
 	//Collision offset Variables
 	//Since the collision system uses the sprites height and width,
 	//this allows it to make the collision detect either smaller or larger or offset boundaries, helps with sprites that have like a tail or some shit
@@ -47,6 +48,8 @@ public class GameObject {
 	
 	public void update(){ };
 	
+	public void update(GameObject e){ };
+	
 	public void spawn(){ };
 	
 	public void die(){ };
@@ -62,6 +65,10 @@ public class GameObject {
 	public float getDy(){ return dy; }
 	
 	public float getScale(){ return scale; }
+	
+	public boolean isInvulnerable() { return invulnerable; }
+	
+	public void setInvulnerablity(boolean active){ invulnerable = active; }
 	
 	public boolean facingRight(){ return facingRight; }
 	
@@ -180,6 +187,7 @@ public class GameObject {
 		return yCollide;
 
 	}
+
 	
 	
 	

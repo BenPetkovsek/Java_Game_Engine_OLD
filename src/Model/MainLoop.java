@@ -31,11 +31,12 @@ public class MainLoop extends Thread {
 	
 	private Player hero;
 	
-	private ArrayList<GameObject> things;	//list of objects in the scene minus the player for some reason...
 	private PlayerController controller;
 	
 	private boolean gameRunning=false;
 	public boolean freeze = false;	//debugging pause
+	
+	//level managing
 	static LevelManager levelManager = new LevelManager();
 	public static Level currentLevel;
 	public static Level previousLevel;
@@ -79,6 +80,7 @@ public class MainLoop extends Thread {
 		renderer.setFocusable(true); 
 		renderer.addNotify();
 		renderer.grabFocus();
+	
 		
 		//Init stuff
 		gameRunning =true;
@@ -130,6 +132,9 @@ public class MainLoop extends Thread {
 	 * The main game update, updates objects and renders
 	 */
 	public void gameUpdate(){
+		//effect manager update
+		EffectManager.update();
+		
 		hero.update(currentLevel.levelObjects);
 		for (GameObject e: currentLevel.levelObjects){
 			if(e instanceof Enemy){

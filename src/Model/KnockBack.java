@@ -8,7 +8,7 @@ package Model;
 
 import java.awt.geom.Rectangle2D;
 
-public class KnockBack {
+public class KnockBack extends Effect {
 
 	protected float pushDistance=0f;
 	
@@ -16,46 +16,40 @@ public class KnockBack {
 	
 	protected float sourceX;
 	protected float sourceY;
-	protected GameObject actor;		//thing to push
-	protected float currTime;
-	protected float length=0;
+
 	
-	private boolean running=false;
 	
 	/**
-	 * 
-	 * @param s -source point
-	 * @param p - length of push in pixels
-	 * @param l - Length of push in time
+	 * Creates a knockback using a gameobject's position as the source
+	 * @param source -source object of origin point
+	 * @param pushDistance - length of push in pixels
+	 * @param duration - Length of push in time
 	 */
-	public KnockBack(GameObject s,GameObject a,float p, float l) {
-		//takes the collision box coordinates as they are more accurate
-		this((float) (s.getCollisionBox().getCenterX()),(float) (s.getCollisionBox().getCenterY()),a,p,l);
+	public KnockBack(GameObject source,GameObject actor,float pushDistance, int duration) {
+		//takes the collision box coordinates as they are more accurate)
+		this((float) (source.getCollisionBox().getCenterX()),(float) (source.getCollisionBox().getCenterY()),actor,pushDistance,duration);
 	} 
 	
 	/**
-	 * 
+	 * Creates a knockback at (x,y)
 	 * @param x -source x of push
 	 * @param y -source y of push
-	 * @param p - length of push in pixel
-	 * @param l - length of push in time;
+	 * @param pushDistance - length of push in pixel
+	 * @param duration - length of push in time;
 	 */
-	public KnockBack(float x, float y,GameObject a, float p, float l){
+	public KnockBack(float x, float y,GameObject actor, float pushDistance, int duration){
+		super(duration,actor);
 		sourceX = x;
 		sourceY = y;
-		actor =a;
-		pushDistance =p;
-		length =l;
-		currTime =0;
-		running=true;
+		this.pushDistance =pushDistance;
 		calculateXY();
 	}
 	
 	/**
-	 * Calculates the push dx and dy to be added to the player
+	 * Calculates the push dx and dy to be added to the gameObject
 	 */
 	private void calculateXY(){
-		Rectangle2D.Float colBox = actor.getCollisionBox();
+		Rectangle2D.Float colBox = getActor().getCollisionBox();
 		xy = new float[2];
 		//distance between mid point of each sprite
 		float diffX = (float) (sourceX - (colBox.x+colBox.getWidth()/2));		//delta x between center points
@@ -65,33 +59,38 @@ public class KnockBack {
 	
 		double xComponent = -pushDistance*Math.cos(angle);		//multiply by -1 since you want to go in opposite direction
 		double yComponent = -pushDistance*Math.sin(angle);		//same tings
-		xy[0] = (float) (xComponent/Math.pow(length, 2));
-		xy[1] = (float) (yComponent/Math.pow(length, 2));
+		xy[0] = (float) (xComponent/Math.pow(getDuration(), 2));
+		xy[1] = (float) (yComponent/Math.pow(getDuration(), 2));
 		
 	}
 	
-	//knockback now deals with dx and dy
+	/**
+	 * 
+	 */
+	@Override
 	public void update(){
-		if(running){
-			
-			actor.setDx(actor.getDx()+xy[0]);
-			actor.setDy(actor.getDy()+xy[1]);
-			if(currTime >= length){
-				running=false;
-				if(actor.getDx() != 0){
-					actor.setDx(0);
-				}
-				if(actor.getDy() != 0){
-					actor.setDy(0);
-				}
+		super.update();
+		
+		//pushes gameobject
+		if(getStatus()){
+			getActor().setDx(getActor().getDx()+xy[0]);
+			getActor().setDy(getActor().getDy()+xy[1]);
+			if(getActor() instanceof Player){
+				((Player)getActor()).noMovement = true;
 			}
-			currTime+=1;
+		}
+		else{
+			if(getActor().getDx() != 0){
+				getActor().setDx(0);
+			}
+			if(getActor().getDy() != 0){
+				getActor().setDy(0);
+			}
+			if(getActor() instanceof Player){
+				((Player)getActor()).noMovement = false;
+			}
 		}
 	}
 	
-	//returns if the knockback is still playing
-	public boolean getStatus(){ return running; }
-	
-	public float[] getKnockback(){ return xy; }
 	
 }

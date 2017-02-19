@@ -29,7 +29,7 @@ public class Player extends GameObject {
 	private boolean movingUp=false;
 	private boolean movingDown=false;
 	
-	private boolean noMovement=false;	//if the player can't move
+	public boolean noMovement=false;	//if the player can't move
 	
 	//Animation Variables
 	private BufferedImage[] walkRight= {ImageStyler.loadImg("heroWalk1.png"),ImageStyler.loadImg("heroWalk2.png"),ImageStyler.loadImg("heroWalk3.png")};
@@ -58,10 +58,7 @@ public class Player extends GameObject {
 	
 	private Animation oldAnim;
 	
-	//effects variables
-	private Invulnerability grace;	//this is when the player gets hit, it allows them to be invincible for a second to prevent insta death
 	
-	private KnockBack knockback;
 	
 	//attacking variables
 	private boolean attacking=false;
@@ -115,7 +112,6 @@ public class Player extends GameObject {
 		offsetInit();
 		
 		//sets the grace period for the player
-		grace= new Invulnerability(70, 10);
 		updateWindowVars();
 	}
 	//init for all anims
@@ -217,28 +213,6 @@ public class Player extends GameObject {
 				if(movedY) y-=dy;
 				if(movedBgX) bgX-=dx;
 				if(movedBgY) bgY-=dy;
-				/*if(checkDeadzoneX() && checkDeadzoneY()){
-					x -=dx;
-					y -=dy;
-					getCollisionBox().x -=dx;
-					getCollisionBox().y -=dy;
-				}else{
-					if((maxXHit && facingRight) || (minXHit && !facingRight)){
-						x -= dx;
-						//getCollisionBox().x -=dx;
-					}else{
-						System.out.println("Back ground x move after collision");
-						bgX -= dx;
-					}
-					
-					if((maxYHit && dy >0) || (minYHit && dy < 0)){
-						y -= dy;
-						//getCollisionBox().y -=dy;
-					}else{
-						System.out.println("Back ground y move after collision");
-						bgY -= dy;
-					}
-				}*/
 				
 				/*checks if the player is hitting the object from the top or bottom
 				 * This means the player can still move in left or right direction
@@ -248,18 +222,7 @@ public class Player extends GameObject {
 				if(!this.checkTBCollision(obj)){
 					if(movedX) x+=dx;
 					if(movedBgX) bgX+=dx;
-					/*if(checkDeadzoneX() && checkDeadzoneY()){
-						x +=dx;
-						//getCollisionBox().x +=dx;
-					}else{
-						if((maxXHit && facingRight) || (minXHit && !facingRight)){
-							x += dx;
-							//getCollisionBox().x +=dx;
-						}else{
-							System.out.println("Back ground x move after collision trying to move left/right");
-							bgX += dx;
-						}
-					}*/
+
 				}
 				/*checks if the player is hitting the object from the right or left
 				 * This means the player can still move in up or down direction
@@ -269,19 +232,7 @@ public class Player extends GameObject {
 				if(!this.checkLRCollision(obj)){
 					if(movedY) y+=dy;
 					if(movedBgY) bgY+=dy;
-					/*if(checkDeadzoneX() && checkDeadzoneY()){
-						y +=dy;
-						//getCollisionBox().y +=dy;
-					}else{
-						
-						if((maxYHit && dy >0) || (minYHit && dy < 0)){
-							y += dy;
-							//getCollisionBox().y +=dy;
-						}else{
-							System.out.println("Back ground y move after collision trying to move up/down");
-							bgY += dy;
-						}
-					}*/
+	
 
 				}
 				
@@ -290,26 +241,7 @@ public class Player extends GameObject {
 			GameRender.setBackgroundOffset(-Math.round(bgX), -Math.round(bgY));
 		}
 
-		System.out.println("__________________");
-		
-		//grace updates
-		if(grace.going()){
-			grace.update();
-		}
-		
-		//knockback updates
-		//TODO have it so the knockback class is completely hidden from player
-		//possible use an external knockback manager?
-		if(knockback !=null){
-			if(knockback.getStatus()){
-				knockback.update();
-			}
-			else{	
-				knockback=null;	//reset
-				noMovement=false;	//reset
-			}
-		}
-		
+
 		//attacking updates
 		//TODO Do attack interruption better
 		if(currentAttack != null){
@@ -508,12 +440,12 @@ public class Player extends GameObject {
 	//player takes dmg if they arent in grace mode
 	//TODO Make it more modular so it takes in an attack or something
 	public void takeDamage(int dmg, Enemy enemy){
-		if(!grace.going()){
-			grace.start();
+		if(!isInvulnerable()){
 			HP -= dmg;
 			checkDeath();
-			knockback = new KnockBack(enemy,this,150,8);
-			noMovement =true;
+			EffectManager.addEffect(new Invulnerability(70, 10,this));
+			EffectManager.addEffect(new KnockBack(enemy,this,150,5));
+
 		}
 	}
 	
@@ -562,11 +494,7 @@ public class Player extends GameObject {
 
 	public Attack getAttack(){ return currentAttack; }
 	
-	public boolean isBlinked(){ return grace.getBlink(); }
 	
-	//SETTERS
-/*	public void setDx(float dx){ this.dx = dx;}
-	public void setDy(float dy){ this.dy = dy;}*/
 	
 
 	//MOVEMENT/ CONTROLS

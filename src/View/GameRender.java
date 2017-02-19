@@ -96,19 +96,17 @@ public class GameRender extends JPanel {
 	}
 	
 	public void drawHero(Graphics2D g, Player hero){
-		if(!hero.isBlinked()){
-			int width =  (int) (hero.getWidth());
-			int height = (int) (hero.getHeight());
+		int width =  (int) (hero.getWidth());
+		int height = (int) (hero.getHeight());
 
-			//same as drawObj method
-			g.drawImage(hero.getAnim().getCurrFrame(),Math.round(hero.getX()),Math.round(hero.getY()),width,height,this);
-			if(hero.debug()){ 
-				drawCollisionBox(g,hero);
-			}
-			if (hero.isAttacking()){
-				Attack a = hero.getAttack();
-				g.draw3DRect((int) a.getX(),(int) a.getY(),(int) a.getWidth(),(int) a.getHeight(), true);
-			}
+		//same as drawObj method
+		g.drawImage(hero.getAnim().getCurrFrame(),Math.round(hero.getX()),Math.round(hero.getY()),width,height,this);
+		if(hero.debug()){ 
+			drawCollisionBox(g,hero);
+		}
+		if (hero.isAttacking()){
+			Attack a = hero.getAttack();
+			g.draw3DRect((int) a.getX(),(int) a.getY(),(int) a.getWidth(),(int) a.getHeight(), true);
 		}
 	}
 	//draws game objects to screen
