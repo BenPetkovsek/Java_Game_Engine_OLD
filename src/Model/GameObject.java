@@ -42,8 +42,14 @@ public abstract class GameObject {
 	public void setYOffset(float newY){ yOffset = newY; }
 	
 	public void setDx(float dx) { this.dx = dx; }
+	public void addDx(float dx) { this.dx +=dx; }
 	public void setDy(float dy) { this.dy = dy; }
+	public void addDy(float dy) { this.dy +=dy; }
 	
+	public void setX(float x){ this.x = x; }
+	public void addX(float x){ this.x +=x; }
+	public void setY(float y){ this.y = y; }
+	public void addY(float y){ this.y +=y; }
 
 
 

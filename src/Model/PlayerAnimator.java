@@ -5,14 +5,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 import View.ImageStyler;
-
+/**
+ * Models all animation changes done to the player
+ * Needed a whole class because the players animator will easily be the most complex
+ * Its nice to have out of the player class
+ * @author Michael
+ *
+ */
 public class PlayerAnimator {
 	
 	
 	//Animation Variables
-	
+	//holds all animation/images for external pulls in case needed
 	private Map<String,BufferedImage[]> imageCollection = new HashMap<String,BufferedImage[]>();
 	private Map<String,Animation> animationCollection = new HashMap<String,Animation>();
+	
 	private BufferedImage[] walkRight= {ImageStyler.loadImg("heroWalk1.png"),ImageStyler.loadImg("heroWalk2.png"),ImageStyler.loadImg("heroWalk3.png")};
 	private BufferedImage[] walkLeft = ImageStyler.flipImgs(walkRight);
 	
@@ -43,7 +50,10 @@ public class PlayerAnimator {
 	//player
 	private Player player;
 	
-
+	/**
+	 * Creates a player animator for player
+	 * @param player the Player to animate
+	 */
 	public PlayerAnimator(Player player){
 		this.player = player;
 		animInit();
@@ -78,6 +88,7 @@ public class PlayerAnimator {
 		
 	}
 	
+	//inits the maps and puts all elements in
 	private void mapInit(){
 		imageCollection.put("walkRight", walkRight);
 		imageCollection.put("walkLeft", walkLeft);
@@ -97,6 +108,10 @@ public class PlayerAnimator {
 		animationCollection.put("hurtRight", hurtRightAnim);
 		animationCollection.put("hurtLeft", hurtLeftAnim);
 	}
+	
+	/**
+	 * Updates the player's animation
+	 */
 	public void update(){
 		Animation possibleNewAnim = currentAnim;
 		
@@ -124,7 +139,6 @@ public class PlayerAnimator {
 		if(possibleNewAnim.getPriority() >= currentAnim.getPriority() || currentAnim.isFinished()){
 			currentAnim = possibleNewAnim;
 			if(oldAnim != currentAnim){
-				//System.out.println("reset");
 				currentAnim.reset();
 			}
 			player.setAnim(currentAnim);
@@ -134,6 +148,12 @@ public class PlayerAnimator {
 
 	}
 	
+	/**
+	 * Gets image from animation
+	 * @param searchKey the key of the bufferedimage array
+	 * @param index the index in the array
+	 * @return the bufferedimage specified
+	 */
 	public BufferedImage getImage(String searchKey, int index){
 		if(imageCollection.containsKey(searchKey)){
 			return imageCollection.get(searchKey)[index];
@@ -144,6 +164,11 @@ public class PlayerAnimator {
 		}
 	}
 	
+	/**
+	 * Gets animation
+	 * @param searchKey key to find animation in map
+	 * @return the animation specified
+	 */
 	public Animation getAnimationCollection(String searchKey){
 		if(animationCollection.containsKey(searchKey)){
 			return animationCollection.get(searchKey);
@@ -154,5 +179,9 @@ public class PlayerAnimator {
 		}
 	}
 	
+	/**
+	 * Gets current animation of the player
+	 * @return current animation
+	 */
 	public Animation getCurrentAnim() { return currentAnim; }
 }
