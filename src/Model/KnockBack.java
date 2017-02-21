@@ -25,7 +25,7 @@ public class KnockBack extends Effect {
 	 * @param pushDistance - length of push in pixels
 	 * @param duration - Length of push in time
 	 */
-	public KnockBack(GameObject source,GameObject actor,float pushDistance, int duration) {
+	public KnockBack(Collidable source,Collidable actor,float pushDistance, int duration) {
 		//takes the collision box coordinates as they are more accurate)
 		this((float) (source.getCollisionBox().getCenterX()),(float) (source.getCollisionBox().getCenterY()),actor,pushDistance,duration);
 	} 
@@ -37,7 +37,7 @@ public class KnockBack extends Effect {
 	 * @param pushDistance - length of push in pixel
 	 * @param duration - length of push in time;
 	 */
-	public KnockBack(float x, float y,GameObject actor, float pushDistance, int duration){
+	public KnockBack(float x, float y,Collidable actor, float pushDistance, int duration){
 		super(duration,actor);
 		sourceX = x;
 		sourceY = y;

@@ -2,13 +2,15 @@ package Model;
 
 import java.awt.geom.Rectangle2D;
 
-public class LoadTrigger extends GameObject {
+public class LoadTrigger extends Collidable {
+	
 	String destination;
+	
 	public LoadTrigger(float x, float y, String initDestination) {
 		super(x, y);
 		this.destination = initDestination;
 		drawBorders = true;
-		isCollidable = false;
+		setTrigger(true);
 		collisionBox = new Rectangle2D.Float(x,y,50,50);
 	}
 	

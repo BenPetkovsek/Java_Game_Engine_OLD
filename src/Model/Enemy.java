@@ -4,7 +4,7 @@ import java.awt.geom.Rectangle2D;
 
 import View.ImageStyler;
 
-public class Enemy extends GameObject {
+public class Enemy extends Collidable {
 	
 	int HP, totalHP, str, def, intel;
 	String name;
@@ -26,8 +26,7 @@ public class Enemy extends GameObject {
 		hurt.setRefreshRate(20);
 		currentAnim = idle;
 		scale = 5f;
-		drawBorders=true;
-		isCollidable =false;
+		setTrigger(true);
 		HP =100;
 		collisionBox = new Rectangle2D.Float(x,y,getWidth(),getHeight());
 		

@@ -14,12 +14,14 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
+import Model.Animatable;
 import Model.Attack;
+import Model.Collidable;
 import Model.Enemy;
 import Model.GameObject;
 import Model.LoadTrigger;
 import Model.Player;
-import Model.Rock;
+import Model.Terrain;
 
 public class GameRender extends JPanel {
 
@@ -61,28 +63,27 @@ public class GameRender extends JPanel {
 	
 	//The draw method that should be called from model
 	//DOUBLE BUFFERING MAGIC YO
-	public void draw(Player hero,ArrayList<GameObject> things){
+	public void draw(Player hero,ArrayList<Animatable> levelObjects){
 		offImg = createImage(width, height);
 		offGraph = (Graphics2D) offImg.getGraphics();
 		/***DRAWING STUFF IN ORDER***/
 		drawBackGround(offGraph);
 		drawHero(offGraph,hero);
-		for (GameObject e: things){
+		for (Animatable e: levelObjects){
 			if(!(e instanceof LoadTrigger)){
 				drawObj(offGraph,e);
 			}
 			else{
 				e.setXOffset(offsetX);
 				e.setYOffset(offsetY);
-				drawCollisionBox(offGraph,e);
+				
 			}
-			
-			
+			if(e instanceof Collidable){
+				if(((Collidable) e).debug()){
+					drawCollisionBox(offGraph,(Collidable) e);
+				}
+			}
 		}
-		
-		
-		
-		//draw other shit
 		
 		//drawing to screen
 		Graphics2D g = (Graphics2D) this.getGraphics();
@@ -110,7 +111,7 @@ public class GameRender extends JPanel {
 		}
 	}
 	//draws game objects to screen
-	public void drawObj(Graphics2D g,GameObject obj){
+	public void drawObj(Graphics2D g,Animatable obj){
 		//scaling if possible
 		int width =  (int) (obj.getWidth());
 		int height = (int) (obj.getHeight());
@@ -120,46 +121,14 @@ public class GameRender extends JPanel {
 		obj.setXOffset(offsetX);
 		obj.setYOffset(offsetY);
 		g.drawImage(obj.getAnim().getCurrFrame(),Math.round(obj.getX() + offsetX),Math.round(obj.getY() + offsetY),width,height,this);
-		if(obj.debug()){ 
-			drawCollisionBox(g,obj);
-		}
 	}
 	
 	//lmao see how easy it is with shapes
-	private void drawCollisionBox(Graphics2D g, GameObject obj){
+	private void drawCollisionBox(Graphics2D g, Collidable obj){
 		//some objects dont have col boxs so dont do it
 		if(obj.getCollisionBox() != null){
 			g.draw(obj.getCollisionBox());
 		}
-		
-		/*int width =  (int) (obj.getWidth());
-		int height = (int) (obj.getHeight());
-		float xAO = obj.getOffsets()[0];
-		float xBO = obj.getOffsets()[1];
-		float yAO = obj.getOffsets()[2];
-		float yBO = obj.getOffsets()[3];
-		
-		//System.out.println(xBO);
-		
-		int xA =(int) (obj.getX() + xAO);
-		int xB =(int) (obj.getX() + width + xBO);
-		int yA =(int) (obj.getY() +yAO);
-		int yB =(int) (obj.getY() + height + yBO); 
-		int borderWidth = Math.abs(xB - xA);
-		int borderHeight = Math.abs(yB - yA);
-		//if the player is facing the direction that the offset was intended for, do it regular,
-		//if not then reverse it
-		if(obj.offSetDir() == obj.facingRight()){
-			
-			g.draw3DRect(xA, yA, borderWidth, borderHeight, true);
-		}
-		else{
-			//reversing x offset
-			xA =(int) (obj.getX() - xBO);
-			xB =(int) (obj.getX() + width - xAO);
-			borderWidth = Math.abs(xB - xA);
-			borderHeight = Math.abs(yB - yA);
-			g.draw3DRect(xA, yA, borderWidth, borderHeight, true);
-		}*/
+
 	}
 }

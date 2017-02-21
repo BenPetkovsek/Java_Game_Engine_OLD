@@ -135,7 +135,8 @@ public class MainLoop extends Thread {
 		//effect manager update
 		EffectManager.update();
 		
-		hero.update(currentLevel.levelObjects);
+		hero.update(currentLevel.collidableObjects);
+		
 		for (GameObject e: currentLevel.levelObjects){
 			if(e instanceof Enemy){
 				((Enemy) e).update(hero);
@@ -143,7 +144,7 @@ public class MainLoop extends Thread {
 			else if (e instanceof LoadTrigger){
 				((LoadTrigger) e).update(hero);
 			}else{
-				((Rock) e).update();
+				((Terrain) e).update();
 			}
 			
 		}

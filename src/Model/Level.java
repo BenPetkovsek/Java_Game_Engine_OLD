@@ -11,7 +11,8 @@ public class Level {
 	String fileName;
 	String mapName;
 	String background;
-	ArrayList<GameObject> levelObjects = new ArrayList<GameObject>();
+	ArrayList<Animatable> levelObjects = new ArrayList<Animatable>();
+	ArrayList<Collidable> collidableObjects = new ArrayList<Collidable>();
 	
 	public Level(String initMapName, String initFileName, String initBackgroundFile){
 		this.fileName = initFileName;
@@ -42,14 +43,16 @@ public class Level {
 					
 					
 					if(objectInfo[0].equals("rock")){
-						levelObjects.add(new Rock(Integer.parseInt(objectInfo[1]), Integer.parseInt(objectInfo[2])));
+						levelObjects.add(new Terrain(Integer.parseInt(objectInfo[1]), Integer.parseInt(objectInfo[2]),StaticType.ROCK));
+						collidableObjects.add(new Terrain(Integer.parseInt(objectInfo[1]), Integer.parseInt(objectInfo[2]), StaticType.ROCK));
 					}
 					else if(objectInfo[0].equals("enemy")){
 						levelObjects.add(new Enemy(Integer.parseInt(objectInfo[1]), Integer.parseInt(objectInfo[2])));
+						collidableObjects.add(new Enemy(Integer.parseInt(objectInfo[1]), Integer.parseInt(objectInfo[2])));
 					}
 					else if(objectInfo[0].equals("loadTrigger")){
-						
 						levelObjects.add(new LoadTrigger(Integer.parseInt(objectInfo[1]), Integer.parseInt(objectInfo[2]), objectInfo[3]));
+						collidableObjects.add(new LoadTrigger(Integer.parseInt(objectInfo[1]), Integer.parseInt(objectInfo[2]), objectInfo[3]));
 					}
 				}
 			}

@@ -8,10 +8,10 @@ package Model;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-public class Attack extends GameObject{
+public class Attack extends Collidable{
 
 	//Gameobject that is attacking
-	private GameObject holder;
+	private Collidable holder;
 	//dmg
 	private int damage;
 	
@@ -44,7 +44,7 @@ public class Attack extends GameObject{
 	 * @param duration duration in time of attack
 	 * @param xOffset how much the attack sprite extends the regular sprite	//deprecated or some shit
 	 */
-	public Attack(GameObject source,float x, float y,int DMG, float width, float height, int duration, float xOffset){
+	public Attack(Collidable source,float x, float y,int DMG, float width, float height, int duration, float xOffset){
 		super(source.getX()+x,source.getY()+y);	//init the attack at the same x,y as player then local axis
 		this.xDiff = x;
 		this.yDiff =y;
