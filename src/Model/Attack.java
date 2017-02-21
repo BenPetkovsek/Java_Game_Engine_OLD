@@ -92,6 +92,7 @@ public class Attack extends Collidable{
 		return active;
 	}
 	//updates the attack's position and internal timer
+	@Override
 	public void update(){
 		//timer for attack
 		if(active){
