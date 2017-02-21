@@ -76,7 +76,7 @@ public class KnockBack extends Effect {
 			getActor().setDx(getActor().getDx()+xy[0]);
 			getActor().setDy(getActor().getDy()+xy[1]);
 			if(getActor() instanceof Player){
-				((Player)getActor()).noMovement = true;
+				((Player)getActor()).setFreeze(true);
 			}
 		}
 		else{
@@ -87,7 +87,7 @@ public class KnockBack extends Effect {
 				getActor().setDy(0);
 			}
 			if(getActor() instanceof Player){
-				((Player)getActor()).noMovement = false;
+				((Player)getActor()).setFreeze(false);
 			}
 		}
 	}

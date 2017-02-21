@@ -34,35 +34,11 @@ public class Player extends Collidable {
 	private boolean movingUp=false;
 	private boolean movingDown=false;
 	
-	public boolean noMovement=false;	//if the player can't move
+	private boolean noMovement=false;	//if the player can't move
 	
-	//Animation Variables
-	private BufferedImage[] walkRight= {ImageStyler.loadImg("heroWalk1.png"),ImageStyler.loadImg("heroWalk2.png"),ImageStyler.loadImg("heroWalk3.png")};
-	private BufferedImage[] walkLeft = ImageStyler.flipImgs(walkRight);
 	
-	private Animation walkRightAnim;
-	private Animation walkLeftAnim;
-	
-	private BufferedImage[] idleRight = {ImageStyler.loadImg("heroIdle.png")};
-	private BufferedImage[] idleLeft = ImageStyler.flipImgs(idleRight);
-	
-	private Animation idleRightAnim;
-	private Animation idleLeftAnim;
-	
-	private BufferedImage[] attackRight = {ImageStyler.loadImg("heroAttack.png")};
-	private BufferedImage[] attackLeft =ImageStyler.flipImgs(attackRight);
-	
-	private Animation attackRAnim;
-	private Animation attackLAnim;
-	
-	private BufferedImage[] hurtRight = {ImageStyler.loadImg("heroHurt.png")};
-	private BufferedImage[] hurtLeft = ImageStyler.flipImgs(hurtRight);
-	
-	private Animation hurtRightAnim;
-	private Animation hurtLeftAnim;
-	
-	private Animation oldAnim;
-	
+	//Animator Variables
+	private PlayerAnimator animator;
 	
 	
 	//attacking variables
@@ -93,69 +69,33 @@ public class Player extends Collidable {
 	boolean minYHit = false;
 	
 	
-/*	//complicated constructor for future releases with stats
-	public Player(int x, int y,String initName, int initHP, int initStr, int initDef, int initIntel ){
-		this(x,y);
-		HP = initHP;
-		totalHP = initHP;
-		str = initStr;
-		def = initDef;
-		intel = initIntel;
-		name = initName;
-		
-	}*/
 	
 	//constructor for simple people like me
 	public Player(float x,float y){
 		super(x,y);
+		animator = new PlayerAnimator(this);
 		HP =100;
-		scale= 5f;
+		setScale(5f);
 		drawBorders=true;
-		animInit();
 		attackInit();
 		offsetInit();
 		
 		//sets the grace period for the player
 		updateWindowVars();
 	}
-	//init for all anims
-	private void animInit(){
-		//initialize images for all anims
-		walkRightAnim= new Animation(true,0);
-		walkRightAnim.addFrame(walkRight[0]).addFrame(walkRight[1]).addFrame(walkRight[2]);
-		walkLeftAnim= new Animation(true,0);
-		walkLeftAnim.addFrame(walkLeft[0]).addFrame(walkLeft[1]).addFrame(walkLeft[2]);
-		idleRightAnim = new Animation(true,0);
-		idleRightAnim.addFrame(idleRight[0]);
-		idleLeftAnim = new Animation(true,0);
-		idleLeftAnim.addFrame(idleLeft[0]);
-		attackRAnim = new Animation(false,1).addFrame(attackRight[0]);
-		attackLAnim = new Animation(false,1).addFrame(attackLeft[0]);
-		hurtRightAnim = new Animation(false,2).addFrameWithLength(hurtRight[0],8);
-		hurtLeftAnim = new Animation(false,2).addFrameWithLength(hurtLeft[0],8);
-		
-		
-		//init first anim
-		if (facingRight){
-			currentAnim = idleRightAnim;
-		}
-		else{
-			currentAnim = idleLeftAnim;
-		}
-		oldAnim = currentAnim;
-		
-	}
 	
 	private void attackInit(){
+		BufferedImage attackWidth;
+		BufferedImage idle;
 		//current punch attack
 		//xOffset is the difference in the sprite compared to idle animation
-		float offset = scale*(attackRight[0].getWidth() - idleRight[0].getWidth());
-		currentAttack = new Attack(this,getWidth(),0f,30,offset,getHeight(), (int) attackLAnim.getDuration(),offset);
+		float offset = getScale()*(animator.getImage("attackRight", 0).getWidth() - animator.getImage("idleRight", 0).getWidth());
+		currentAttack = new Attack(this,getWidth(),0f,30,offset,getHeight(), (int) animator.getAnimationCollection("attackLeft").getDuration(),offset);
 	}
 	private void offsetInit(){
 		//offSetDir is whether the offset was applied to the sprite when it was facing right or not
 		//this is important because the offset should reflect when the player also reflects
-		offsetDir = facingRight;
+		offsetDir = facingRight();
 		/*setOffsets(getWidth() *0.3f,-getWidth() *0.1f,getHeight() *0.3f,0);*/
 		
 		collisionBox = new Rectangle2D.Float(x, y, getWidth(), getHeight());
@@ -252,7 +192,7 @@ public class Player extends Collidable {
 			//if currently attacking, update else dont
 			if(attacking){
 				if(!currentAttack.isActive() || noMovement){
-					if(!facingRight){
+					if(!facingRight()){
 						x+=currentAttack.getOffset();
 					}
 					currentAttack.stop();
@@ -263,7 +203,7 @@ public class Player extends Collidable {
 			
 		}
 		
-		animationUpdate();
+		animator.update();
 		
 	}
 	
@@ -281,10 +221,10 @@ public class Player extends Collidable {
 			//System.out.println("MIN X = TRUE");	
 		}
 		//if we hit the left side, but are now walking right and get back to the middle
-		if(minXHit & x >= windowWidth/2 & facingRight){
+		if(minXHit & x >= windowWidth/2 & facingRight()){
 			minXHit = false;
 		//if we hit the right side but are now walking left back to the middle
-		}else if(maxXHit & x <= windowWidth/2 & !facingRight){
+		}else if(maxXHit & x <= windowWidth/2 & !facingRight()){
 			maxXHit = false;
 		}
 		
@@ -324,7 +264,7 @@ public class Player extends Collidable {
 					dx=0;
 				}
 				//change direction
-				if(facingRight){
+				if(facingRight()){
 					flip();
 				}
 				this.dx-=moveSpeedX;
@@ -338,7 +278,7 @@ public class Player extends Collidable {
 					dx=0;
 				}
 				//change direction
-				if(!facingRight){
+				if(!facingRight()){
 					flip();
 				}
 				this.dx+=moveSpeedX;
@@ -377,52 +317,10 @@ public class Player extends Collidable {
 	//flips image
 	private void flip(){
 		if(!attacking){
-			facingRight = !facingRight;
+			setFacingRight(!facingRight());
 		}
 	}
 	
-	/*
-	 * updates animation
-	 * TODO do a better job at possibleNewAnim
-	 */
-	private void animationUpdate(){
-		Animation possibleNewAnim = currentAnim;
-		
-		//these should be in the same order of the priority
-		if(dx <0){
-			possibleNewAnim = walkLeftAnim; 
-		}
-		else if(dx >0){
-			possibleNewAnim = walkRightAnim;
-		}
-		else if(dx==0){
-			possibleNewAnim = (facingRight) ? idleRightAnim : idleLeftAnim;
-		}
-		//getting attacked, do better
-		if(noMovement){
-			possibleNewAnim = (facingRight) ? hurtRightAnim : hurtLeftAnim;
-		}
-		//attacking overrides movement animation
-		if(attacking){
-			possibleNewAnim = (facingRight) ? attackRAnim: attackLAnim;
-		}
-		
-		
-		//priority checking, animation change
-		if(possibleNewAnim.getPriority() >= currentAnim.getPriority() || currentAnim.isFinished()){
-			currentAnim = possibleNewAnim;
-			if(oldAnim != currentAnim){
-				//System.out.println("reset");
-				currentAnim.reset();
-			}
-		}
-		oldAnim = currentAnim;
-		
-		currentAnim.update();
-	
-		
-		
-	}
 	/**
 	 * Calculates the offset in x when changing direction
 	 * based on difference of offset
@@ -483,7 +381,7 @@ public class Player extends Collidable {
 	public Rectangle2D.Float getCollisionBox(){
 		
 		//mother of all fucking god do this better LMAO
-		if(attacking && !facingRight){
+		if(attacking && !facingRight()){
 			collisionBox.x = x+ currentAttack.getOffset();
 		}
 		else{
@@ -494,12 +392,29 @@ public class Player extends Collidable {
 		return collisionBox;
 	}
 	
+	@Override
+	public Animation getAnim(){
+		return animator.getCurrentAnim();
+	}
+	
+	@Override
+	public float getWidth(){
+		return getAnim().getCurrFrame().getWidth() * getScale();
+	}
+	
+	@Override
+	public float getHeight(){
+		return getAnim().getCurrFrame().getHeight() * getScale();
+	}
+	
+	
 	public boolean isAttacking(){ return attacking; }
 
 	public Attack getAttack(){ return currentAttack; }
 	
+	public boolean isFrozen(){ return noMovement; }
 	
-	
+	public void setFreeze(boolean state){ noMovement = state; }
 
 	//MOVEMENT/ CONTROLS
 	public void moveLeft(){
@@ -543,7 +458,7 @@ public class Player extends Collidable {
 		//might change this idk
 		if(!attacking && !noMovement){
 			attacking=true;
-			if(!facingRight){
+			if(!facingRight()){
 				//move the character the offset designated to the attack
 				x-=currentAttack.getOffset();
 			}

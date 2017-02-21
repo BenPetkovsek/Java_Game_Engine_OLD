@@ -20,7 +20,7 @@ public class Terrain extends Collidable{
 		super(x,y);
 		idleAnim = new Animation(false,0);
 		init(type);
-		scale=0.5f;
+		setScale(0.5f);
 		collisionBox = new Rectangle2D.Float(x,y,getWidth(),getHeight());
 		
 		
@@ -29,7 +29,7 @@ public class Terrain extends Collidable{
 	private void init(StaticType e){
 		if(e == StaticType.ROCK){
 			idleAnim.addFrame(rockIdle);
-			currentAnim  = idleAnim;
+			setAnim(idleAnim);
 		}
 	}
 	

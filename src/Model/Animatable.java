@@ -8,9 +8,9 @@ package Model;
  */
 public abstract class Animatable extends GameObject{
 
-	protected Animation currentAnim;
-	protected boolean facingRight =true;
-	protected float scale=1;
+	private Animation currentAnim;
+	private boolean facingRight =true;
+	private float scale=1;
 	
 	
 	public Animatable(float x, float y) {

@@ -24,8 +24,8 @@ public class Enemy extends Collidable {
 		idle = new Animation(false,0).addFrame(ImageStyler.loadImg("dog.png"));
 		hurt = new Animation(false,1).addFrame(ImageStyler.loadImg("dogHurt.png")).addFrame(ImageStyler.loadImg("dogHurt.png"));
 		hurt.setRefreshRate(20);
-		currentAnim = idle;
-		scale = 5f;
+		setAnim(idle);
+		setScale(5f);
 		setTrigger(true);
 		HP =100;
 		collisionBox = new Rectangle2D.Float(x,y,getWidth(),getHeight());
@@ -38,8 +38,8 @@ public class Enemy extends Collidable {
 			EffectManager.addEffect(new Invulnerability(80, 10,this));
 			HP -= dmg;
 			checkDeath();
-			currentAnim = hurt;
-			currentAnim.reset();
+			setAnim(hurt);
+			getAnim().reset();
 		}
 		
 	}
@@ -47,7 +47,7 @@ public class Enemy extends Collidable {
 	private void checkDeath(){
 		if(HP <= 0){
 			System.out.println(name + " has died!");
-			currentAnim = dead;
+			setAnim(dead);
 			
 		}	
 	}
@@ -65,10 +65,10 @@ public class Enemy extends Collidable {
 			hero.takeDamage(20,this);
 		}
 		//animation updates
-		if(currentAnim == hurt && currentAnim.isFinished()){
-			currentAnim = idle;
+		if(getAnim() == hurt && getAnim().isFinished()){
+			setAnim(idle);
 		}
-		currentAnim.update();
+		getAnim().update();
 
 	}
 	
