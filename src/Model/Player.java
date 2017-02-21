@@ -6,7 +6,12 @@ import java.util.ArrayList;
 
 import View.*;
 
-public class Player extends GameObject {
+/**
+ * Models the main player of the game
+ * @author Michael
+ *
+ */
+public class Player extends Collidable {
 	int HP, totalHP, str, def, intel;
 	String name;
 	
@@ -104,7 +109,6 @@ public class Player extends GameObject {
 	public Player(float x,float y){
 		super(x,y);
 		HP =100;
-		isCollidable = true;
 		scale= 5f;
 		drawBorders=true;
 		animInit();
@@ -158,7 +162,7 @@ public class Player extends GameObject {
 	}
 	//main update for the object, is called every loop
 
-	public void update(ArrayList<GameObject> objs){
+	public void update(ArrayList<Collidable> objs){
 
 		checkDeadzoneX();
 		checkDeadzoneY();
@@ -205,10 +209,10 @@ public class Player extends GameObject {
 		//idk if this is good practise but i just reverse the changes if it collides
 		//then i test each direction (x,y) collisions then give the player back its dx or dy if its not colliding
 		//this just translate to the player  being allowed to hitting a wall from the right but still being able to move up and down
-		for (GameObject obj: objs){
+		for (Collidable obj: objs){
 			obj.setXOffset(-bgX);
 			obj.setYOffset(-bgY);
-			if (this.checkCollision(obj) && obj.isCollidable()){
+			if (this.checkCollision(obj) && !obj.isTrigger()){
 				if(movedX) x-=dx;
 				if(movedY) y-=dy;
 				if(movedBgX) bgX-=dx;
@@ -548,15 +552,4 @@ public class Player extends GameObject {
 		}
 		
 	}
-	@Override
-	public void spawn() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void die() {
-		// TODO Auto-generated method stub
-		
-	}
-}//end class
+}

@@ -20,7 +20,7 @@ public class SimpleKnockBack extends KnockBack {
 	 * @param pushDistance - length of push in pixel
 	 * @param duration - length of push in time;
 	 */
-	public SimpleKnockBack(float x, float y, GameObject actor, float pushDistance, int duration) {
+	public SimpleKnockBack(float x, float y, Collidable actor, float pushDistance, int duration) {
 		super(x, y, actor, pushDistance, duration);
 		calculateXY();	
 	}
@@ -30,7 +30,7 @@ public class SimpleKnockBack extends KnockBack {
 	 * @param pushDistance - length of push in pixels
 	 * @param duration - Length of push in time
 	 */
-	public SimpleKnockBack(GameObject source,GameObject actor,float pushDistance, int duration) {
+	public SimpleKnockBack(Collidable source,Collidable actor,float pushDistance, int duration) {
 		super(source,actor,pushDistance,duration);
 		calculateXY();	//override calculateXY
 	}

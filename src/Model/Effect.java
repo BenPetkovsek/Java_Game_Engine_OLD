@@ -7,7 +7,7 @@ package Model;
  */
 public class Effect {
 	
-	private GameObject objectToAffect;
+	private Collidable objectToAffect;
 	
 	private boolean running=true;
 	
@@ -30,7 +30,7 @@ public class Effect {
 	 * @param duration how long the effect runs for
 	 * @param actor which gameobject to affect
 	 */
-	public Effect(int duration, GameObject actor){
+	public Effect(int duration, Collidable actor){
 		this(duration);
 		objectToAffect = actor;
 	}
@@ -45,7 +45,7 @@ public class Effect {
 	 * Creates a time independent effect
 	 * @param actor which gameobject to affect
 	 */
-	public Effect(GameObject actor){
+	public Effect(Collidable actor){
 		this();
 		objectToAffect = actor;
 	}
@@ -105,7 +105,7 @@ public class Effect {
 	 * Returns the object affect if there is any
 	 * @return the game object being affected by this effect
 	 */
-	public GameObject getActor(){ return objectToAffect; }
+	public Collidable getActor(){ return objectToAffect; }
 	
 
 
