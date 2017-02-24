@@ -140,11 +140,17 @@ public class MainLoop extends Thread {
 		for (GameObject e: currentLevel.levelObjects){
 			if(e instanceof Enemy){
 				((Enemy) e).update(hero);
+				e.setXOffset(GameRender.getBGOffsetX());
+				e.setYOffset(GameRender.getBGOffsetY());
 			}
 			else if (e instanceof LoadTrigger){
 				((LoadTrigger) e).update(hero);
+				e.setXOffset(GameRender.getBGOffsetX());
+				e.setYOffset(GameRender.getBGOffsetY());
 			}else{
 				((Terrain) e).update();
+				e.setXOffset(GameRender.getBGOffsetX());
+				e.setYOffset(GameRender.getBGOffsetY());
 			}
 			
 		}
@@ -167,6 +173,7 @@ public class MainLoop extends Thread {
 		currentLevel = newLevel;
 		background = ImageStyler.loadImg(currentLevel.background);
 		renderer.setBackground(background,background.getWidth(), background.getHeight());
+		PlayerPhysics.updateWindowVars();
 	}
 	
 	

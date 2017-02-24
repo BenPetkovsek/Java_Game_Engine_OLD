@@ -73,11 +73,7 @@ public class GameRender extends JPanel {
 			if(!(e instanceof LoadTrigger)){
 				drawObj(offGraph,e);
 			}
-			else{
-				e.setXOffset(offsetX);
-				e.setYOffset(offsetY);
-				
-			}
+			
 			if(e instanceof Collidable){
 				if(((Collidable) e).debug()){
 					drawCollisionBox(offGraph,(Collidable) e);
@@ -130,5 +126,12 @@ public class GameRender extends JPanel {
 			g.draw(obj.getCollisionBox());
 		}
 
+	}
+	
+	public static int getBGOffsetX(){
+		return offsetX;
+	}
+	public static int getBGOffsetY(){
+		return offsetY;
 	}
 }

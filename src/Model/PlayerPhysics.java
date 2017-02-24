@@ -222,10 +222,10 @@ public class PlayerPhysics {
 			minXHit = true;
 		}
 		//if we hit the left side, but are now walking right and get back to the middle
-		if(minXHit & player.getX() >= windowWidth/2 & player.facingRight()){
+		if(minXHit & player.getX() >= windowWidth/2 & player.getDx() > 0){
 			minXHit = false;
 		//if we hit the right side but are now walking left back to the middle
-		}else if(maxXHit & player.getX() <= windowWidth/2 & !player.facingRight()){
+		}else if(maxXHit & player.getX() <= windowWidth/2 & player.getDx() < 0){
 			maxXHit = false;
 		}
 		
