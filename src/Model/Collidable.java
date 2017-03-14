@@ -1,5 +1,7 @@
 package Model;
 
+import java.awt.Shape;
+import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -20,6 +22,8 @@ public abstract class Collidable extends Animatable{
 	
 	protected Rectangle2D.Float collisionBox;
 	
+	protected float colXOffset, collYOffset;
+	
 	public Collidable(float x, float y) {
 		super(x, y);
 		// TODO Auto-generated constructor stub
@@ -35,6 +39,12 @@ public abstract class Collidable extends Animatable{
 		return collisionBox;
 	}
 	
+	public Shape getCollisionShape(){
+		collisionBox.x =x + xOffset;
+		collisionBox.y =y + yOffset;
+		return collisionBox;
+	}
+	
 	//checks if the object has collided at all, used for interactions between objects
 	//Uses built in intersect functions
 	public boolean checkCollision(Collidable otherObject){
@@ -42,6 +52,17 @@ public abstract class Collidable extends Animatable{
 		return getCollisionBox().intersects(otherObject.getCollisionBox());
 	}
 	
+	/**
+	 * Checks if the two shapes have collided
+	 * @param otherObject to collide with
+	 * @return if the two shapes have collided
+	 */
+	public boolean checkShapeCollision(Collidable otherObject){
+		Area a= new Area(getCollisionShape());
+		Area b= new Area(otherObject.getCollisionShape());
+		a.intersect(b);
+		return !a.isEmpty();
+	}
 	//checks collision from (L)eft and (R)ight side
 	//uses intersecting number ranges
 	//currently only works for rectangles

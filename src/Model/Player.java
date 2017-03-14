@@ -99,7 +99,6 @@ public class Player extends Collidable {
 				currentAttack.update();
 			}
 		}
-		//weapon update
 		weapon.update(calcWeaponAngle());
 	}
 	

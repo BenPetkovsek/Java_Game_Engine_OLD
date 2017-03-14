@@ -15,7 +15,7 @@ import View.ImageStyler;
 public class Weapon extends Collidable{
 	
 	//Sword Anims
-	private BufferedImage[] sword= {ImageStyler.loadImg("sword.png")};
+	private BufferedImage[] sword= {ImageStyler.loadImg("sword2.png")};
 	private Animation swordIdleR = new Animation(true, 0).addFrame(sword[0]);
 	private Animation swordIdleL = new Animation(true,0).addFrame(ImageStyler.flip(sword[0]));
 	
@@ -33,19 +33,22 @@ public class Weapon extends Collidable{
 	private int offSetY;
 	
 	private Double angle;
-	private Double angleOffset= -45d;	//angle offset corresponds to the sprite angle, ex. sprite is drawn on 45 degree angle in this case
+	private Double angleOffset= -0d;	//angle offset corresponds to the sprite angle, ex. sprite is drawn on 45 degree angle in this case
 	
 	/**
 	 * Creates a new weapon
 	 * @param hero the player the weapon belongs to
-	 * @param index the index of the weapon
+	 * @param index
 	 */
 	public Weapon(Player hero, int index) {
 		super(hero.getX(), hero.getY());
 		this.hero = hero;
 		this.index =index;
-		setScale(1f);
 		init();
+		/*****/
+		setScale(1f);
+		
+		colXOffset = getWidth()/4;
 	}
 	
 	/*
@@ -60,7 +63,7 @@ public class Weapon extends Collidable{
 		}
 		offSetX = (int) (hero.getWidth()/2);
 		offSetY = (int) -(getHeight() -hero.getHeight()/2);
-		collisionBox = new Rectangle2D.Float(0,0,getWidth(),getHeight());
+		collisionBox = new Rectangle2D.Float(colXOffset,0,getWidth()/2,getHeight());
 	}
 	
 	/**
@@ -75,6 +78,7 @@ public class Weapon extends Collidable{
 		//If mouse is right of player
 		if((angle<=90 && angle >= 0) || (angle<360 && angle >=270)){
 			setFacingRight(true);
+			hero.setFacingRight(true);
 			if(index ==0){
 				setAnim(swordIdleR);
 			}
@@ -82,8 +86,9 @@ public class Weapon extends Collidable{
 				setAnim(axeIdleR);
 			}
 		}
-		else{		//mouse right of player
+		else{
 			setFacingRight(false);
+			hero.setFacingRight(false);
 			this.x = (float) hero.getCollisionBox().getX() + (hero.getWidth()/2 -getWidth());
 			if(index ==0){
 				setAnim(swordIdleL);
@@ -93,11 +98,19 @@ public class Weapon extends Collidable{
 			}
 		}
 		this.angle =angle+angleOffset;
+		
+		
 	}
 	
-	public Shape getNewCollisionBox(){
+	@Override
+	public Shape getCollisionShape(){
+		return getTransform().createTransformedShape(collisionBox);
+		
+	}
+	
+	public AffineTransform getTransform(){
 		AffineTransform trans  = new AffineTransform();
-		double angle = facingRight() ? getAngle() : getAngle()-90;
+		double angle = facingRight() ? getAngle() : getAngle()-180;
 		
 		//rotate anchor point
 		double xAnchor = facingRight() ? 0 : getWidth()/getScale();
@@ -107,10 +120,8 @@ public class Weapon extends Collidable{
 		trans.translate(getX(), getY());
 		trans.scale(getScale(),getScale());
 		trans.rotate(-Math.toRadians(angle),xAnchor,yAnchor);
-		return trans.createTransformedShape(collisionBox);
-		
+		return trans;
 	}
-	
 	/**
 	 * Change Weapon
 	 * @param up if the weapon index is increased or decreased

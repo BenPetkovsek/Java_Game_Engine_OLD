@@ -81,7 +81,7 @@ public class Enemy extends Collidable {
 	//PLACEHOLDER PROTOTYPE
 	private boolean checkWeaponCollision(Weapon weap){
 		Area a =new Area(getCollisionBox());
-		Area b = new Area(weap.getNewCollisionBox());
+		Area b = new Area(weap.getCollisionShape());
 		a.intersect(b);
 		return !a.isEmpty();
 	}

@@ -142,7 +142,6 @@ public class PlayerPhysics {
 			}
 			GameRender.setBackgroundOffset(-Math.round(bgX), -Math.round(bgY));
 		}
-
 	}
 	/**
 	 * movement update based on user input
@@ -208,9 +207,9 @@ public class PlayerPhysics {
 	
 	//flips image
 	private void flip(){
-		if(!player.isAttacking()){
+		/*if(!player.isAttacking()){
 			player.setFacingRight(!player.facingRight());
-		}
+		}*/
 	}
 	//Checks dead zone for X direction
 	private void checkDeadzoneX(){

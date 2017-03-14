@@ -116,11 +116,19 @@ public class PlayerAnimator {
 		Animation possibleNewAnim = currentAnim;
 		
 		//these should be in the same order of the priority
-		if(player.getDx() <0){
+		/*if(player.getDx() <0){
 			possibleNewAnim = walkLeftAnim; 
 		}
 		else if(player.getDx() >0){
 			possibleNewAnim = walkRightAnim;
+		}*/
+		if(player.getDx() != 0){
+			if(player.facingRight()){
+				possibleNewAnim = walkRightAnim;
+			}
+			else{
+				possibleNewAnim = walkLeftAnim;
+			}
 		}
 		else if(player.getDx()==0){
 			possibleNewAnim = (player.facingRight()) ? idleRightAnim : idleLeftAnim;
