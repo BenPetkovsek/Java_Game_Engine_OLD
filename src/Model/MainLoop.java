@@ -6,6 +6,7 @@ package Model;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -18,6 +19,8 @@ import javax.swing.AbstractAction;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 
+import Controller.MouseWheelController;
+import Controller.MouseTracking;
 import Controller.PlayerController;
 import View.*;
 
@@ -70,12 +73,14 @@ public class MainLoop extends Thread {
 		panelWidth =gameframe.getWidth();
 		panelHeight = gameframe.getHeight();
 		
-		//main player controller init
+		//Adding Controllers
 		hero = new Player(350,300);
-		controller =new PlayerController(hero);
-		GameListener debugController = new GameListener();
-		renderer.addKeyListener(controller);
-		renderer.addKeyListener(debugController);
+		renderer.addKeyListener(new PlayerController(hero));
+		renderer.addKeyListener(new GameListener());
+		renderer.addMouseMotionListener(new MouseTracking(hero));
+		renderer.addMouseWheelListener(new MouseWheelController(hero));
+		
+		
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 		renderer.setFocusable(true); 
 		renderer.addNotify();
@@ -148,7 +153,7 @@ public class MainLoop extends Thread {
 				e.setXOffset(GameRender.getBGOffsetX());
 				e.setYOffset(GameRender.getBGOffsetY());
 			}else{
-				((Terrain) e).update();
+				((TerrainObject) e).update();
 				e.setXOffset(GameRender.getBGOffsetX());
 				e.setYOffset(GameRender.getBGOffsetY());
 			}

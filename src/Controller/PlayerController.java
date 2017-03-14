@@ -20,10 +20,10 @@ import Model.Player;
 public class PlayerController extends KeyAdapter {
 	
 	Player player;
-	int moveLeft= KeyEvent.VK_LEFT;
-	int moveRight = KeyEvent.VK_RIGHT;
-	int moveUp = KeyEvent.VK_UP;
-	int moveDown= KeyEvent.VK_DOWN;
+	int moveLeft= KeyEvent.VK_A;
+	int moveRight = KeyEvent.VK_D;
+	int moveUp = KeyEvent.VK_W;
+	int moveDown= KeyEvent.VK_S;
 	int attackKey = KeyEvent.VK_SPACE;
 	
 	int tempKey;	//TEMP DEBUGGING, IGNORE

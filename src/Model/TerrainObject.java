@@ -11,12 +11,12 @@ import View.ImageStyler;
  * @author Michael
  *
  */
-public class Terrain extends Collidable{
+public class TerrainObject extends Collidable{
 
 	private Animation idleAnim;
 	private BufferedImage rockIdle = ImageStyler.loadImg("rock.png");
 	
-	public Terrain(float x, float y, StaticType type){
+	public TerrainObject(float x, float y, StaticType type){
 		super(x,y);
 		idleAnim = new Animation(false,0);
 		init(type);

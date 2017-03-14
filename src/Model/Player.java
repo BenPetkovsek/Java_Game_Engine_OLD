@@ -17,7 +17,7 @@ public class Player extends Collidable {
 	int HP, totalHP, str, def, intel;
 	String name;
 	
-	
+	float mouseX,mouseY;
 	
 	private boolean movingLeft=false;
 	private boolean movingRight=false;
@@ -38,6 +38,7 @@ public class Player extends Collidable {
 	
 	private boolean noMovement=false;	//if the player can't move
 	
+	private Weapon weapon;
 	
 	/**
 	 * Creates a player at (x,y)
@@ -53,7 +54,7 @@ public class Player extends Collidable {
 		drawBorders=true;
 		attackInit();
 		offsetInit();
-	
+		weapon = new Weapon(this,0);
 	}
 	//inits attack
 	private void attackInit(){
@@ -82,7 +83,7 @@ public class Player extends Collidable {
 	public void update(ArrayList<Collidable> objs){
 
 		playerPhysics.update(objs);
-
+		animator.update();
 		//attacking updates
 		//TODO Do attack interruption better
 		if(currentAttack != null){
@@ -98,7 +99,18 @@ public class Player extends Collidable {
 				currentAttack.update();
 			}
 		}
-		animator.update();
+		//weapon update
+		weapon.update(calcWeaponAngle());
+	}
+	
+	private Double calcWeaponAngle(){
+		Double diffX= this.getCollisionBox().getCenterX() - mouseX;
+		Double diffY = this.getCollisionBox().getCenterY() - mouseY;
+		Double angle = Math.atan2(diffY, diffX);
+		angle = Math.toDegrees(angle);
+		angle -=180;
+		angle= Math.abs(angle);
+		return angle;
 	}
 	
 	/**
@@ -219,6 +231,11 @@ public class Player extends Collidable {
 	 * Gets the current attack the player is attacking with
 	 */
 	public Attack getAttack(){ return currentAttack; }
+	
+	/**
+	 * Returns the players weapon
+	 */
+	public Weapon getWeapon(){ return weapon; }
 	/**
 	 * Gets if the player is not allowed to moved (frozen)
 	 */
@@ -270,5 +287,15 @@ public class Player extends Collidable {
 	public boolean[] getMovementDir(){
 		boolean[] dir = {movingUp,movingDown,movingLeft,movingRight};
 		return dir;
+	}
+	
+	/**
+	 * Get mouse position from mouselistener
+	 * @param x x pos of mouse
+	 * @param y y pos of mouse 
+	 */
+	public void recieveMousePos(float x, float y){
+		mouseX = x;
+		mouseY = y;
 	}
 }

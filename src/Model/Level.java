@@ -43,8 +43,8 @@ public class Level {
 					
 					
 					if(objectInfo[0].equals("rock")){
-						levelObjects.add(new Terrain(Integer.parseInt(objectInfo[1]), Integer.parseInt(objectInfo[2]),StaticType.ROCK));
-						collidableObjects.add(new Terrain(Integer.parseInt(objectInfo[1]), Integer.parseInt(objectInfo[2]), StaticType.ROCK));
+						levelObjects.add(new TerrainObject(Integer.parseInt(objectInfo[1]), Integer.parseInt(objectInfo[2]),StaticType.ROCK));
+						collidableObjects.add(new TerrainObject(Integer.parseInt(objectInfo[1]), Integer.parseInt(objectInfo[2]), StaticType.ROCK));
 					}
 					else if(objectInfo[0].equals("enemy")){
 						levelObjects.add(new Enemy(Integer.parseInt(objectInfo[1]), Integer.parseInt(objectInfo[2])));

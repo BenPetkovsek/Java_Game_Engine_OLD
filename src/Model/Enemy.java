@@ -1,6 +1,8 @@
 package Model;
 
+import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
+
 
 import View.ImageStyler;
 
@@ -32,9 +34,9 @@ public class Enemy extends Collidable {
 		
 	}
 
-	public void takeDamage(int dmg,Player hero){
+	public void takeDamage(int dmg,Collidable a){
 		if(!isInvulnerable()){
-			EffectManager.addEffect(new SimpleKnockBack(hero, this, 100, 5));
+			EffectManager.addEffect(new SimpleKnockBack(a, this, 100, 5));
 			EffectManager.addEffect(new Invulnerability(80, 10,this));
 			HP -= dmg;
 			checkDeath();
@@ -61,8 +63,11 @@ public class Enemy extends Collidable {
 			
 			
 		}
-		else if(checkCollision(hero)){
+		else if(checkCollision(hero)){		//collide with player
 			hero.takeDamage(20,this);
+		}
+		else if(checkWeaponCollision(hero.getWeapon())){	//collide with enemy
+			takeDamage(20,hero);
 		}
 		//animation updates
 		if(getAnim() == hurt && getAnim().isFinished()){
@@ -70,6 +75,15 @@ public class Enemy extends Collidable {
 		}
 		getAnim().update();
 
+	}
+	
+	
+	//PLACEHOLDER PROTOTYPE
+	private boolean checkWeaponCollision(Weapon weap){
+		Area a =new Area(getCollisionBox());
+		Area b = new Area(weap.getNewCollisionBox());
+		a.intersect(b);
+		return !a.isEmpty();
 	}
 	
 

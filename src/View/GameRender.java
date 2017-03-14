@@ -9,6 +9,7 @@ package View;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -20,8 +21,10 @@ import Model.Collidable;
 import Model.Enemy;
 import Model.GameObject;
 import Model.LoadTrigger;
+import Model.MainLoop;
 import Model.Player;
-import Model.Terrain;
+import Model.TerrainObject;
+import Model.Weapon;
 
 public class GameRender extends JPanel {
 
@@ -95,9 +98,15 @@ public class GameRender extends JPanel {
 	public void drawHero(Graphics2D g, Player hero){
 		int width =  (int) (hero.getWidth());
 		int height = (int) (hero.getHeight());
-
+		
+		//Weapon rendering
+		Weapon weapon = hero.getWeapon();
+		
+		
 		//same as drawObj method
 		g.drawImage(hero.getAnim().getCurrFrame(),Math.round(hero.getX()),Math.round(hero.getY()),width,height,this);
+		
+		drawWeapon(g,weapon,hero);
 		if(hero.debug()){ 
 			drawCollisionBox(g,hero);
 		}
@@ -106,6 +115,35 @@ public class GameRender extends JPanel {
 			g.draw3DRect((int) a.getX(),(int) a.getY(),(int) a.getWidth(),(int) a.getHeight(), true);
 		}
 	}
+	/*
+	 * Draws the Weapon attached to the player
+	 */
+	private void drawWeapon(Graphics2D g, Weapon weapon, Player hero){
+		
+		BufferedImage weaponImg = weapon.getAnim().getCurrFrame();
+		Graphics2D weaponGraphics = (Graphics2D) weaponImg.getGraphics();
+		
+		AffineTransform trans = new AffineTransform();
+		
+		//adjusting the weapon angle
+		double angle = weapon.facingRight() ? weapon.getAngle() : weapon.getAngle()-90;
+		
+		//rotate anchor point
+		double xAnchor = weapon.facingRight() ? 0 : weapon.getWidth()/weapon.getScale();
+		double yAnchor = weapon.getHeight()/weapon.getScale();
+
+		//Affine transformations
+		trans.translate(weapon.getX(), weapon.getY());
+		trans.scale(weapon.getScale(),weapon.getScale());
+		trans.rotate(-Math.toRadians(angle),xAnchor,yAnchor); 
+		
+		weaponGraphics.transform(trans);
+		
+		g.drawImage(weaponImg, trans,this);
+		
+		//drawWeaponCollisionBox(g,weapon);
+	}
+	
 	//draws game objects to screen
 	public void drawObj(Graphics2D g,Animatable obj){
 		//scaling if possible
@@ -124,6 +162,17 @@ public class GameRender extends JPanel {
 		//some objects dont have col boxs so dont do it
 		if(obj.getCollisionBox() != null){
 			g.draw(obj.getCollisionBox());
+		}
+
+	}
+	
+	/*
+	 * Modified version of drawCollisionBox to draw weapon col box
+	 */
+	private void drawWeaponCollisionBox(Graphics2D g, Weapon obj){
+		//some objects dont have col boxs so dont do it
+		if(obj.getNewCollisionBox() != null){
+			g.draw(obj.getNewCollisionBox());
 		}
 
 	}
