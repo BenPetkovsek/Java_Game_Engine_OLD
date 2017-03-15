@@ -7,17 +7,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Level {
-
+	int spawnX;
+	int spawnY;
 	String fileName;
 	String mapName;
 	String background;
 	ArrayList<Animatable> levelObjects = new ArrayList<Animatable>();
 	ArrayList<Collidable> collidableObjects = new ArrayList<Collidable>();
 	
-	public Level(String initMapName, String initFileName, String initBackgroundFile){
+	public Level(String initMapName, String initFileName, String initBackgroundFile, int x, int y){
 		this.fileName = initFileName;
 		this.mapName = initMapName;
 		this.background = initBackgroundFile;
+		this.spawnX = x;
+		this.spawnY = y;
 		loadGameObjects();
 		
 	}
@@ -66,6 +69,12 @@ public class Level {
 		}
 	}
 	
+	public int getSpawnX(){
+		return spawnX;
+	}
+	public int getSpawnY(){
+		return spawnY;
+	}
 	
 
 	

@@ -17,8 +17,10 @@ public class LoadTrigger extends Collidable {
 	public void update(Player hero){
 		if(checkCollision(hero)){
 			MainLoop.changeCurrentLevel(destination);
-			//PlayerPhysics.updateWindowVars();
 			System.out.println("Changed level to: " + destination);
+			
+			hero.setX(LevelManager.getLevel(destination).getSpawnX());
+			hero.setY(LevelManager.getLevel(destination).getSpawnY());
 		}
 	}
 	

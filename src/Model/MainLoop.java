@@ -179,6 +179,7 @@ public class MainLoop extends Thread {
 		background = ImageStyler.loadImg(currentLevel.background);
 		renderer.setBackground(background,background.getWidth(), background.getHeight());
 		PlayerPhysics.updateWindowVars();
+
 	}
 	
 	
