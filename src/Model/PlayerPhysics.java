@@ -39,10 +39,10 @@ public class PlayerPhysics {
 	static float deadzoneMaxY = windowHeight - deadzoneYOffset - 150;
 	static float deadzoneMinY = deadzoneYOffset;
 	
-	boolean maxXHit = false;
-	boolean minXHit = false;
-	boolean maxYHit = false;
-	boolean minYHit = false;
+	static boolean maxXHit = false;
+	static boolean minXHit = false;
+	static boolean maxYHit = false;
+	static boolean minYHit = false;
 	
 	private Player player;
 	
@@ -68,6 +68,10 @@ public class PlayerPhysics {
 	public void update(ArrayList<Collidable> objs){
 		checkDeadzoneX();
 		checkDeadzoneY();
+		//System.out.println("MaxX: " + maxXHit);
+		//System.out.println("MinX: " + minXHit);
+		//System.out.println("MaxY: " + maxYHit);
+		//System.out.println("MinY: " + minYHit);
 		//LARGE UPDATE OF DELTA MOVEMENT 
 		updateDeltaMovement();
 		
@@ -101,8 +105,6 @@ public class PlayerPhysics {
 		
 		}
 
-		
-		
 		//collision updates
 		//idk if this is good practise but i just reverse the changes if it collides
 		//then i test each direction (x,y) collisions then give the player back its dx or dy if its not colliding
@@ -213,6 +215,7 @@ public class PlayerPhysics {
 	}
 	//Checks dead zone for X direction
 	private void checkDeadzoneX(){
+		
 		//if window hits the right side of background
 		if(bgX >= bgWidth - windowWidth){
 			maxXHit = true;
@@ -258,12 +261,23 @@ public class PlayerPhysics {
 		bgHeight = GameRender.height;
 		windowWidth = MainLoop.getWindowWidth();
 		windowHeight = MainLoop.getWindowHeight();
+		minXHit = false;
+		minYHit = false;
+		maxXHit = false;
+		maxYHit = false;
 		
 		deadzoneMaxX = windowWidth - deadzoneXOffset - 40;
 		deadzoneMinX = deadzoneXOffset;
 		deadzoneMaxY = windowHeight - deadzoneYOffset - 150;
 		deadzoneMinY = deadzoneYOffset;
 		
+	}
+	
+	public void setBgX(float x){
+		bgX = x;
+	}
+	public void setBgY(float y){
+		bgY = y;
 	}
 
 

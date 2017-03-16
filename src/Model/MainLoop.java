@@ -43,7 +43,7 @@ public class MainLoop extends Thread {
 	static LevelManager levelManager = new LevelManager();
 	public static Level currentLevel;
 	public static Level previousLevel;
-	
+	public static boolean canTeleport = true;
 	
 	//initialization of game settings
 	public MainLoop(){
@@ -137,23 +137,27 @@ public class MainLoop extends Thread {
 	 * The main game update, updates objects and renders
 	 */
 	public void gameUpdate(){
+		//System.out.println("BgOffsetX: " + GameRender.getBGOffsetX());
+		//System.out.println("BgOffsetY: " + GameRender.getBGOffsetY());
+		//System.out.println("Player x: " + hero.getX());
+		//System.out.println("Player x: " + hero.getY());
 		//effect manager update
 		EffectManager.update();
-		
+		LoadTrigger.teleportCooldown();
 		hero.update(currentLevel.collidableObjects);
 		
 		for (GameObject e: currentLevel.levelObjects){
-			if(e instanceof Enemy){
+			if(e instanceof Enemy){		//updates all enemies in list
 				((Enemy) e).update(hero);
 				e.setXOffset(GameRender.getBGOffsetX());
 				e.setYOffset(GameRender.getBGOffsetY());
 			}
-			else if (e instanceof LoadTrigger){
+			else if (e instanceof LoadTrigger){	//updates all loadtriggers in list, counts cooldown if needed
 				((LoadTrigger) e).update(hero);
 				e.setXOffset(GameRender.getBGOffsetX());
 				e.setYOffset(GameRender.getBGOffsetY());
 			}else{
-				((TerrainObject) e).update();
+				((TerrainObject) e).update();	//updates all terrain objects in list
 				e.setXOffset(GameRender.getBGOffsetX());
 				e.setYOffset(GameRender.getBGOffsetY());
 			}
@@ -173,13 +177,14 @@ public class MainLoop extends Thread {
 	public void setRunning(boolean state) { gameRunning= state; }
 	
 	public static void changeCurrentLevel(String newLevelName){
+		if(canTeleport){//prevents the player from instantly teleporting again before the load trigger has despawned
 		Level newLevel = levelManager.getLevel(newLevelName);
 		previousLevel = currentLevel;
 		currentLevel = newLevel;
 		background = ImageStyler.loadImg(currentLevel.background);
 		renderer.setBackground(background,background.getWidth(), background.getHeight());
 		PlayerPhysics.updateWindowVars();
-
+		}
 	}
 	
 	
@@ -188,6 +193,11 @@ public class MainLoop extends Thread {
 		MainLoop main = new MainLoop();
 		main.start();
 	}
+
+	
+	
+	
+	
 	
 	//debugger listner
 	// z to pause
