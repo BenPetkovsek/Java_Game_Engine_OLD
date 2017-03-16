@@ -66,8 +66,7 @@ public class PlayerPhysics {
 	 * @param objs The list of collidable objects to check for collision with the player
 	 */
 	public void update(ArrayList<Collidable> objs){
-		checkDeadzoneX();
-		checkDeadzoneY();
+		
 		//System.out.println("MaxX: " + maxXHit);
 		//System.out.println("MinX: " + minXHit);
 		//System.out.println("MaxY: " + maxYHit);
@@ -81,6 +80,8 @@ public class PlayerPhysics {
 		boolean movedBgX=false;
 		boolean movedBgY= false;
 		//movement updates
+		checkDeadzoneX();
+		checkDeadzoneY();
 		//if we hit any X-edges of background
 		if(minXHit ||maxXHit ){	
 			//move the character, not background
@@ -154,9 +155,11 @@ public class PlayerPhysics {
 		boolean movingDown = player.getMovementDir()[1];
 		boolean movingLeft = player.getMovementDir()[2];
 		boolean movingRight =player.getMovementDir()[3];
-	
+		int isDodging = player.getDodge();
+		Double dodgeSpeedMod = 1.05;
+		player.updateDodge();
 		//LEFT press
-		if(movingLeft){
+		if(movingLeft && isDodging == 0){
 			if(player.getDx() > -maxXSpeed && !player.isFrozen()){
 				if(player.getDx()>0){
 					player.setDx(0);
@@ -167,10 +170,17 @@ public class PlayerPhysics {
 				}
 				player.addDx(-moveSpeedX);
 			}
+		}else if(movingLeft && isDodging != 0){
+			if (isDodging == 1){//if dodge has just started and is ramping up
+				player.addDx((float) (-moveSpeedX*dodgeSpeedMod));
+			}else if(isDodging == 2){//if dodge is ending and ramping down
+				player.addDx((float) (moveSpeedX*dodgeSpeedMod));
+			}
+			System.out.println("player DX: " + player.getDx());
 		}
 		
 		//RIGHT press
-		if(movingRight){
+		if(movingRight && isDodging == 0){
 			if(player.getDx()< maxXSpeed && !player.isFrozen()){
 				if(player.getDx()<0){
 					player.setDx(0);
@@ -181,23 +191,42 @@ public class PlayerPhysics {
 				}
 				player.addDx(moveSpeedX);
 			}
+		}else if(movingRight && isDodging != 0){
+			if (isDodging == 1){//if dodge has just started and is ramping up
+				player.addDx((float) (moveSpeedX*dodgeSpeedMod));
+			}else if(isDodging == 2){//if dodge is ending and ramping down
+				player.addDx((float) (-moveSpeedX*dodgeSpeedMod));
+			}
 		}
+		
 		//stop dx if no buttons are pressed and movement is allowed
 		if(!movingRight && !movingLeft && !player.isFrozen()){
 			player.setDx(0);
 		}
 		//UP press
-		if(movingUp){
+		if(movingUp && isDodging == 0){
 			if(player.getDy()> -maxYSpeed && !player.isFrozen()){
 				player.addDy(-moveSpeedY);
 			}	
+		}else if(movingUp && isDodging != 0){	//if dodging ONLY in the UP y direction
+			if (isDodging == 1){//if dodge has just started and is ramping up
+				player.addDy((float) (-moveSpeedY*dodgeSpeedMod));
+			}else if(isDodging == 2){//if dodge is ending and ramping down
+				player.addDy((float) (moveSpeedY*dodgeSpeedMod));
+			}
 		}
 		
 		//DOWN press
-		if(movingDown){
+		if(movingDown && isDodging == 0){
 			if(player.getDy()< maxYSpeed && !player.isFrozen()){
 				player.addDy(moveSpeedY);
 			}	
+		}else if(movingDown && isDodging != 0){//if ONLY dodging DOWN with NO X INPUT
+			if (isDodging == 1){//if dodge has just started and is ramping up
+				player.addDy((float) (moveSpeedY*dodgeSpeedMod));
+			}else if(isDodging == 2){//if dodge is ending and ramping down
+				player.addDy((float) (-moveSpeedY*dodgeSpeedMod));
+			}
 		}
 		
 		//stop dy if no buttons are pressed and movement is allowed
@@ -206,6 +235,7 @@ public class PlayerPhysics {
 		}
 		
 	}
+	
 	
 	//flips image
 	private void flip(){
