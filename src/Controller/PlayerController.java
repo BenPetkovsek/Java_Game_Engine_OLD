@@ -15,7 +15,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import Model.Player;
+import PlayerModel.Player;
 
 public class PlayerController extends KeyAdapter {
 	

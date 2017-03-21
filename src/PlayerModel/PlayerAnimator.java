@@ -1,9 +1,10 @@
-package Model;
+package PlayerModel;
 
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
+import MiscModel.Animation;
 import View.ImageStyler;
 /**
  * Models all animation changes done to the player

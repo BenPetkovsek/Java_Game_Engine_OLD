@@ -15,16 +15,16 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
-import Model.Animatable;
-import Model.Attack;
-import Model.Collidable;
-import Model.Enemy;
-import Model.GameObject;
-import Model.LoadTrigger;
-import Model.MainLoop;
-import Model.Player;
-import Model.TerrainObject;
-import Model.Weapon;
+import EnemyModel.Enemy;
+import GameObjectModel.Animatable;
+import GameObjectModel.Collidable;
+import GameObjectModel.GameObject;
+import GameObjectModel.LoadTrigger;
+import GameObjectModel.TerrainObject;
+import MiscModel.Attack;
+import MiscModel.MainLoop;
+import PlayerModel.Player;
+import PlayerModel.Weapon;
 
 public class GameRender extends JPanel {
 

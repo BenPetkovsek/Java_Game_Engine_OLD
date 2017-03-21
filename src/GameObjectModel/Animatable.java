@@ -1,4 +1,6 @@
-package Model;
+package GameObjectModel;
+
+import MiscModel.Animation;
 
 /**
  * Models any gameobject that is animatable

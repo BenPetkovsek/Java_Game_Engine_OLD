@@ -1,4 +1,4 @@
-package Model;
+package EffectModel;
 
 import java.util.ArrayList;
 /**

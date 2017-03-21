@@ -3,7 +3,7 @@ package Controller;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
-import Model.Player;
+import PlayerModel.Player;
 
 public class MouseTracking implements MouseMotionListener{
 

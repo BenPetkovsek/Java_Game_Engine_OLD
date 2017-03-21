@@ -1,10 +1,16 @@
-package Model;
+package EnemyModel;
 
 import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
+import EffectModel.EffectManager;
+import EffectModel.Invulnerability;
+import EffectModel.SimpleKnockBack;
+import GameObjectModel.Collidable;
+import MiscModel.Animation;
+import PlayerModel.Player;
 import View.ImageStyler;
 
 public class Enemy extends Collidable {

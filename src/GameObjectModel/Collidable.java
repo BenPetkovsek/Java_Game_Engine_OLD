@@ -1,4 +1,4 @@
-package Model;
+package GameObjectModel;
 
 import java.awt.Shape;
 import java.awt.geom.Area;

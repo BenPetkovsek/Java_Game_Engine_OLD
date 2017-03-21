@@ -1,4 +1,4 @@
-package Model;
+package GameObjectModel;
 
 /**
  * Allows the Terrain Class to properly identify the type of terrain to draw

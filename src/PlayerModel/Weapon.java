@@ -1,4 +1,4 @@
-package Model;
+package PlayerModel;
 
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
@@ -6,6 +6,8 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.Rectangle2D.Float;
 import java.awt.image.BufferedImage;
 
+import GameObjectModel.Collidable;
+import MiscModel.Animation;
 import View.ImageStyler;
 /**
  * Models the WeaponHolder for the player

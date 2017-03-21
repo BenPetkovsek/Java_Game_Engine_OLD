@@ -1,7 +1,9 @@
-package Model;
+package PlayerModel;
 
 import java.util.ArrayList;
 
+import GameObjectModel.Collidable;
+import MiscModel.MainLoop;
 import View.GameRender;
 
 /**

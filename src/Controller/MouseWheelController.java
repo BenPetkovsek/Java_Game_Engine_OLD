@@ -3,7 +3,7 @@ package Controller;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
-import Model.Player;
+import PlayerModel.Player;
 
 public class MouseWheelController implements MouseWheelListener  {
 

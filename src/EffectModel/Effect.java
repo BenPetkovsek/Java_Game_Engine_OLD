@@ -1,4 +1,7 @@
-package Model;
+package EffectModel;
+
+import GameObjectModel.Collidable;
+
 /**
  * Models general effects that can be applied to gameobjects in the game
  * There are two modes, timed and not timed, if an effect is not instaniated with a duration than it is not time dependent

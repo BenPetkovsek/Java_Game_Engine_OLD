@@ -1,9 +1,16 @@
-package Model;
+package PlayerModel;
 
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import EffectModel.EffectManager;
+import EffectModel.Invulnerability;
+import EffectModel.KnockBack;
+import EnemyModel.Enemy;
+import GameObjectModel.Collidable;
+import MiscModel.Animation;
+import MiscModel.Attack;
 import View.*;
 
 /**

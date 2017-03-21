@@ -4,9 +4,12 @@
  * from the source, with a certain power
  * TODO Have all movement done from the knockback done in this class, as opposed to the source using the values
  */
-package Model;
+package EffectModel;
 
 import java.awt.geom.Rectangle2D;
+
+import GameObjectModel.Collidable;
+import PlayerModel.Player;
 
 public class KnockBack extends Effect {
 

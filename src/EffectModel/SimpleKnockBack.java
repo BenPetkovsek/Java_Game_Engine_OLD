@@ -1,6 +1,8 @@
-package Model;
+package EffectModel;
 
 import java.awt.geom.Rectangle2D;
+
+import GameObjectModel.Collidable;
 
 
 /**

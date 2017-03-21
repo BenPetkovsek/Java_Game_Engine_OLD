@@ -1,7 +1,7 @@
 /*
  * Main thread of the game, contains all game initializes (i think) and main(String args[])
  */
-package Model;
+package MiscModel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
@@ -22,6 +22,13 @@ import javax.swing.KeyStroke;
 import Controller.MouseWheelController;
 import Controller.MouseTracking;
 import Controller.PlayerController;
+import EffectModel.EffectManager;
+import EnemyModel.Enemy;
+import GameObjectModel.GameObject;
+import GameObjectModel.LoadTrigger;
+import GameObjectModel.TerrainObject;
+import PlayerModel.Player;
+import PlayerModel.PlayerPhysics;
 import View.*;
 
 public class MainLoop extends Thread {

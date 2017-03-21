@@ -1,10 +1,17 @@
-package Model;
+package MiscModel;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import EnemyModel.Enemy;
+import GameObjectModel.Animatable;
+import GameObjectModel.Collidable;
+import GameObjectModel.LoadTrigger;
+import GameObjectModel.StaticType;
+import GameObjectModel.TerrainObject;
 
 public class Level {
 	int spawnX;

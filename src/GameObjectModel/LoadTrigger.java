@@ -1,6 +1,11 @@
-package Model;
+package GameObjectModel;
 
 import java.awt.geom.Rectangle2D;
+
+import MiscModel.Level;
+import MiscModel.LevelManager;
+import MiscModel.MainLoop;
+import PlayerModel.Player;
 
 public class LoadTrigger extends Collidable {
 	

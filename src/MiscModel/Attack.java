@@ -3,10 +3,12 @@
  * game objects, specifically player and enemies can have, possibly NPC's if developed
  * should hold attack dmg, duraction, animation etc.
  */
-package Model;
+package MiscModel;
 
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+
+import GameObjectModel.Collidable;
 
 public class Attack extends Collidable{
 

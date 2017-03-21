@@ -1,7 +1,7 @@
 /*
  * This class will be responsible for simulating animation, change of frames with the main loop as a timer of sorts
  */
-package Model;
+package MiscModel;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
