@@ -50,8 +50,6 @@ public class PlayerController extends KeyAdapter {
     	else if(key == moveDown){
     		player.moveDown();
     	}
-    	else if(key == attackKey){
-    		//player.attack();
     	else if(key == dodgeKey){
     		//player.attack();
     		player.setDodge();
