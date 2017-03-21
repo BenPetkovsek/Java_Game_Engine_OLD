@@ -39,6 +39,11 @@ public class Player extends Collidable {
 	private boolean noMovement=false;	//if the player can't move
 	
 	private Weapon weapon;
+	private int isDodging = 0;// 0 for not dodging, 1 for dodge ramp up, 2 for dodge ramp down
+	private int maxDodgeLength = 10;
+	private int currentDodgeLength = 0;
+	private int dodgeCooldown = 20;
+	private int currentDodgeCooldown = dodgeCooldown;
 	
 	/**
 	 * Creates a player at (x,y)
@@ -157,6 +162,34 @@ public class Player extends Collidable {
 				x-=currentAttack.getOffset();
 			}
 			currentAttack.activate();
+		}
+	}
+	
+	//if the player presses space and the dodge isnt on cooldown
+	public void setDodge(){
+		if(isDodging==0 && currentDodgeCooldown >= dodgeCooldown){
+		isDodging = 1;
+		currentDodgeCooldown = 0;	//start dodge and start cooldown
+		}
+	}
+	//is the player currently dodging?
+	public int getDodge(){
+		return isDodging;
+	}
+	//controls how long the dodge lasts for + updates cooldown
+	public void updateDodge(){
+		//System.out.println("isDodging = " + isDodging + "Cooldown Remaining: " + (dodgeCooldown -  currentDodgeCooldown));
+		//System.out.println("Current dodge length: "+ currentDodgeLength +" - max Dodge Length: " + maxDodgeLength);
+		if(isDodging != 0){	//if currently dodging, regardless of phase
+			currentDodgeLength++;	
+			if(currentDodgeLength >= maxDodgeLength/2 && currentDodgeLength < maxDodgeLength){//check if the dodge is halfway done
+				isDodging = 2;		//set the dodge to start ramping down
+			}else if(currentDodgeLength >= maxDodgeLength){	//if the dodge is completely finished
+				isDodging = 0;
+				currentDodgeLength = 0;
+			}
+		}else if(isDodging == 0 && currentDodgeCooldown < dodgeCooldown){	//if the dodge has ended and the cooldown has started
+			currentDodgeCooldown++;
 		}
 	}
 	private void checkDeath(){

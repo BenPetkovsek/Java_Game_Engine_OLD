@@ -39,10 +39,10 @@ public class PlayerPhysics {
 	static float deadzoneMaxY = windowHeight - deadzoneYOffset - 150;
 	static float deadzoneMinY = deadzoneYOffset;
 	
-	boolean maxXHit = false;
-	boolean minXHit = false;
-	boolean maxYHit = false;
-	boolean minYHit = false;
+	static boolean maxXHit = false;
+	static boolean minXHit = false;
+	static boolean maxYHit = false;
+	static boolean minYHit = false;
 	
 	private Player player;
 	
@@ -66,8 +66,11 @@ public class PlayerPhysics {
 	 * @param objs The list of collidable objects to check for collision with the player
 	 */
 	public void update(ArrayList<Collidable> objs){
-		checkDeadzoneX();
-		checkDeadzoneY();
+		
+		//System.out.println("MaxX: " + maxXHit);
+		//System.out.println("MinX: " + minXHit);
+		//System.out.println("MaxY: " + maxYHit);
+		//System.out.println("MinY: " + minYHit);
 		//LARGE UPDATE OF DELTA MOVEMENT 
 		updateDeltaMovement();
 		
@@ -77,6 +80,8 @@ public class PlayerPhysics {
 		boolean movedBgX=false;
 		boolean movedBgY= false;
 		//movement updates
+		checkDeadzoneX();
+		checkDeadzoneY();
 		//if we hit any X-edges of background
 		if(minXHit ||maxXHit ){	
 			//move the character, not background
@@ -101,8 +106,6 @@ public class PlayerPhysics {
 		
 		}
 
-		
-		
 		//collision updates
 		//idk if this is good practise but i just reverse the changes if it collides
 		//then i test each direction (x,y) collisions then give the player back its dx or dy if its not colliding
@@ -152,9 +155,11 @@ public class PlayerPhysics {
 		boolean movingDown = player.getMovementDir()[1];
 		boolean movingLeft = player.getMovementDir()[2];
 		boolean movingRight =player.getMovementDir()[3];
-	
+		int isDodging = player.getDodge();
+		Double dodgeSpeedMod = 1.05;
+		player.updateDodge();
 		//LEFT press
-		if(movingLeft){
+		if(movingLeft && isDodging == 0){
 			if(player.getDx() > -maxXSpeed && !player.isFrozen()){
 				if(player.getDx()>0){
 					player.setDx(0);
@@ -165,10 +170,17 @@ public class PlayerPhysics {
 				}
 				player.addDx(-moveSpeedX);
 			}
+		}else if(movingLeft && isDodging != 0){
+			if (isDodging == 1){//if dodge has just started and is ramping up
+				player.addDx((float) (-moveSpeedX*dodgeSpeedMod));
+			}else if(isDodging == 2){//if dodge is ending and ramping down
+				player.addDx((float) (moveSpeedX*dodgeSpeedMod));
+			}
+			System.out.println("player DX: " + player.getDx());
 		}
 		
 		//RIGHT press
-		if(movingRight){
+		if(movingRight && isDodging == 0){
 			if(player.getDx()< maxXSpeed && !player.isFrozen()){
 				if(player.getDx()<0){
 					player.setDx(0);
@@ -179,23 +191,42 @@ public class PlayerPhysics {
 				}
 				player.addDx(moveSpeedX);
 			}
+		}else if(movingRight && isDodging != 0){
+			if (isDodging == 1){//if dodge has just started and is ramping up
+				player.addDx((float) (moveSpeedX*dodgeSpeedMod));
+			}else if(isDodging == 2){//if dodge is ending and ramping down
+				player.addDx((float) (-moveSpeedX*dodgeSpeedMod));
+			}
 		}
+		
 		//stop dx if no buttons are pressed and movement is allowed
 		if(!movingRight && !movingLeft && !player.isFrozen()){
 			player.setDx(0);
 		}
 		//UP press
-		if(movingUp){
+		if(movingUp && isDodging == 0){
 			if(player.getDy()> -maxYSpeed && !player.isFrozen()){
 				player.addDy(-moveSpeedY);
 			}	
+		}else if(movingUp && isDodging != 0){	//if dodging ONLY in the UP y direction
+			if (isDodging == 1){//if dodge has just started and is ramping up
+				player.addDy((float) (-moveSpeedY*dodgeSpeedMod));
+			}else if(isDodging == 2){//if dodge is ending and ramping down
+				player.addDy((float) (moveSpeedY*dodgeSpeedMod));
+			}
 		}
 		
 		//DOWN press
-		if(movingDown){
+		if(movingDown && isDodging == 0){
 			if(player.getDy()< maxYSpeed && !player.isFrozen()){
 				player.addDy(moveSpeedY);
 			}	
+		}else if(movingDown && isDodging != 0){//if ONLY dodging DOWN with NO X INPUT
+			if (isDodging == 1){//if dodge has just started and is ramping up
+				player.addDy((float) (moveSpeedY*dodgeSpeedMod));
+			}else if(isDodging == 2){//if dodge is ending and ramping down
+				player.addDy((float) (-moveSpeedY*dodgeSpeedMod));
+			}
 		}
 		
 		//stop dy if no buttons are pressed and movement is allowed
@@ -205,6 +236,7 @@ public class PlayerPhysics {
 		
 	}
 	
+	
 	//flips image
 	private void flip(){
 		/*if(!player.isAttacking()){
@@ -213,6 +245,7 @@ public class PlayerPhysics {
 	}
 	//Checks dead zone for X direction
 	private void checkDeadzoneX(){
+		
 		//if window hits the right side of background
 		if(bgX >= bgWidth - windowWidth){
 			maxXHit = true;
@@ -258,12 +291,23 @@ public class PlayerPhysics {
 		bgHeight = GameRender.height;
 		windowWidth = MainLoop.getWindowWidth();
 		windowHeight = MainLoop.getWindowHeight();
+		minXHit = false;
+		minYHit = false;
+		maxXHit = false;
+		maxYHit = false;
 		
 		deadzoneMaxX = windowWidth - deadzoneXOffset - 40;
 		deadzoneMinX = deadzoneXOffset;
 		deadzoneMaxY = windowHeight - deadzoneYOffset - 150;
 		deadzoneMinY = deadzoneYOffset;
 		
+	}
+	
+	public void setBgX(float x){
+		bgX = x;
+	}
+	public void setBgY(float y){
+		bgY = y;
 	}
 
 
