@@ -76,7 +76,7 @@ public class KnockBack extends Effect {
 			getActor().setDx(getActor().getDx()+xy[0]);
 			getActor().setDy(getActor().getDy()+xy[1]);
 			if(getActor() instanceof Player){
-				((Player)getActor()).setFreeze(true);
+				((Player)getActor()).setFreeze(true);		//TODO have enemies also have a freeze option
 			}
 		}
 		else{

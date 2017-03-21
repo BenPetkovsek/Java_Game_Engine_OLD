@@ -51,7 +51,7 @@ public class PlayerController extends KeyAdapter {
     		player.moveDown();
     	}
     	else if(key == attackKey){
-    		player.attack();
+    		//player.attack();
     	}
     	/*else if(key == KeyEvent.VK_ENTER){
     		//DEBUGGING CONSOLE CLEANLINESS

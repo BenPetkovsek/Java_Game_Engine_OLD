@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 
 import View.ImageStyler;
 /**
- * Models the Weapon for the player
+ * Models the WeaponHolder for the player
  * @author Michael
  *
  */
@@ -48,7 +48,7 @@ public class Weapon extends Collidable{
 		/*****/
 		setScale(1f);
 		
-		colXOffset = getWidth()/4;
+		
 	}
 	
 	/*
@@ -61,6 +61,7 @@ public class Weapon extends Collidable{
 		else if(index ==1){
 			setAnim(axeIdleR);
 		}
+		colXOffset = getWidth()/4;
 		offSetX = (int) (hero.getWidth()/2);
 		offSetY = (int) -(getHeight() -hero.getHeight()/2);
 		collisionBox = new Rectangle2D.Float(colXOffset,0,getWidth()/2,getHeight());
@@ -75,8 +76,10 @@ public class Weapon extends Collidable{
 		//update position to player +offset
 		this.x = (float) (hero.getCollisionBox().getX() + offSetX);
 		this.y = (float) (hero.getCollisionBox().getY() + offSetY);
+		
+		double lowerBound = facingRight() ? 200 : 340;
 		//If mouse is right of player
-		if((angle<=90 && angle >= 0) || (angle<360 && angle >=270)){
+		if((angle<=90 && angle >= 0) || (angle<360 && angle >=lowerBound)){
 			setFacingRight(true);
 			hero.setFacingRight(true);
 			if(index ==0){
