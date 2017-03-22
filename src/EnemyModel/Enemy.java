@@ -21,24 +21,9 @@ public class Enemy extends Collidable {
 	int direction = 0;
 	
 	/******AI Vars******/
-	
-	//prevents enemy from change direction every second
-/*	boolean behaviourPause =false;
-	int behaviourPauseTime = 100;
-	int behaviourClock = 0;*/
-	
-	boolean following=false;	//if enemy is following player
-	
-	Point2D.Float startPt;
-	Point2D.Float endPt;
-	float[] walkDis = {300,300};
 
-	boolean toEndPt=true;
+	private AI behaviour;
 	
-	boolean onPath=true;	//if enemy is on own personal journey
-	 
-	int idleTime=100;
-	int idleClock;
 	/******Physics Vars**********/
 	
 	
@@ -90,8 +75,7 @@ public class Enemy extends Collidable {
 	
 	public Enemy(float x, float y){
 		super(x,y);
-		startPt = new Point2D.Float(x,y);
-		endPt = new Point2D.Float(x+walkDis[0],y+walkDis[1]);
+		behaviour = new RandomAI(this,true, false, 300, 300,100,70, 300, 100, 300, 100);
 		setAnim(idleR);
 		setScale(5f);
 		setTrigger(true);
@@ -137,10 +121,11 @@ public class Enemy extends Collidable {
 			//takeDamage(20,hero);
 		}
 		
-		behaviourUpdate(hero);
+		//AI
+		behaviour.update();
 		
 		//direction updates
-		if(!following){			//if not following 
+		if(!behaviour.isChasing()){			//if not following 
 			if(dx > 0){
 			direction = 0;
 			}
@@ -155,6 +140,7 @@ public class Enemy extends Collidable {
 			}
 		}
 		else{	//direction changes are different if following
+			//TODO possible seperate this
 			double xDiff = hero.getCollisionBox().getCenterX()-getCollisionBox().getCenterX();
 			double yDiff = hero.getCollisionBox().getCenterY()-getCollisionBox().getCenterY();
 			if(Math.abs(xDiff) >= Math.abs(yDiff)){	//if x difference is greater than y, direction is L or R
@@ -178,81 +164,6 @@ public class Enemy extends Collidable {
 		animationUpdates();
 		
 
-	}
-	//updates AI of enemy
-	protected void behaviourUpdate(Player hero){
-		if(onPath){ 	//walking to idle
-			Point2D.Float dest;
-			if(toEndPt){
-				dest = endPt;
-			}
-			else{
-				dest = startPt;
-			}
-
-			if(Math.abs(getX() - dest.getX()) < 5){		//if at x
-				dx= 0;
-			}
-			else{
-				dx = getX() < dest.getX() ? MOVESPEEDX : -MOVESPEEDX;
-			}
-			if(Math.abs(getY() - dest.getY()) < 5){		//if at y
-				dy= 0;
-			}
-			else{
-				dy = getY() < dest.getY() ? MOVESPEEDY : -MOVESPEEDY;
-			}
-			if(dx == 0 && dy ==0){	//if at point
-				onPath = false;
-				idleClock=0;
-			}
-		}
-		else{	//idle
-			idleClock++;
-			if(idleClock >= idleTime){	//
-				onPath= true;
-				toEndPt = !toEndPt;	//reverse direction
-			}
-		}
-		
-		/**AI Following**/
-		double diffX =hero.getCollisionBox().getCenterX()-getCollisionBox().getCenterX();
-		double diffY =hero.getCollisionBox().getCenterY()-getCollisionBox().getCenterY();
-		if(Math.abs(diffX) < 300 && Math.abs(diffY) < 300 ){		//300 = proximity circle, CHANGE THIS 
-			following=true;
-			startPt = new Point2D.Float(getX(),getY());
-			//randomly selects if it continues forward or back
-			if(Math.random() > 0.5){
-				endPt = new Point2D.Float(getX()+walkDis[0],getY()+walkDis[1]);
-			}
-			else{
-				endPt = new Point2D.Float(getX()-walkDis[0],getY()-walkDis[1]);
-			}
-			
-			if(diffX > -5 && diffX < 5){	//if the difference is so negligible just set to 0
-				dx=0;
-			}
-			else if(diffX >0){		//player is to the left
-				dx = MOVESPEEDX;
-			}
-			else{
-				dx =-MOVESPEEDX;	//player is to the right
-			}
-			
-			if(diffY > -5 && diffY< 5){ //if the difference is so negligible just set to 0
-				dy=0;
-			}
-			else if(diffY <0){		//player is above
-				dy= -MOVESPEEDY;
-			}
-			else{
-				dy =MOVESPEEDY;		//player is below 
-			}
-			
-		}
-		else{
-			following =false;
-		}
 	}
 	//updates animation
 	private void animationUpdates(){
@@ -294,8 +205,13 @@ public class Enemy extends Collidable {
 		}
 		getAnim().update();
 	}
-	
-	
+	protected void walkLeft(){ dx = -MOVESPEEDX; }
+	protected void walkRight(){ dx = +MOVESPEEDX; }
+	protected void walkUp(){ dy = -MOVESPEEDY; }
+	protected void walkDown(){ dy = MOVESPEEDY; }
+	protected void stopXWalk(){ dx= 0; }
+	protected void stopYWalk(){ dy =0; }
+
 
 	
 }//end class
