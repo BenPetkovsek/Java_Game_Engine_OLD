@@ -10,6 +10,7 @@ import EffectModel.Invulnerability;
 import EffectModel.SimpleKnockBack;
 import GameObjectModel.Collidable;
 import MiscModel.Animation;
+import MiscModel.Attack;
 import PlayerModel.Player;
 import View.ImageStyler;
 
@@ -30,6 +31,17 @@ public class Enemy extends Collidable {
 	private final float MOVESPEEDX = 1f;
 	private final float MOVESPEEDY = 1f;
 	
+	/*****Attacking******/
+	protected boolean attacking=false;
+	protected boolean freeze=false;
+	//assume attackXProx is smaller than chase proximity
+	private float attackXProx= 200;	//x direction of attack proximity circle
+	private float attackYProx = 200;	//y direction of attack proximity cicle
+	private Attack attack;
+	
+	private boolean cooldown=false;	//if on cooldown
+	private int attackCooldown= 70;	//cooldown for attack
+	private int cooldownTimer=0;
 	
 	/******Animation Vars*******/
 	
@@ -61,24 +73,32 @@ public class Enemy extends Collidable {
 	private Animation walkUpAnim = new Animation(true,1).addFrame(walkUp[0]).addFrame(walkUp[1]).addFrame(walkUp[2]).addFrame(walkUp[3]);
 	private Animation walkDownAnim = new Animation(true,1).addFrame(walkDown[0]).addFrame(walkDown[1]).addFrame(walkDown[2]).addFrame(walkDown[3]);
 	
-	private Animation attackRightAnim = new Animation(false,2).addFrame(attackRight[0]).addFrame(attackRight[1]).addFrame(attackRight[2]).addFrame(attackRight[3]);
-	private Animation attackLeftAnim = new Animation(false,2).addFrame(attackLeft[0]).addFrame(attackLeft[1]).addFrame(attackLeft[2]).addFrame(attackLeft[3]);
-	private Animation attackUpAnim = new Animation(false,2).addFrame(attackUp[0]).addFrame(attackUp[1]).addFrame(attackUp[2]).addFrame(attackUp[3]);
-	private Animation attackDownAnim = new Animation(false,2).addFrame(attackDown[0]).addFrame(attackDown[1]).addFrame(attackDown[2]).addFrame(attackDown[3]);
+	private Animation attackRightAnim = new Animation(false,2).addFrameWithLength(attackRight[0],40).addFrameWithLength(attackRight[1],40).addFrame(attackRight[2]).addFrame(attackRight[3]);
+	private Animation attackLeftAnim = new Animation(false,2).addFrameWithLength(attackLeft[0],40).addFrameWithLength(attackLeft[1],40).addFrame(attackLeft[2]).addFrame(attackLeft[3]);
+	private Animation attackUpAnim = new Animation(false,2).addFrameWithLength(attackUp[0],40).addFrameWithLength(attackUp[1],40).addFrame(attackUp[2]).addFrame(attackUp[3]);
+	private Animation attackDownAnim = new Animation(false,2).addFrameWithLength(attackDown[0],40).addFrameWithLength(attackDown[1],40).addFrame(attackDown[2]).addFrame(attackDown[3]);
 	
 	
 	
 	
 	//TODO gameobject sub class should take care of movement
+	//...what
 /*	private float dx;
 	private float dy;*/
 	
 	public Enemy(float x, float y){
 		super(x,y);
-		behaviour = new RandomAI(this,true, false, 300, 300,100,70, 300, 100, 300, 100);
+		Point2D.Float[] path = {new Point2D.Float(x,y),new Point2D.Float(x+100,y+300),new Point2D.Float(x-200,y+100)};
 		setAnim(idleR);
 		setScale(5f);
 		setTrigger(true);
+		
+		attack = new Attack(this,0, getHeight()/2, 30, 100, getHeight()/2, 40,40);
+		
+		behaviour = new PathingAI(this, true, false, 300, 300, 100, 70, path, false);
+		//behaviour = new RandomAI(this,true,false,300,300,100,75,200,100, 200, 100);
+		
+	
 		HP =100;
 		collisionBox = new Rectangle2D.Float(x,y,getWidth(),getHeight());
 		
@@ -90,7 +110,6 @@ public class Enemy extends Collidable {
 			EffectManager.addEffect(new Invulnerability(80, 10,this));
 			HP -= dmg;
 			checkDeath();
-			//setAnim(hurt);
 			getAnim().reset();
 		}
 		
@@ -99,35 +118,98 @@ public class Enemy extends Collidable {
 	private void checkDeath(){
 		if(HP <= 0){
 			System.out.println(name + " has died!");
-			//setAnim(dead);
 			
 		}	
 	}
 	
+	/**
+	 * Main update for Enemy
+	 * Updates AI, direction and animation
+	 * @param hero the player to update in reference to
+	 */
 	public void update(Player hero){
 		x += dx;
 		y += dy;
 		
+		//Collision Updates
 		//checks if the enemy gets hit by player, also checks if the hero is collide if so hero gets hurt then
-		if(checkCollision(hero.getAttack()) && hero.getAttack().isActive() && !checkCollision(hero)){	
-			takeDamage(20,hero);
-			
-			
-		}
-		else if(checkCollision(hero)){		//collide with player
+		if(checkCollision(hero)){		//collide with player
 			hero.takeDamage(20,this);
 		}
+		else if(attack.checkCollision(hero) && attack.isLive()){	//attacked player
+			hero.takeDamage(20, this);
+		}
 		else if(checkShapeCollision(hero.getWeapon())){	//collide with enemy
-			//takeDamage(20,hero);
+			takeDamage(20,hero);
 		}
 		
 		//AI
-		behaviour.update();
+		if(!freeze){
+			behaviour.update(hero);
+			directionUpdate(hero);
+		}
 		
+		if(!cooldown)
+			checkAttack(hero);
 		//direction updates
+		
+		
+		
+		
+		//attack update()
+		//if currently attacking or on cooldown
+		if(attacking){
+			//slow down
+			dx/=2;
+			dy/=2;
+			attack.update();
+			if(!attack.isActive()){
+				/*if(!facingRight()){
+					x+=attack.getOffset();
+				}*/
+				attack.stop();
+				attacking =false;
+				freeze=false;
+				//only put on cooldown when attack is over
+				cooldown =true;
+				cooldownTimer=0;
+			}
+			
+		}
+		
+		//cooldown behaviour
+		if(cooldown){
+			if(cooldownTimer >= attackCooldown) cooldown = false;
+			cooldownTimer++;
+		}
+		
+		
+		animationUpdates();
+		
+
+	}
+	//TODO do this better
+	protected void checkAttack(Player hero){
+		double playerX = hero.getCollisionBox().getCenterX();
+		double playerY = hero.getCollisionBox().getCenterY();
+		
+		double enemyX = getCollisionBox().getCenterX();
+		double enemyY = getCollisionBox().getCenterY();
+		
+		double diffX = playerX - enemyX;
+		double diffY = playerY - enemyY;
+		
+		if(Math.abs(diffX) < attackXProx && Math.abs(diffY) < attackYProx && !attacking){		//making sure you cant reset attack while attacking
+			attacking =true;
+			attack.activate();
+			freeze=true;
+		}
+	}
+	//updates the direction of the enemy
+	private void directionUpdate(Player hero){
 		if(!behaviour.isChasing()){			//if not following 
 			if(dx > 0){
-			direction = 0;
+				direction = 0;
 			}
 			else if(dx <0){
 				direction = 1;
@@ -160,11 +242,8 @@ public class Enemy extends Collidable {
 				}
 			}
 		}
-		
-		animationUpdates();
-		
-
 	}
+	
 	//updates animation
 	private void animationUpdates(){
 		Animation oldAnim = getAnim();
@@ -200,6 +279,14 @@ public class Enemy extends Collidable {
 				setAnim(idleD);
 			}
 		}
+		if(attacking){
+			switch(direction){
+			case 0: setAnim(attackRightAnim); break; 
+			case 1: setAnim(attackLeftAnim); break;
+			case 2: setAnim(attackUpAnim); break;
+			case 3: setAnim(attackDownAnim); break;
+			}
+		}
 		if(oldAnim != getAnim()){
 			getAnim().reset();
 		}
@@ -213,5 +300,22 @@ public class Enemy extends Collidable {
 	protected void stopYWalk(){ dy =0; }
 
 
+	public AI getAI(){
+		return behaviour;
+	}
 	
+	/**
+	 * Returns the direction of enemy
+	 * TODO move this to Animatable
+	 * @return 0 - right 1 - left 2 - up 3 down
+	 */
+	public int getDirection(){ return direction; }
+	
+	public Attack getAttack(){
+		return attack;
+	}
+	
+	public boolean isAttacking(){
+		return attacking;
+	}
 }//end class

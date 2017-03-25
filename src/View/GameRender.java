@@ -10,12 +10,14 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
 import EnemyModel.Enemy;
+import EnemyModel.PathingAI;
 import GameObjectModel.Animatable;
 import GameObjectModel.Collidable;
 import GameObjectModel.GameObject;
@@ -75,6 +77,11 @@ public class GameRender extends JPanel {
 		for (Animatable e: levelObjects){
 			if(!(e instanceof LoadTrigger)){
 				drawObj(offGraph,e);
+				if(e instanceof Enemy){
+					drawPath(offGraph,(Enemy) e);
+					if(((Enemy) e).getAttack().isLive())
+						drawCollisionBox(offGraph,((Enemy) e).getAttack());
+				}
 			}
 			
 			if(e instanceof Collidable){
@@ -161,6 +168,15 @@ public class GameRender extends JPanel {
 			g.draw(obj.getCollisionShape());
 		}
 
+	}
+	
+	private void drawPath(Graphics2D g,Enemy e){
+		if(e.getAI() instanceof PathingAI){
+			Point2D.Float[] path = ((PathingAI) e.getAI()).getPath();
+			for (Point2D.Float pt : path){
+				g.draw3DRect((int) pt.x+offsetX,(int) pt.y+offsetY, 10, 10, false);
+			}
+		}
 	}
 	
 	public static int getBGOffsetX(){

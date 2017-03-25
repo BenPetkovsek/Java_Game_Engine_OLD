@@ -75,7 +75,7 @@ public class Player extends Collidable {
 		//current punch attack
 		//xOffset is the difference in the sprite compared to idle animation
 		float offset = getScale()*(animator.getImage("attackRight", 0).getWidth() - animator.getImage("idleRight", 0).getWidth());
-		currentAttack = new Attack(this,getWidth(),0f,30,offset,getHeight(), (int) animator.getAnimationCollection("attackLeft").getDuration(),offset);
+		//currentAttack = new Attack(this,getWidth(),0f,30,offset,getHeight(), (int) animator.getAnimationCollection("attackLeft").getDuration(),offset);
 	}
 	
 	//offset inits
@@ -98,7 +98,7 @@ public class Player extends Collidable {
 		animator.update();
 		//attacking updates
 		//TODO Do attack interruption better
-		if(currentAttack != null){
+		/*if(currentAttack != null){
 			//if currently attacking, update else dont
 			if(attacking){
 				if(!currentAttack.isActive() || isFrozen()){
@@ -110,7 +110,7 @@ public class Player extends Collidable {
 				}
 				currentAttack.update();
 			}
-		}
+		}*/
 		weapon.update(calcWeaponAngle());
 	}
 	
@@ -159,7 +159,7 @@ public class Player extends Collidable {
 	/**
 	 * Sets the player to attack
 	 */
-	public void attack(){
+/*	public void attack(){
 		//cant attack if already attacking or hurt
 		//might change this idk
 		if(!attacking && !isFrozen()){
@@ -170,7 +170,7 @@ public class Player extends Collidable {
 			}
 			currentAttack.activate();
 		}
-	}
+	}*/
 	
 	//if the player presses space and the dodge isnt on cooldown
 	public void setDodge(){
@@ -214,13 +214,14 @@ public class Player extends Collidable {
 	public Rectangle2D.Float getCollisionBox(){
 		
 		//mother of all fucking god do this better LMAO
-		if(attacking && !facingRight()){
+	/*	if(attacking && !facingRight()){
 			collisionBox.x = x+ currentAttack.getOffset();
 		}
 		else{
 			collisionBox.x = x;
 		}
-		
+		*/
+		collisionBox.x = x;
 		collisionBox.y = y;
 		return collisionBox;
 	}

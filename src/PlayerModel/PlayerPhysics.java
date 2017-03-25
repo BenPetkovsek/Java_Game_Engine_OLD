@@ -178,7 +178,6 @@ public class PlayerPhysics {
 			}else if(isDodging == 2){//if dodge is ending and ramping down
 				player.addDx((float) (moveSpeedX*dodgeSpeedMod));
 			}
-			System.out.println("player DX: " + player.getDx());
 		}
 		
 		//RIGHT press

@@ -1,5 +1,10 @@
 package EnemyModel;
 
+import java.awt.geom.Point2D;
+import java.util.concurrent.ThreadLocalRandom;
+
+import PlayerModel.Player;
+
 /**
  * Models Artificial Intelligence, will be used by the basic enemies in the game.
  * @author Michael
@@ -25,11 +30,11 @@ public class AI {
 	float proxY;		//chasing proximity in y direction
 	
 	boolean chasing=false;	//if currently chasing
-	
+	float chasingError=5;
 	/****walking vars*****/
 	protected boolean onPath=false; //if currently heading to destination
 	protected float destinationError= 5; 	//grace zone of allowed destination arrival
-	
+	protected Point2D.Float destination;	//next point to go, determined randomly
 	/**
 	 * Constructs empty AI
 	 * @param enemy the enemy to attach AI to
@@ -52,17 +57,104 @@ public class AI {
 	/**
 	 * Update AI 
 	 */
-	public void update(){
+	public void update(Player hero){
+		if(smart){
+			chase(hero);
+		}
 		
+	}
+	
+	//updates movement based on destination point;
+	protected void updateMovement(Point2D.Float destination){
+		float xDiff = enemy.getX() - destination.x;
+		boolean reachedX=false;
+		if(Math.abs(xDiff) < destinationError){	//reached 
+			enemy.stopXWalk();
+			reachedX= true;
+		}
+		else if(xDiff >0){	//to the right of dest
+			enemy.walkLeft();
+		}
+		else if(xDiff <0){	//to the left of dest
+			enemy.walkRight();
+		}
+		
+		float yDiff = enemy.getY() - destination.y;
+		boolean reachedY=false;
+		if(Math.abs(yDiff) < destinationError){	//reached 
+			enemy.stopYWalk();
+			reachedY=true;
+		}
+		else if(yDiff >0){	//above dest
+			enemy.walkUp();
+		}
+		else if(yDiff <0){	//below dest
+			enemy.walkDown();
+		}
+		if(reachedX && reachedY){	//if destination reached
+			onPath =false;
+		}
+		if(!onPath){		//start idling
+			idling =true;
+			idleClock =0;
+			idleTime = ThreadLocalRandom.current().nextInt(idleTimeMin, idleTimeMax + 1);	//set random idle time
+		}
 	}
 	
 	/**
-	 * Chase player
+	 * Chases player based on proximity circle, basic following
 	 */
-	protected void chase(){
+	protected void chase(Player hero){
 		
+		double playerX = hero.getCollisionBox().getCenterX();
+		double playerY = hero.getCollisionBox().getCenterY();
+		
+		double enemyX = enemy.getCollisionBox().getCenterX();
+		double enemyY = enemy.getCollisionBox().getCenterY();
+		
+		double diffX = playerX - enemyX;
+		double diffY = playerY - enemyY;
+		boolean facingPlayer=false;
+		if(dumb){
+			switch(enemy.getDirection()){
+				case 0: facingPlayer = diffX > 0; break;	//right
+				case 1: facingPlayer = diffX < 0; break;		//left
+				case 2: facingPlayer = diffY < 0; break;	//up
+				case 3: facingPlayer = diffY > 0; break;		//down
+			}	
+		}
+		boolean inProximity = Math.abs(diffX) <= proxX && Math.abs(diffY) <= proxY;
+		if( (inProximity && dumb && facingPlayer) || (inProximity && !dumb)){	//if within prox (dumb has to also face Player)
+			chasing=true;
+			if(Math.abs(diffX) <= chasingError){
+				enemy.stopXWalk();
+			}
+			else if(diffX < 0){
+				enemy.walkLeft();
+			}
+			else{
+				enemy.walkRight();
+			}
+			if(Math.abs(diffY) <= chasingError){
+				enemy.stopYWalk();
+			}
+			else if(diffY < 0){
+				enemy.walkUp();
+			}
+			else{
+				enemy.walkDown();
+			}
+		}
+		else{
+			chasing=false;
+		}
 	}
 	
+
+	
+	/**
+	 * @return If Enemy is currently chasing AI
+	 */
 	public boolean isChasing(){
 		return chasing;
 	}

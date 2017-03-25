@@ -1,39 +1,45 @@
 /*
- * This class will model attacks in the game
+ * This class will model a basic attack with a variable delay before
  * game objects, specifically player and enemies can have, possibly NPC's if developed
  * should hold attack dmg, duraction, animation etc.
+ * Currently models attacks attached to enemyies, not projectiles for example 
  */
 package MiscModel;
 
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
+import EnemyModel.Enemy;
 import GameObjectModel.Collidable;
 
 public class Attack extends Collidable{
 
 	//Gameobject that is attacking
-	private Collidable holder;
+	private Enemy holder;	//TODO change to Collidable (or Creature if implemented)
 	//dmg
 	private int damage;
 	
 	//col box
-	private float width;
+	//use for rotations
+	private float width;	
 	private float height;
 	
-	//the local x,y position
+	//the x and y offset the edges of the sources collision box
 	private float xDiff;
 	private float yDiff;
 
 	
-	//extension of attack sprite	//idk if this is even still valid but yolo
-	float xOffset;
+
 	
 	//state
-	private boolean active=false;
+	private boolean active=false;		//active means the attack is updating
+	private boolean live =false;		//live means it will do damage (different from active since there can be a delay)
 	
-	private int duration;
-	private int time;
+	private int duration;		//duration of live attack
+	private int delayDuration;	//duration of delay before
+	private int time;			//internal timer
+	
+	
 	
 	/**
 	 * @brief creates an attack object with certain specs
@@ -46,7 +52,8 @@ public class Attack extends Collidable{
 	 * @param duration duration in time of attack
 	 * @param xOffset how much the attack sprite extends the regular sprite	//deprecated or some shit
 	 */
-	public Attack(Collidable source,float x, float y,int DMG, float width, float height, int duration, float xOffset){
+	//TODO change from enemy
+	public Attack(Enemy source,float x, float y,int DMG, float width, float height, int duration, int delayDuration){
 		super(source.getX()+x,source.getY()+y);	//init the attack at the same x,y as player then local axis
 		this.xDiff = x;
 		this.yDiff =y;
@@ -57,28 +64,76 @@ public class Attack extends Collidable{
 		this.width = width;
 		this.height =height;
 		this.duration  =duration;
-		
-		this.xOffset = xOffset;
+		this.delayDuration = delayDuration;
 		
 		
 		time = 0;
-		collisionBox = new Rectangle2D.Float(x,y,getWidth(),getHeight());
+		collisionBox = new Rectangle2D.Float(x,y,width,height);
 
 	}
-	
-	
+	//updates the attack's position and internal timer
+	@Override
+	public void update(){
+		//timer for attack
+		if(active){
+			if(time >= delayDuration && !live){	//delay timer
+				time=0;
+				live =true;
+			}
+			else{
+				time++;
+			}
+			if(live){					//live timer
+				attackPlacement();
+				if(time >= duration){
+					active =false;
+					live=false;
+				}
+				else{
+					time++;	
+				}
+			} 
+		}
+	}
+	private void attackPlacement(){
+		//if the collision box needs to be rotated (L/R will be rotated version of U/D)
+		if(holder.getDirection() == 0 || holder.getDirection() ==1){
+			collisionBox = new Rectangle2D.Float((float) collisionBox.getX(),(float) collisionBox.getY(),width,height);
+		}
+		else{
+			collisionBox = new Rectangle2D.Float((float) collisionBox.getX(),(float) collisionBox.getY(), height, width);
+		}
+		//set x,y to holders x y
+		x = (float) holder.getCollisionBox().getX();
+		y = (float) holder.getCollisionBox().getY();
+		
+		//collision orientation based on direction of holder because (x,y) is situated at top left it causes ALL KINDS OF PROBLEMS
+		switch(holder.getDirection()){
+			case 0: x += holder.getCollisionBox().getWidth() + xDiff;			//right
+					y += yDiff;
+					break;
+			case 1: x += -getWidth() - xDiff;		//left
+					y += yDiff;
+					break;
+			case 2: x += yDiff;		//up
+					y += -getHeight() - xDiff;
+					break;
+			case 3: x += yDiff;		//down
+					y += holder.getCollisionBox().getHeight() + xDiff;
+
+		}
+	}
 	@Override
 	public float getWidth(){
-		return width;
+		return (float) collisionBox.getWidth();
 	}
 	@Override
 	public float getHeight(){
-		return height;
+		return (float) collisionBox.getHeight();
 	}
 	
 	public int getDmg(){ return damage; }
 	
-	public float getOffset(){ return xOffset; }
 	
 	//activates the attack
 	public void activate(){ 
@@ -93,25 +148,11 @@ public class Attack extends Collidable{
 	public boolean isActive(){
 		return active;
 	}
-	//updates the attack's position and internal timer
-	@Override
-	public void update(){
-		//timer for attack
-		if(active){
-			//matchs it with right side of border;
-			if(!holder.facingRight()){
-				x= holder.getX();
-			}
-			else{
-				x = holder.getX() + xDiff;
-			}
-			//no need for y-dir yet
-			y = holder.getY() + yDiff;
-			if(time == duration){
-				active =false;
-			}
-			time++;
-		}
+	//returns if the attack is live
+	public boolean isLive(){
+		return live;
 	}
+	
+	
 	
 }
