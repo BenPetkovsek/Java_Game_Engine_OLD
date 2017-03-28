@@ -6,8 +6,9 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.Rectangle2D.Float;
 import java.awt.image.BufferedImage;
 
+import AnimationModel.Animation;
 import GameObjectModel.Collidable;
-import MiscModel.Animation;
+import GameObjectModel.Direction;
 import View.ImageStyler;
 /**
  * Models the WeaponHolder for the player
@@ -79,11 +80,11 @@ public class Weapon extends Collidable{
 		this.x = (float) (hero.getCollisionBox().getX() + offSetX);
 		this.y = (float) (hero.getCollisionBox().getY() + offSetY);
 		
-		double lowerBound = facingRight() ? 200 : 340;
+		double lowerBound = (getDirection() == Direction.RIGHT) ? 200 : 340;
 		//If mouse is right of player
 		if((angle<=90 && angle >= 0) || (angle<360 && angle >=lowerBound)){
-			setFacingRight(true);
-			hero.setFacingRight(true);
+			setDirection(Direction.RIGHT);
+			hero.setDirection(Direction.RIGHT);
 			if(index ==0){
 				setAnim(swordIdleR);
 			}
@@ -92,8 +93,8 @@ public class Weapon extends Collidable{
 			}
 		}
 		else{
-			setFacingRight(false);
-			hero.setFacingRight(false);
+			setDirection(Direction.LEFT);
+			hero.setDirection(Direction.LEFT);
 			this.x = (float) hero.getCollisionBox().getX() + (hero.getWidth()/2 -getWidth());
 			if(index ==0){
 				setAnim(swordIdleL);
@@ -115,10 +116,10 @@ public class Weapon extends Collidable{
 	
 	public AffineTransform getTransform(){
 		AffineTransform trans  = new AffineTransform();
-		double angle = facingRight() ? getAngle() : getAngle()-180;
+		double angle = (getDirection() == Direction.RIGHT) ? getAngle() : getAngle()-180;
 		
 		//rotate anchor point
-		double xAnchor = facingRight() ? 0 : getWidth()/getScale();
+		double xAnchor = (getDirection() == Direction.RIGHT) ? 0 : getWidth()/getScale();
 		double yAnchor = getHeight()/getScale();
 
 		//Affine transformations

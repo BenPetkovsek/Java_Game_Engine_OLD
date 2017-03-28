@@ -4,6 +4,8 @@ import java.awt.Shape;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 
+import PlayerModel.Player;
+
 /**
  * Models a physical object in the game meaning it can be interacted with.
  * Collision and collision box/trigger box is kept in this classes privacy
@@ -18,11 +20,10 @@ public abstract class Collidable extends Animatable{
 	
 	protected boolean drawBorders=true;
 	
-	protected boolean offsetDir = true;
 	
 	protected Rectangle2D.Float collisionBox;
 	
-	protected float colXOffset, collYOffset;
+	protected float colXOffset, colYOffset =0;	//local (x,y) of the collision box relative to the GameObjects (x,y)
 	
 	public Collidable(float x, float y) {
 		super(x, y);
@@ -34,14 +35,14 @@ public abstract class Collidable extends Animatable{
 	 * @return The Collision Box
 	 */
 	public Rectangle2D.Float getCollisionBox(){
-		collisionBox.x =x + xOffset;
-		collisionBox.y =y + yOffset;
+		collisionBox.x =x + xOffset + colXOffset;
+		collisionBox.y =y + yOffset + colYOffset;
 		return collisionBox;
 	}
 	
 	public Shape getCollisionShape(){
-		collisionBox.x =x + xOffset;
-		collisionBox.y =y + yOffset;
+		collisionBox.x =x + xOffset+ colXOffset;
+		collisionBox.y =y + yOffset+ colYOffset;
 		return collisionBox;
 	}
 	
@@ -101,6 +102,28 @@ public abstract class Collidable extends Animatable{
 		return yCollide;
 
 	}
+	/**
+	 * @param other - other collidable
+	 * @return difference in x between this and other
+	 */
+	public double diffX(Collidable other){
+		double aX = this.getCollisionBox().getCenterX();
+		
+		double bX = other.getCollisionBox().getCenterX();
+		
+		return aX - bX;
+	}
+	/**
+	 * @param other - other collidable
+	 * @return difference in y between this and other
+	 */
+	public double diffY(Collidable other){
+		double aY = this.getCollisionBox().getCenterY();
+		
+		double bY = other.getCollisionBox().getCenterY();
+		
+		return aY - bY;
+	}
 	
 	//SETTERS
 	public void setTrigger(boolean isTrigger){ this.isTrigger = isTrigger; }
@@ -108,8 +131,6 @@ public abstract class Collidable extends Animatable{
 
 	//GETTERS
 	public boolean isTrigger(){ return isTrigger; }
-	
-	public boolean offSetDir() {return offsetDir; }
 	
 	public boolean isInvulnerable() { return invulnerable; }
 	

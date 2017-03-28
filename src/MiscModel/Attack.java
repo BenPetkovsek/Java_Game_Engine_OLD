@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 
 import EnemyModel.Enemy;
 import GameObjectModel.Collidable;
+import GameObjectModel.Direction;
 
 public class Attack extends Collidable{
 
@@ -97,7 +98,7 @@ public class Attack extends Collidable{
 	}
 	private void attackPlacement(){
 		//if the collision box needs to be rotated (L/R will be rotated version of U/D)
-		if(holder.getDirection() == 0 || holder.getDirection() ==1){
+		if(holder.getDirection() == Direction.RIGHT || holder.getDirection() ==Direction.LEFT){
 			collisionBox = new Rectangle2D.Float((float) collisionBox.getX(),(float) collisionBox.getY(),width,height);
 		}
 		else{
@@ -106,21 +107,20 @@ public class Attack extends Collidable{
 		//set x,y to holders x y
 		x = (float) holder.getCollisionBox().getX();
 		y = (float) holder.getCollisionBox().getY();
-		
 		//collision orientation based on direction of holder because (x,y) is situated at top left it causes ALL KINDS OF PROBLEMS
 		switch(holder.getDirection()){
-			case 0: x += holder.getCollisionBox().getWidth() + xDiff;			//right
+			case RIGHT: x += holder.getCollisionBox().getWidth() + xDiff;			//right
 					y += yDiff;
 					break;
-			case 1: x += -getWidth() - xDiff;		//left
+			case LEFT: x += -getWidth() - xDiff;		//left
 					y += yDiff;
 					break;
-			case 2: x += yDiff;		//up
+			case UP: x += yDiff;		//up
 					y += -getHeight() - xDiff;
 					break;
-			case 3: x += yDiff;		//down
+			case DOWN: x += yDiff;		//down
 					y += holder.getCollisionBox().getHeight() + xDiff;
-
+					break;
 		}
 	}
 	@Override

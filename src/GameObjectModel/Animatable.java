@@ -1,6 +1,6 @@
 package GameObjectModel;
 
-import MiscModel.Animation;
+import AnimationModel.Animation;
 
 /**
  * Models any gameobject that is animatable
@@ -11,7 +11,7 @@ import MiscModel.Animation;
 public abstract class Animatable extends GameObject{
 
 	private Animation currentAnim;
-	private boolean facingRight =true;
+	private Direction direction = Direction.RIGHT;
 	private float scale=1;
 	
 	
@@ -28,7 +28,7 @@ public abstract class Animatable extends GameObject{
 	
 	public Animation getAnim(){ return currentAnim; }
 	
-	public boolean facingRight(){ return facingRight; }
+	public Direction getDirection(){ return direction; }
 	
 	public float getScale(){ return scale; }
 	
@@ -49,7 +49,6 @@ public abstract class Animatable extends GameObject{
 	//SETTERS
 	public void setAnim(Animation anim){ this.currentAnim = anim; }
 	
-	public void setFacingRight(boolean facingRight){ this.facingRight = facingRight; }
-	
+	public void setDirection(Direction newDir){ this.direction = newDir; }
 	public void setScale(float newScale){ this.scale=  newScale; }
 }

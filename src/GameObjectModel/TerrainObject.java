@@ -3,7 +3,7 @@ package GameObjectModel;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-import MiscModel.Animation;
+import AnimationModel.Animation;
 import View.ImageStyler;
 
 /**

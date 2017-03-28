@@ -4,7 +4,8 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
-import MiscModel.Animation;
+import AnimationModel.Animation;
+import GameObjectModel.Direction;
 import View.ImageStyler;
 /**
  * Models all animation changes done to the player
@@ -74,12 +75,12 @@ public class PlayerAnimator {
 		idleLeftAnim.addFrame(idleLeft[0]);
 		attackRAnim = new Animation(false,1).addFrame(attackRight[0]);
 		attackLAnim = new Animation(false,1).addFrame(attackLeft[0]);
-		hurtRightAnim = new Animation(false,2).addFrameWithLength(hurtRight[0],8);
-		hurtLeftAnim = new Animation(false,2).addFrameWithLength(hurtLeft[0],8);
+		hurtRightAnim = new Animation(false,2).addFrame(hurtRight[0],8);
+		hurtLeftAnim = new Animation(false,2).addFrame(hurtLeft[0],8);
 		
 		
 		//init first anim
-		if (player.facingRight()){
+		if (player.getDirection() == Direction.RIGHT){
 			currentAnim = idleRightAnim;
 		}
 		else{
@@ -124,7 +125,7 @@ public class PlayerAnimator {
 			possibleNewAnim = walkRightAnim;
 		}*/
 		if(player.getDx() != 0){
-			if(player.facingRight()){
+			if(player.getDirection() == Direction.RIGHT){
 				possibleNewAnim = walkRightAnim;
 			}
 			else{
@@ -132,15 +133,15 @@ public class PlayerAnimator {
 			}
 		}
 		else if(player.getDx()==0){
-			possibleNewAnim = (player.facingRight()) ? idleRightAnim : idleLeftAnim;
+			possibleNewAnim = (player.getDirection() == Direction.RIGHT) ? idleRightAnim : idleLeftAnim;
 		}
 		//getting attacked, do better
 		if(player.isFrozen()){
-			possibleNewAnim = (player.facingRight()) ? hurtRightAnim : hurtLeftAnim;
+			possibleNewAnim = (player.getDirection() == Direction.RIGHT) ? hurtRightAnim : hurtLeftAnim;
 		}
 		//attacking overrides movement animation
 		if(player.isAttacking()){
-			possibleNewAnim = (player.facingRight()) ? attackRAnim: attackLAnim;
+			possibleNewAnim = (player.getDirection() == Direction.RIGHT) ? attackRAnim: attackLAnim;
 		}
 		
 		

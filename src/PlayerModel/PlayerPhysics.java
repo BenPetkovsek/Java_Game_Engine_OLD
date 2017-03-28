@@ -3,6 +3,7 @@ package PlayerModel;
 import java.util.ArrayList;
 
 import GameObjectModel.Collidable;
+import GameObjectModel.Direction;
 import MiscModel.MainLoop;
 import View.GameRender;
 
@@ -167,7 +168,7 @@ public class PlayerPhysics {
 					player.setDx(0);
 				}
 				//change direction
-				if(player.facingRight()){
+				if(player.getDirection() == Direction.RIGHT){
 					flip();
 				}
 				player.addDx(-moveSpeedX);
@@ -187,7 +188,7 @@ public class PlayerPhysics {
 					player.setDx(0);
 				}
 				//change direction
-				if(!player.facingRight()){
+				if(player.getDirection() != Direction.RIGHT){
 					flip();
 				}
 				player.addDx(moveSpeedX);

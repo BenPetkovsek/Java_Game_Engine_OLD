@@ -25,6 +25,7 @@ public class AI {
 	//we shall do this for now as it deems still good by me
 	boolean smart = false;	//if they chase the player
 	boolean dumb = false;	//if they dont notice the player behind them
+	boolean overrideDumb = false;	//overrides AI's dumb feature allowing them to notice player if #TRIGGERED
 	
 	float proxX;		//chasing proximity in x direction
 	float proxY;		//chasing proximity in y direction
@@ -106,25 +107,12 @@ public class AI {
 	 */
 	protected void chase(Player hero){
 		
-		double playerX = hero.getCollisionBox().getCenterX();
-		double playerY = hero.getCollisionBox().getCenterY();
 		
-		double enemyX = enemy.getCollisionBox().getCenterX();
-		double enemyY = enemy.getCollisionBox().getCenterY();
-		
-		double diffX = playerX - enemyX;
-		double diffY = playerY - enemyY;
-		boolean facingPlayer=false;
-		if(dumb){
-			switch(enemy.getDirection()){
-				case 0: facingPlayer = diffX > 0; break;	//right
-				case 1: facingPlayer = diffX < 0; break;		//left
-				case 2: facingPlayer = diffY < 0; break;	//up
-				case 3: facingPlayer = diffY > 0; break;		//down
-			}	
-		}
-		boolean inProximity = Math.abs(diffX) <= proxX && Math.abs(diffY) <= proxY;
-		if( (inProximity && dumb && facingPlayer) || (inProximity && !dumb)){	//if within prox (dumb has to also face Player)
+		boolean facingPlayer=enemy.dumbCheck(hero);
+		boolean inProximity = enemy.proximityCheck(hero, proxX, proxY);
+		double diffX = hero.diffX(enemy);
+		double diffY = hero.diffY(enemy);
+		if( (inProximity && dumb && facingPlayer) || (inProximity && !dumb) || (inProximity && overrideDumb)){	//if within prox (dumb has to also face Player)
 			chasing=true;
 			if(Math.abs(diffX) <= chasingError){
 				enemy.stopXWalk();
@@ -147,6 +135,7 @@ public class AI {
 		}
 		else{
 			chasing=false;
+			overrideDumb = false;	//once out of proximity, turn of override
 		}
 	}
 	
@@ -158,4 +147,9 @@ public class AI {
 	public boolean isChasing(){
 		return chasing;
 	}
+	
+	/**
+	 * Forces enemy to chase player
+	 */
+	public void triggerChase(){ overrideDumb =true; }
 }

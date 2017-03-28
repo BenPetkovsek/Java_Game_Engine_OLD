@@ -4,12 +4,12 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import AnimationModel.Animation;
 import EffectModel.EffectManager;
 import EffectModel.Invulnerability;
 import EffectModel.KnockBack;
 import EnemyModel.Enemy;
 import GameObjectModel.Collidable;
-import MiscModel.Animation;
 import MiscModel.Attack;
 import View.*;
 
@@ -80,12 +80,7 @@ public class Player extends Collidable {
 	
 	//offset inits
 	private void offsetInit(){
-		//offSetDir is whether the offset was applied to the sprite when it was facing right or not
-		//this is important because the offset should reflect when the player also reflects
-		offsetDir = facingRight();
-		/*setOffsets(getWidth() *0.3f,-getWidth() *0.1f,getHeight() *0.3f,0);*/
-		
-		collisionBox = new Rectangle2D.Float(x, y, getWidth(), getHeight());
+		collisionBox = new Rectangle2D.Float(x+colXOffset, y+colYOffset, getWidth(), getHeight());
 	}
 	
 	/**
@@ -93,7 +88,6 @@ public class Player extends Collidable {
 	 * @param objs list of collidable objects to check for collision
 	 */
 	public void update(ArrayList<Collidable> objs){
-
 		playerPhysics.update(objs);
 		animator.update();
 		//attacking updates
@@ -212,17 +206,8 @@ public class Player extends Collidable {
 	 */
 	@Override
 	public Rectangle2D.Float getCollisionBox(){
-		
-		//mother of all fucking god do this better LMAO
-	/*	if(attacking && !facingRight()){
-			collisionBox.x = x+ currentAttack.getOffset();
-		}
-		else{
-			collisionBox.x = x;
-		}
-		*/
-		collisionBox.x = x;
-		collisionBox.y = y;
+		collisionBox.x = x +colXOffset;
+		collisionBox.y = y + colYOffset;
 		return collisionBox;
 	}
 	
