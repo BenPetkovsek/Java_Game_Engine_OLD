@@ -12,13 +12,20 @@ import GameObjectModel.Collidable;
 import GameObjectModel.LoadTrigger;
 import GameObjectModel.StaticType;
 import GameObjectModel.TerrainObject;
+import View.GameRender;
 
 public class Level {
 	int spawnX;
 	int spawnY;
+	boolean smallMapX;
+	boolean smallMapY;
 	String fileName;
 	String mapName;
 	String background;
+	int windowWidth = MainLoop.getWindowWidth();
+	int windowHeight = MainLoop.getWindowHeight();
+	int bgHeight;
+	int bgWidth;
 	ArrayList<Animatable> levelObjects = new ArrayList<Animatable>();
 	ArrayList<Collidable> collidableObjects = new ArrayList<Collidable>();
 	
@@ -28,6 +35,12 @@ public class Level {
 		this.background = initBackgroundFile;
 		this.spawnX = x;
 		this.spawnY = y;
+		this.bgHeight = GameRender.getHeightOf(background);
+		this.bgWidth = GameRender.getWidthOf(background);
+		if (bgWidth - windowWidth <=0){ this.smallMapX = true;}
+		else{ this.smallMapX = false;}
+		if (bgHeight - windowHeight <=0){ this.smallMapY = true;}
+		else{ this.smallMapY = false;}
 		loadGameObjects();
 		
 	}
@@ -81,6 +94,20 @@ public class Level {
 	}
 	public int getSpawnY(){
 		return spawnY;
+	}
+	public boolean getSmallMapX(){
+		return smallMapX;
+	}
+	public boolean getSmallMapY(){
+		return smallMapY;
+	}
+	public void mapDebug(){
+		System.out.println("smallMapX - " + smallMapX);
+		System.out.println("smallMapY - " + smallMapY);
+		System.out.println("windowWidth - " + windowWidth);
+		System.out.println("windowHeight - " + windowHeight);
+		System.out.println("bgWidth - " + bgWidth);
+		System.out.println("bgHeight - " + bgHeight);
 	}
 	
 

@@ -53,6 +53,16 @@ public class GameRender extends JPanel {
 		height =backgroundImg.getHeight();
 	}
 	
+	//get height of specified image
+	public static int getHeightOf(String img){
+		return ImageStyler.loadImg(img).getHeight();
+	}
+	
+	//get width of specified image
+	public static int getWidthOf(String img){
+		return ImageStyler.loadImg(img).getWidth();
+	}
+	
 	//set static image with offset
 	public static void setBackgroundOffset(int x, int y){
 		offsetX = x;

@@ -58,7 +58,12 @@ public class MainLoop extends Thread {
 		GameFrame gameframe = new GameFrame("Test");
 		renderer = new GameRender();
 		gameframe.add(renderer);
-		
+		//setting the panel size based on background
+		//this can change as the game might not have the background fully cover
+		//yolo
+		gameframe.setSize(1000,1000);
+		panelWidth =gameframe.getWidth();
+		panelHeight = gameframe.getHeight();
 		//Map init stuff
 		//load maps, set current map
 		levelManager.initializeLevels();
@@ -73,12 +78,7 @@ public class MainLoop extends Thread {
 		//renderer.setBackground(background);
 		renderer.setBackground(background,background.getWidth(), background.getHeight());
 		
-		//setting the panel size based on background
-		//this can change as the game might not have the background fully cover
-		//yolo
-		gameframe.setSize(1000,1000);
-		panelWidth =gameframe.getWidth();
-		panelHeight = gameframe.getHeight();
+		
 		
 		//Adding Controllers
 		hero = new Player(350,300);

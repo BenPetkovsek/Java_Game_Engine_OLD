@@ -27,8 +27,8 @@ public class PlayerPhysics {
 	
 
 	///windows scrolling variables
-	private float bgX;
-	private float bgY;
+	private static float bgX;
+	private static float bgY;
 	static int bgWidth = GameRender.width;
 	static int bgHeight = GameRender.height;
 	static int windowWidth = MainLoop.getWindowWidth();
@@ -46,6 +46,8 @@ public class PlayerPhysics {
 	static boolean minXHit = false;
 	static boolean maxYHit = false;
 	static boolean minYHit = false;
+	static boolean smallMapY = false;
+	static boolean smallMapX = false;
 	
 	private Player player;
 	
@@ -70,10 +72,13 @@ public class PlayerPhysics {
 	 */
 	public void update(ArrayList<Collidable> objs){
 		
-		//System.out.println("MaxX: " + maxXHit);
-		//System.out.println("MinX: " + minXHit);
-		//System.out.println("MaxY: " + maxYHit);
-		//System.out.println("MinY: " + minYHit);
+		System.out.println("MaxX: " + maxXHit);
+		System.out.println("MinX: " + minXHit);
+		System.out.println("MaxY: " + maxYHit);
+		System.out.println("MinY: " + minYHit);
+		System.out.println("BgY: " + bgY);
+		System.out.println("if bgY >= " + (bgHeight - windowHeight));
+		
 		//LARGE UPDATE OF DELTA MOVEMENT 
 		updateDeltaMovement();
 		
@@ -85,8 +90,12 @@ public class PlayerPhysics {
 		//movement updates
 		checkDeadzoneX();
 		checkDeadzoneY();
+		//if the window is bigger than the map in the x direction
+		if(smallMapX){
+		bgX = 0;
+		}
 		//if we hit any X-edges of background
-		if(minXHit ||maxXHit ){	
+		if(minXHit ||maxXHit || smallMapX ){	
 			//move the character, not background
 			player.addX(player.getDx());
 			movedX=true;
@@ -96,8 +105,13 @@ public class PlayerPhysics {
 			bgX += player.getDx();
 			movedBgX=true;	
 		}
+		
+		
+		if(smallMapY){
+			bgY = 0;
+			}
 		//if we hit any Y-EDGES
-		if(minYHit ||maxYHit){
+		if(minYHit ||maxYHit||smallMapY){
 			//move player
 			player.addY(player.getDy());
 			movedY=true;
@@ -247,7 +261,8 @@ public class PlayerPhysics {
 	}
 	//Checks dead zone for X direction
 	private void checkDeadzoneX(){
-		
+		if (bgWidth - windowWidth <=0){ smallMapX = true;}
+		else{ smallMapX = false;}
 		//if window hits the right side of background
 		if(bgX >= bgWidth - windowWidth){
 			maxXHit = true;
@@ -267,6 +282,8 @@ public class PlayerPhysics {
 	
 	//checks dead zone for y direction
 	private void checkDeadzoneY(){
+		if (bgHeight - windowHeight <=0){ smallMapY = true;}
+		else{ smallMapY = false;}
 		//if the window hits the bottom of the background
 		if(bgY >= bgHeight - windowHeight){
 			maxYHit = true;
@@ -282,6 +299,11 @@ public class PlayerPhysics {
 		}else if(maxYHit & player.getY() <= windowWidth/2 & player.getDy() < 0){
 			maxYHit = false;
 		}
+		
+
+		
+		
+		
 			
 	}
 	/**
@@ -297,19 +319,22 @@ public class PlayerPhysics {
 		minYHit = false;
 		maxXHit = false;
 		maxYHit = false;
+	
 		
-		deadzoneMaxX = windowWidth - deadzoneXOffset - 40;
-		deadzoneMinX = deadzoneXOffset;
-		deadzoneMaxY = windowHeight - deadzoneYOffset - 150;
-		deadzoneMinY = deadzoneYOffset;
 		
 	}
 	
-	public void setBgX(float x){
-		bgX = x;
+	public static void setBgX(float x){
+		if(x > bgWidth - windowWidth){ bgX = bgWidth - windowWidth;}
+		else if(x < 0){bgX = 0;}
+		else{bgX = x;}
+		
+		
 	}
-	public void setBgY(float y){
-		bgY = y;
+	public static void setBgY(float y){
+		if(y > bgHeight - windowHeight){ bgY = bgHeight - windowHeight;}
+		else if(y < 0){bgY = 0;}
+		else{bgY = y;}
 	}
 
 
