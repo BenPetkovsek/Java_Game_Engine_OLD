@@ -156,6 +156,9 @@ public class GameRender extends JPanel {
 		if(obj.getCollisionBox() != null){
 			g.draw(obj.getCollisionBox());
 		}
+		if(obj.useCenterPoints()){
+			g.draw3DRect((int) obj.getCenterX(),(int) obj.getCenterY(), 10, 10, false);
+		}
 
 	}
 	
@@ -174,7 +177,7 @@ public class GameRender extends JPanel {
 		if(e.getAI() instanceof PathingAI){
 			Point2D.Float[] path = ((PathingAI) e.getAI()).getPath();
 			for (Point2D.Float pt : path){
-				g.draw3DRect((int) pt.x+offsetX,(int) pt.y+offsetY, 10, 10, false);
+				g.draw3DRect((int) pt.x,(int) pt.y, 10, 10, false);
 			}
 		}
 	}

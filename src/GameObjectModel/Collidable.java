@@ -2,8 +2,10 @@ package GameObjectModel;
 
 import java.awt.Shape;
 import java.awt.geom.Area;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import AnimationModel.CollisionBoxAnim;
 import PlayerModel.Player;
 
 /**
@@ -22,8 +24,15 @@ public abstract class Collidable extends Animatable{
 	
 	
 	protected Rectangle2D.Float collisionBox;
+	protected CollisionBoxAnim currColBoxAnim;
 	
 	protected float colXOffset, colYOffset =0;	//local (x,y) of the collision box relative to the GameObjects (x,y)
+	
+	/***Proximity Variables****/
+	//Fixes certain situations where moving the collisionBox screws up things, have this as a default
+	protected boolean useCenterPoint=false;
+	protected float centerX;	//local offset from x
+	protected float centerY;	//local offset from y
 	
 	public Collidable(float x, float y) {
 		super(x, y);
@@ -35,21 +44,31 @@ public abstract class Collidable extends Animatable{
 	 * @return The Collision Box
 	 */
 	public Rectangle2D.Float getCollisionBox(){
-		collisionBox.x =x + xOffset + colXOffset;
-		collisionBox.y =y + yOffset + colYOffset;
-		return collisionBox;
+		Rectangle2D.Float colBox;
+		if(currColBoxAnim != null){
+			colBox = currColBoxAnim.getCurrFrame();
+			colBox.x = x+ xOffset + currColBoxAnim.getCurrFrameOffsetX();
+			colBox.y = y+ yOffset + currColBoxAnim.getCurrFrameOffsetY();
+		}
+		else{
+			colBox =collisionBox;
+			colBox.x =x + xOffset + colXOffset;
+			colBox.y =y + yOffset + colYOffset;
+		}
+		
+		return colBox;
 	}
 	
+	//only used by weapon really
 	public Shape getCollisionShape(){
-		collisionBox.x =x + xOffset+ colXOffset;
-		collisionBox.y =y + yOffset+ colYOffset;
-		return collisionBox;
+		return getCollisionBox();
 	}
+	
+	public CollisionBoxAnim getColAnim() { return currColBoxAnim; }
 	
 	//checks if the object has collided at all, used for interactions between objects
 	//Uses built in intersect functions
 	public boolean checkCollision(Collidable otherObject){
-
 		return getCollisionBox().intersects(otherObject.getCollisionBox());
 	}
 	
@@ -107,9 +126,11 @@ public abstract class Collidable extends Animatable{
 	 * @return difference in x between this and other
 	 */
 	public double diffX(Collidable other){
-		double aX = this.getCollisionBox().getCenterX();
+/*		double aX = this.getCollisionBox().getCenterX();
+		double bX = other.getCollisionBox().getCenterX();*/
+		double aX = this.useCenterPoint ? this.getCenterX() : this.getCollisionBox().getCenterX();
 		
-		double bX = other.getCollisionBox().getCenterX();
+		double bX = other.useCenterPoint ? other.getCenterX() :other.getCollisionBox().getCenterX();
 		
 		return aX - bX;
 	}
@@ -118,9 +139,35 @@ public abstract class Collidable extends Animatable{
 	 * @return difference in y between this and other
 	 */
 	public double diffY(Collidable other){
-		double aY = this.getCollisionBox().getCenterY();
+/*		double aY = this.getCollisionBox().getCenterY();
+		double bY = other.getCollisionBox().getCenterY();*/
+		//double aY= useCenterPoint ? this.getCenterY() : this.getCollisionBox().getCenterY();
+		double aY= useCenterPoint ? this.getCenterY() : this.getCollisionBox().getCenterY();
 		
-		double bY = other.getCollisionBox().getCenterY();
+		double bY = other.useCenterPoint ? other.getCenterY() :other.getCollisionBox().getCenterY();
+		
+		return aY - bY;
+	}
+	
+	/**
+	 * @param other - other collidable
+	 * @return difference in x between this and other
+	 */
+	public double diffX(Point2D.Float other){
+		//double aX = this.getCollisionBox().getCenterX();
+		double bX = other.getX();
+		double aX = this.useCenterPoint ? this.getCenterX() : this.getCollisionBox().getCenterX();
+
+		return aX - bX;
+	}
+	/**
+	 * @param other - other collidable
+	 * @return difference in y between this and other
+	 */
+	public double diffY(Point2D.Float other){
+		//double aY = this.getCollisionBox().getCenterY();
+		double bY = other.getY();
+		double aY= useCenterPoint ? this.getCenterY() : this.getCollisionBox().getCenterY();
 		
 		return aY - bY;
 	}
@@ -128,12 +175,18 @@ public abstract class Collidable extends Animatable{
 	//SETTERS
 	public void setTrigger(boolean isTrigger){ this.isTrigger = isTrigger; }
 	public void setInvulnerablity(boolean active){ invulnerable = active; }
-
+	public void setColAnim(CollisionBoxAnim newAnim){ this.currColBoxAnim= newAnim; }
 	//GETTERS
 	public boolean isTrigger(){ return isTrigger; }
 	
 	public boolean isInvulnerable() { return invulnerable; }
 	
 	public boolean debug(){ return drawBorders; }
+	
+	public float getCenterX(){ return x+xOffset+centerX; }
+	public float getCenterY(){ return y+yOffset+centerY; }
+	
+	public boolean useCenterPoints(){ return useCenterPoint; }
+	
 	
 }

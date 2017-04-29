@@ -22,17 +22,11 @@ public class Animation extends IAnimation{
 	 * @param colBox the BufferedImage to add to the frame
 	 * adds a frame to the animation
 	 */
-	public Animation addFrame(Object sprite){
-		if(sprite instanceof BufferedImage){
-			frames.add((BufferedImage) sprite);
-			framesLengths.add((int) refreshRate);
-			totalDuration += refreshRate;
-			addFrameBackEnd();
-		}
-		else{
-			System.out.println(sprite);
-			System.out.println("wrong type of frame [Animation]");
-		}
+	public Animation addFrame(BufferedImage sprite){
+		frames.add(sprite);
+		framesLengths.add((int) refreshRate);
+		totalDuration += refreshRate;
+		addFrameBackEnd();
 		return this;
 	}
 	
@@ -41,22 +35,17 @@ public class Animation extends IAnimation{
 	 * @param how long
 	 * adds a frame to the animation with certain length
 	 */
-	public Animation addFrame(Object sprite,int length){
-		if(sprite instanceof BufferedImage){
-			frames.add((BufferedImage) sprite);
-			//cant have length 0
-			if(length != 0){
-				framesLengths.add(length);
-			}
-			else{
-				System.out.println(this + " attempted to add a frame with length 0");
-				framesLengths.add(1);
-			}
-			addFrameBackEnd();
-			}
-		else{
-			System.out.println("wrong type of frame [Animation]");
+	public Animation addFrame(BufferedImage sprite,int length){
+		frames.add(sprite);
+		//cant have length 0
+		if(length != 0){
+			framesLengths.add(length);
 		}
+		else{
+			System.out.println(this + " attempted to add a frame with length 0");
+			framesLengths.add(1);
+		}
+		addFrameBackEnd();
 		return this;
 	}
 

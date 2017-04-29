@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import AnimationModel.Animation;
+import AnimationModel.CollisionBoxAnim;
 import EffectModel.EffectManager;
 import EffectModel.Invulnerability;
 import EffectModel.SimpleKnockBack;
@@ -46,6 +47,7 @@ public class Enemy extends Collidable {
 	private int attackCooldown= 70;	//cooldown for attack
 	private int cooldownTimer=0;
 	
+	
 	/******Animation Vars*******/
 	
 	private String pre = "Enemy/";	//folder location
@@ -81,6 +83,8 @@ public class Enemy extends Collidable {
 	private Animation attackUpAnim = new Animation(false,2).addFrame(attackUp[0],40).addFrame(attackUp[1],40).addFrame(attackUp[2]).addFrame(attackUp[3]);
 	private Animation attackDownAnim = new Animation(false,2).addFrame(attackDown[0],40).addFrame(attackDown[1],40).addFrame(attackDown[2]).addFrame(attackDown[3]);
 	
+	private CollisionBoxAnim upDown = new CollisionBoxAnim(false,0);
+
 	
 	
 	
@@ -91,7 +95,7 @@ public class Enemy extends Collidable {
 	
 	public Enemy(float x, float y){
 		super(x,y);
-		Point2D.Float[] path = {new Point2D.Float(x,y),new Point2D.Float(x+100,y+300),new Point2D.Float(x-200,y+100)};
+		Point2D.Float[] path = {new Point2D.Float(x+150,y),new Point2D.Float(x+400,y+300),new Point2D.Float(x-100,y+100)};
 		setAnim(idleR);
 		setScale(5f);
 		setTrigger(true);
@@ -99,11 +103,15 @@ public class Enemy extends Collidable {
 		attack = new Attack(this,0, getHeight()/2, 30, 100, getHeight()/2, 40,40);
 		
 		behaviour = new PathingAI(this, true, dumb, 300, 300, 100, 70, path, false);
-		//behaviour = new RandomAI(this,true,false,300,300,100,75,200,100, 200, 100);
 		
 	
 		HP =100;
+		//collision settings
 		collisionBox = new Rectangle2D.Float(x,y,getWidth(),getHeight());
+		upDown.addFrame(x,y,walkUp[0].getWidth()/2*getScale(),getHeight(),getWidth()/2,0);
+		centerX = (float) (collisionBox.getWidth()/2);
+		centerY = (float) (collisionBox.getHeight()/2);
+		useCenterPoint=true;
 		
 	}
 
@@ -121,7 +129,6 @@ public class Enemy extends Collidable {
 	private void checkDeath(){
 		if(HP <= 0){
 			System.out.println(name + " has died!");
-			
 		}	
 	}
 	
@@ -157,20 +164,20 @@ public class Enemy extends Collidable {
 			behaviour.triggerChase();
 		}
 		else if(checkShapeCollision(hero.getWeapon())){	//collide with enemy
-			//takeDamage(20,hero);
+			takeDamage(20,hero);
 			behaviour.triggerChase();
 		}
 		
 		//AI
 		//direction updates
+		behaviour.update(hero);
+		//direction updates
 		if(!freeze){
-			behaviour.update(hero);
 			directionUpdate(hero);
 		}
 		
 		if(!cooldown && !attacking)
 			checkAttack(hero);
-		
 		
 		//attack update()
 		//if currently attacking or on cooldown
@@ -197,14 +204,13 @@ public class Enemy extends Collidable {
 		
 		
 		animationUpdates();
-		
 
 	}
 	//TODO do this better
 	protected void checkAttack(Player hero){
 		boolean facingPlayer = dumbCheck(hero);
 		boolean inProximity = proximityCheck(hero,attackXProx, attackYProx);
-		if((inProximity && dumb && facingPlayer) || (inProximity && !dumb)){	
+		if((inProximity && dumb && facingPlayer) || (inProximity && !dumb)){
 			attacking =true;
 			attack.activate();
 			freeze=true;
@@ -259,9 +265,8 @@ public class Enemy extends Collidable {
 			}
 		}
 		else{	//direction changes are different if following
-			//TODO possible seperate this
-			double xDiff = hero.getCollisionBox().getCenterX()-getCollisionBox().getCenterX();
-			double yDiff = hero.getCollisionBox().getCenterY()-getCollisionBox().getCenterY();
+			double xDiff = hero.diffX(this);
+			double yDiff = hero.diffY(this);
 			if(Math.abs(xDiff) >= Math.abs(yDiff)){	//if x difference is greater than y, direction is L or R
 				if(dx > 0){
 					//direction = 0;
@@ -286,8 +291,11 @@ public class Enemy extends Collidable {
 	}
 	
 	//updates animation
+	//TODO priority system
 	private void animationUpdates(){
 		Animation oldAnim = getAnim();
+		CollisionBoxAnim oldColAnim = getColAnim();
+		setColAnim(null);
 		switch(getDirection()){
 		case RIGHT:
 			if (dx != 0){
@@ -312,6 +320,7 @@ public class Enemy extends Collidable {
 			else{
 				setAnim(idleU);
 			}
+			setColAnim(upDown);
 			break;
 		case DOWN:
 			if (dy != 0){
@@ -320,19 +329,24 @@ public class Enemy extends Collidable {
 			else{
 				setAnim(idleD);
 			}
+			setColAnim(upDown);
 			break;
 		}
 		if(attacking){
 			switch(getDirection()){
 			case RIGHT: setAnim(attackRightAnim); break; 
 			case LEFT: setAnim(attackLeftAnim); break;
-			case UP: setAnim(attackUpAnim); break;
-			case DOWN: setAnim(attackDownAnim); break;
+			case UP: setAnim(attackUpAnim); setColAnim(upDown); break;
+			case DOWN: setAnim(attackDownAnim); setColAnim(upDown); break;
 			}
 		}
 		if(oldAnim != getAnim()){
 			getAnim().reset();
 		}
+		if(oldColAnim != getColAnim() && getColAnim() != null){
+			getColAnim().reset();
+		}
+		if(getColAnim() != null){ getColAnim().update(); }
 		getAnim().update();
 	}
 	protected void walkLeft(){ dx = -MOVESPEEDX; }

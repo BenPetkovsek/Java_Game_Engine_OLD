@@ -60,14 +60,15 @@ public class AI {
 	 */
 	public void update(Player hero){
 		if(smart){
-			chase(hero);
+			tryChase(hero);
 		}
 		
 	}
 	
 	//updates movement based on destination point;
 	protected void updateMovement(Point2D.Float destination){
-		float xDiff = enemy.getX() - destination.x;
+		//float xDiff = enemy.getCollisionBox().x - destination.x;
+		float xDiff = (float) enemy.diffX(destination);
 		boolean reachedX=false;
 		if(Math.abs(xDiff) < destinationError){	//reached 
 			enemy.stopXWalk();
@@ -80,7 +81,8 @@ public class AI {
 			enemy.walkRight();
 		}
 		
-		float yDiff = enemy.getY() - destination.y;
+		//float yDiff = enemy.getCollisionBox().y - destination.y;
+		float yDiff = (float) enemy.diffY(destination);
 		boolean reachedY=false;
 		if(Math.abs(yDiff) < destinationError){	//reached 
 			enemy.stopYWalk();
@@ -105,7 +107,7 @@ public class AI {
 	/**
 	 * Chases player based on proximity circle, basic following
 	 */
-	protected void chase(Player hero){
+	protected void tryChase(Player hero){
 		
 		
 		boolean facingPlayer=enemy.dumbCheck(hero);

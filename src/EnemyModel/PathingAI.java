@@ -1,9 +1,11 @@
 package EnemyModel;
 
+import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.concurrent.ThreadLocalRandom;
 
 import PlayerModel.Player;
+import View.GameRender;
 
 /**
  * Models an AI that walks in a fixed path, in random order or not
@@ -14,7 +16,8 @@ public class PathingAI extends AI{
 	
 	boolean random;	//if path is random
 
-	Point2D.Float[] path;	//the set of points to follow, can be empty = enemy stays still, always idling
+	Point2D.Float[] path;	//the set of points to follow[base with no offsets], can be empty = enemy stays still, always idling
+	Point2D.Float[] auxPath; //the real set of points with offsets
 	
 	int pathIndex;
 	
@@ -26,6 +29,11 @@ public class PathingAI extends AI{
 	public PathingAI(Enemy enemy,boolean smart, boolean dumb,float proxX, float proxY,int idleTimeMax, int idleTimeMin, Point2D.Float[] path,boolean random){
 		super(enemy,smart,dumb,proxX,proxY,idleTimeMax, idleTimeMin);
 		this.path = path;
+		auxPath= new Point2D.Float[path.length];
+		//copying array
+		for (int i=0; i<path.length;i++){
+			auxPath[i] = new Point2D.Float(path[i].x, path[i].y);
+		}
 		this.random = random;
 	}
 	
@@ -37,19 +45,22 @@ public class PathingAI extends AI{
 	 */
 	@Override
 	public void update(Player hero){
+		updatePath(GameRender.getBGOffsetX(),GameRender.getBGOffsetY());
 		super.update(hero);
-		if(!super.isChasing()){		//only do own movement if not chasing
-			if(!onPath && !idling){	//if not idling or on path
-				onPath =true;
-				setDestination();
-			}
-			else if(onPath){		//if currently on path
-				updateMovement(path[pathIndex]);
-			}
-			else if(idling){		//if currently idling
-				idleClock++;
-				if(idleClock >= idleTime){
-					idling=false;
+		if(!enemy.freeze){
+			if(!super.isChasing()){		//only do own movement if not chasing
+				if(!onPath && !idling){	//if not idling or on path
+					onPath =true;
+					setDestination();
+				}
+				else if(onPath){		//if currently on path
+					updateMovement(auxPath[pathIndex]);
+				}
+				else if(idling){		//if currently idling
+					idleClock++;
+					if(idleClock >= idleTime){
+						idling=false;
+					}
 				}
 			}
 		}
@@ -68,5 +79,12 @@ public class PathingAI extends AI{
 	/**
 	 * @return The path of the Enemy
 	 */
-	public Point2D.Float[] getPath(){ return path; }
+	public Point2D.Float[] getPath(){ return auxPath; }
+	
+	private void updatePath(float newX, float newY){
+		for (int i  =0; i <auxPath.length;i++){
+			auxPath[i].x = path[i].x + newX;
+			auxPath[i].y = path[i].y + newY;
+		}
+	}
 }
