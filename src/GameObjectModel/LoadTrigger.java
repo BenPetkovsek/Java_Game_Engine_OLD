@@ -27,8 +27,16 @@ public class LoadTrigger extends Collidable {
 			canTeleport = false;
 			MainLoop.changeCurrentLevel(destination);
 			System.out.println("Changed level to: " + destination);
-			hero.getPhysicsEngine().setBgX(desLevel.getSpawnX());
-			hero.getPhysicsEngine().setBgY(desLevel.getSpawnY());
+			//if background for level is bigger than window, spawn player at an x position rather than moving bg
+			desLevel.mapDebug();
+			if(desLevel.getSmallMapX()){
+				hero.setX(desLevel.getSpawnX());
+			}else {hero.getPhysicsEngine().setBgX(desLevel.getSpawnX());}
+			//if background for level is bigger than window, spawn player at a y position rather than moving bg
+			if(desLevel.getSmallMapY()){
+				hero.setY(desLevel.getSpawnY());
+			}else {hero.getPhysicsEngine().setBgY(desLevel.getSpawnY());}
+			
 			
 		}
 	}

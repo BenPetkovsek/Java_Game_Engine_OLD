@@ -11,7 +11,7 @@ public class LevelManager {
 	
 	//load all maps into map list
 	public void initializeLevels(){
-		Level testLevel1 = new Level("Test1","test1","background2.jpg", 200, 100);
+		Level testLevel1 = new Level("Test1","test1","background2.jpg", 300, 20);
 		levelMap.put("Test1", testLevel1);
 		Level testLevel2 = new Level("Test2","test2","background3.jpg", 700, 400);
 		levelMap.put("Test2", testLevel2);
