@@ -7,12 +7,10 @@ import java.util.ArrayList;
 public class CollisionBoxAnim extends IAnimation {
 
 	private ArrayList<Rectangle2D.Float> frames;	//list of col boxes in order of the animation
-	
-	private ArrayList<float[]> offsetFrames;			//list of offsets for the frames
 	public CollisionBoxAnim(boolean repeat, int priority) {
 		super(repeat, priority);
 		frames = new ArrayList<Rectangle2D.Float>();
-		offsetFrames = new ArrayList<float[]>();
+		offsetFrames = new ArrayList<float[]>();		
 		// TODO Auto-generated constructor stub
 	}
 	

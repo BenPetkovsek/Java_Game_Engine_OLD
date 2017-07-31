@@ -4,6 +4,7 @@ import java.awt.Shape;
 import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 
 import AnimationModel.CollisionBoxAnim;
 import PlayerModel.Player;
@@ -27,16 +28,25 @@ public abstract class Collidable extends Animatable{
 	protected CollisionBoxAnim currColBoxAnim;
 	
 	protected float colXOffset, colYOffset =0;	//local (x,y) of the collision box relative to the GameObjects (x,y)
-	
+	public float colXOverride, colYOverride; //when you just gotta force things in
 	/***Proximity Variables****/
 	//Fixes certain situations where moving the collisionBox screws up things, have this as a default
 	protected boolean useCenterPoint=false;
 	protected float centerX;	//local offset from x
 	protected float centerY;	//local offset from y
+	//dynamic sprite fix for the center point so that it stays "static"
+	protected float centerXOverride;	
+	protected float centerYOverride;
 	
 	public Collidable(float x, float y) {
 		super(x, y);
 		// TODO Auto-generated constructor stub
+	}
+	
+	
+	@Override
+	public void update(){
+		super.update();
 	}
 	
 	/**
@@ -47,15 +57,15 @@ public abstract class Collidable extends Animatable{
 		Rectangle2D.Float colBox;
 		if(currColBoxAnim != null){
 			colBox = currColBoxAnim.getCurrFrame();
-			colBox.x = x+ xOffset + currColBoxAnim.getCurrFrameOffsetX();
-			colBox.y = y+ yOffset + currColBoxAnim.getCurrFrameOffsetY();
+			colBox.x = x+ xOffset + currColBoxAnim.getCurrFrameOffsetX() + colXOverride;
+			colBox.y = y+ yOffset + currColBoxAnim.getCurrFrameOffsetY() + colYOverride;
 		}
 		else{
 			colBox =collisionBox;
-			colBox.x =x + xOffset + colXOffset;
-			colBox.y =y + yOffset + colYOffset;
+			colBox.x =x + xOffset + colXOffset + colXOverride;
+			colBox.y =y + yOffset + colYOffset + colYOverride;
 		}
-		
+
 		return colBox;
 	}
 	
@@ -176,6 +186,12 @@ public abstract class Collidable extends Animatable{
 	public void setTrigger(boolean isTrigger){ this.isTrigger = isTrigger; }
 	public void setInvulnerablity(boolean active){ invulnerable = active; }
 	public void setColAnim(CollisionBoxAnim newAnim){ this.currColBoxAnim= newAnim; }
+	
+	public void setColXOverride(float override) { this.colXOverride = override; }
+	public void setColYOverride(float override) { this.colYOverride = override;}
+	
+	public void setCenterXOverride(float x){ centerXOverride = x; }
+	public void setCenterYOverride(float y){ centerYOverride = y; }
 	//GETTERS
 	public boolean isTrigger(){ return isTrigger; }
 	
@@ -183,8 +199,8 @@ public abstract class Collidable extends Animatable{
 	
 	public boolean debug(){ return drawBorders; }
 	
-	public float getCenterX(){ return x+xOffset+centerX; }
-	public float getCenterY(){ return y+yOffset+centerY; }
+	public float getCenterX(){ return getCollisionBox().x + centerX + centerXOverride; }
+	public float getCenterY(){ return getCollisionBox().y + centerY + centerYOverride; }
 	
 	public boolean useCenterPoints(){ return useCenterPoint; }
 	

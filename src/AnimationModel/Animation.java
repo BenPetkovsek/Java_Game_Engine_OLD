@@ -15,6 +15,7 @@ public class Animation extends IAnimation{
 	public Animation( boolean repeat, int priority){
 		super(repeat,priority);
 		frames= new ArrayList<BufferedImage>();
+		offsetFrames= new ArrayList<float[]>();
 	}
 	
 	
@@ -27,6 +28,12 @@ public class Animation extends IAnimation{
 		framesLengths.add((int) refreshRate);
 		totalDuration += refreshRate;
 		addFrameBackEnd();
+		return this;
+	}
+	
+	public Animation addFrame(BufferedImage sprite, float[] diff){
+		addFrame(sprite);
+		offsetFrames.add(diff);
 		return this;
 	}
 	
@@ -49,6 +56,12 @@ public class Animation extends IAnimation{
 		return this;
 	}
 
+	public Animation addFrame(BufferedImage sprite, int length, float[] diff){
+		addFrame(sprite,length);
+		offsetFrames.add(diff);
+		return this;
+	}
+	
 	
 	//gets the current image in the animation
 	//for the renderer
@@ -59,6 +72,15 @@ public class Animation extends IAnimation{
 		}
 		else{
 			return frames.get(getIndex());
+		}
+	}
+	
+	public float[] getOffsetFrame(){
+		if (offsetFrames.size() ==0){
+			return null;
+		}
+		else{
+			return offsetFrames.get(getIndex());
 		}
 	}
 }

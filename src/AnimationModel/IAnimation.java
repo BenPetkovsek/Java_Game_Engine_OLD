@@ -27,7 +27,8 @@ protected long refreshRate= 20;	//The time between each animation frame, not sur
 	
 	private int priority=0;
 	
-	
+	private boolean newFrame=false; 	//if the frame was just changed, goes to false after frame stays for more than two frames.
+	protected ArrayList<float[]> offsetFrames;	//offsets for frames, the offset relative to the x,y of the object
 	//creates an empty animation and if it repeats
 	public IAnimation( boolean repeat, int priority){
 		this.priority = priority;
@@ -38,6 +39,7 @@ protected long refreshRate= 20;	//The time between each animation frame, not sur
 	public void update(){
 		
 		//if the time elapsed is on a time period to change frame
+		newFrame=false;
 		if(frameElapsedTime >= framesLengths.get(frameIndex) && timeElapsed != 0){		//if not at starting position and at refresh mark, then do shit
 			frameElapsedTime =0;
 			if(timeElapsed >= totalDuration){
@@ -53,7 +55,9 @@ protected long refreshRate= 20;	//The time between each animation frame, not sur
 				}
 			}
 			else{
+				//new frame
 				frameIndex = (frameIndex+1) % framesLengths.size();
+				newFrame=true;
 				
 			}
 			timeElapsed++;
@@ -110,4 +114,6 @@ protected long refreshRate= 20;	//The time between each animation frame, not sur
 	public long getDuration(){ return totalDuration; }
 	
 	public int getIndex(){ return frameIndex; } 
+	
+	public boolean newFrame() {return newFrame; } //if this animation state is a new frame
 }

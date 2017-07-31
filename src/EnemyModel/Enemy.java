@@ -29,6 +29,7 @@ public class Enemy extends Collidable {
 
 	private AI behaviour;
 	private boolean dumb;
+	private boolean smart;
 	/******Physics Vars**********/
 	
 	
@@ -48,42 +49,7 @@ public class Enemy extends Collidable {
 	private int cooldownTimer=0;
 	
 	
-	/******Animation Vars*******/
 	
-	private String pre = "Enemy/";	//folder location
-	
-	private BufferedImage[] idles = {ImageStyler.loadImg(pre+"walkR1.png"), 	//0 - right, 1 - left, 2 - up, 3 - down
-			ImageStyler.flip(ImageStyler.loadImg(pre+"walkR1.png")),
-			ImageStyler.loadImg(pre+"walkU1.png"),
-			ImageStyler.loadImg(pre+"walkD1.png")};
-	
-	private BufferedImage[] walkRight = {ImageStyler.loadImg(pre+"walkR1.png"),ImageStyler.loadImg(pre+"walkR2.png"),ImageStyler.loadImg(pre+"walkR3.png"),ImageStyler.loadImg(pre+"walkR4.png")};
-	private BufferedImage[] walkLeft =ImageStyler.flipImgs(walkRight);
-	private BufferedImage[] walkUp = {ImageStyler.loadImg(pre+"walkU1.png"),ImageStyler.loadImg(pre+"walkU2.png"),ImageStyler.loadImg(pre+"walkU3.png"),ImageStyler.loadImg(pre+"walkU4.png")};	
-	private BufferedImage[] walkDown = {ImageStyler.loadImg(pre+"walkD1.png"),ImageStyler.loadImg(pre+"walkD2.png"),ImageStyler.loadImg(pre+"walkD3.png"),ImageStyler.loadImg(pre+"walkD4.png")};
-	
-	private BufferedImage[] attackRight = {ImageStyler.loadImg(pre+"attackR1.png"),ImageStyler.loadImg(pre+"attackR2.png"),ImageStyler.loadImg(pre+"attackR3.png"),ImageStyler.loadImg(pre+"attackR4.png")};
-	private BufferedImage[] attackLeft = ImageStyler.flipImgs(attackRight);
-	private BufferedImage[] attackUp = {ImageStyler.loadImg(pre+"attackU1.png"),ImageStyler.loadImg(pre+"attackU2.png"),ImageStyler.loadImg(pre+"attackU3.png"),ImageStyler.loadImg(pre+"attackU4.png")};
-	private BufferedImage[] attackDown = {ImageStyler.loadImg(pre+"attackD1.png"),ImageStyler.loadImg(pre+"attackD2.png"),ImageStyler.loadImg(pre+"attackD3.png"),ImageStyler.loadImg(pre+"attackD4.png")};
-	
-	
-	private Animation idleR = new Animation(true, 0).addFrame(idles[0]);
-	private Animation idleL = new Animation(true, 0).addFrame(idles[1]);
-	private Animation idleU = new Animation(true, 0).addFrame(idles[2]);
-	private Animation idleD = new Animation(true, 0).addFrame(idles[3]);
-	
-	private Animation walkRightAnim = new Animation(true,1).addFrame(walkRight[0]).addFrame(walkRight[1]).addFrame(walkRight[2]).addFrame(walkRight[3]);
-	private Animation walkLeftAnim = new Animation(true,1).addFrame(walkLeft[0]).addFrame(walkLeft[1]).addFrame(walkLeft[2]).addFrame(walkLeft[3]);
-	private Animation walkUpAnim = new Animation(true,1).addFrame(walkUp[0]).addFrame(walkUp[1]).addFrame(walkUp[2]).addFrame(walkUp[3]);
-	private Animation walkDownAnim = new Animation(true,1).addFrame(walkDown[0]).addFrame(walkDown[1]).addFrame(walkDown[2]).addFrame(walkDown[3]);
-	
-	private Animation attackRightAnim = new Animation(false,2).addFrame(attackRight[0],40).addFrame(attackRight[1],40).addFrame(attackRight[2]).addFrame(attackRight[3]);
-	private Animation attackLeftAnim = new Animation(false,2).addFrame(attackLeft[0],40).addFrame(attackLeft[1],40).addFrame(attackLeft[2]).addFrame(attackLeft[3]);
-	private Animation attackUpAnim = new Animation(false,2).addFrame(attackUp[0],40).addFrame(attackUp[1],40).addFrame(attackUp[2]).addFrame(attackUp[3]);
-	private Animation attackDownAnim = new Animation(false,2).addFrame(attackDown[0],40).addFrame(attackDown[1],40).addFrame(attackDown[2]).addFrame(attackDown[3]);
-	
-	private CollisionBoxAnim upDown = new CollisionBoxAnim(false,0);
 
 	
 	
@@ -95,26 +61,31 @@ public class Enemy extends Collidable {
 	
 	public Enemy(float x, float y){
 		super(x,y);
-		Point2D.Float[] path = {new Point2D.Float(x+150,y),new Point2D.Float(x+400,y+300),new Point2D.Float(x-100,y+100)};
-		setAnim(idleR);
 		setScale(5f);
+		animator = new EnemyAnimator<Enemy>(this);
+//		Point2D.Float[] path = {new Point2D.Float(x+150,y),new Point2D.Float(x+400,y+300),new Point2D.Float(x-100,y+100)};
+		Point2D.Float[] path = {new Point2D.Float(x+200, y) , new Point2D.Float(x+200, y+250)};
 		setTrigger(true);
 		dumb=true;
+		smart=false;
 		attack = new Attack(this,0, getHeight()/2, 30, 100, getHeight()/2, 40,40);
-		
-		behaviour = new PathingAI(this, true, dumb, 300, 300, 100, 70, path, false);
+		behaviour = new PathingAI(this, smart, dumb, 300, 300, 100, 70, path, false);
 		
 	
 		HP =100;
 		//collision settings
-		collisionBox = new Rectangle2D.Float(x,y,getWidth(),getHeight());
-		upDown.addFrame(x,y,walkUp[0].getWidth()/2*getScale(),getHeight(),getWidth()/2,0);
+		collisionBox = new Rectangle2D.Float(x,y,getWidth(),getHeight());		//sets collision box to currentAnim dimensions (IDLE)
 		centerX = (float) (collisionBox.getWidth()/2);
 		centerY = (float) (collisionBox.getHeight()/2);
 		useCenterPoint=true;
 		
 	}
 
+	/**
+	 * Makes the enemy take damage
+	 * @param dmg
+	 * @param a
+	 */
 	public void takeDamage(int dmg,Collidable a){
 		if(!isInvulnerable()){
 			EffectManager.addEffect(new SimpleKnockBack(a, this, 200, 5));
@@ -129,7 +100,7 @@ public class Enemy extends Collidable {
 	private void checkDeath(){
 		if(HP <= 0){
 			System.out.println(name + " has died!");
-		}	
+		}
 	}
 	
 	/**
@@ -138,6 +109,7 @@ public class Enemy extends Collidable {
 	 * @param hero the player to update in reference to
 	 */
 	public void update(Player hero, ArrayList<Collidable> things){
+		super.update();
 		x += dx;
 		y += dy;
 		
@@ -202,8 +174,7 @@ public class Enemy extends Collidable {
 			cooldownTimer++;
 		}
 		
-		
-		animationUpdates();
+		//collisionBoxUpdates();
 
 	}
 	//TODO do this better
@@ -292,63 +263,24 @@ public class Enemy extends Collidable {
 	
 	//updates animation
 	//TODO priority system
-	private void animationUpdates(){
-		Animation oldAnim = getAnim();
-		CollisionBoxAnim oldColAnim = getColAnim();
-		setColAnim(null);
-		switch(getDirection()){
-		case RIGHT:
-			if (dx != 0){
-				setAnim(walkRightAnim);
-			}
-			else{
-				setAnim(idleR);
-			}
-			break;
-		case LEFT:
-			if (dx != 0){
-				setAnim(walkLeftAnim);
-			}
-			else{
-				setAnim(idleL);
-			}
-			break;
-		case UP:
-			if (dy != 0){
-				setAnim(walkUpAnim);
-			}
-			else{
-				setAnim(idleU);
-			}
-			setColAnim(upDown);
-			break;
-		case DOWN:
-			if (dy != 0){
-				setAnim(walkDownAnim);
-			}
-			else{
-				setAnim(idleD);
-			}
-			setColAnim(upDown);
-			break;
+/*	private void collisionBoxUpdates(){
+
+		if (getDirection() == Direction.UP){
+			//setColAnim(upDown);
+		}
+		else if (getDirection() == Direction.DOWN){
+			//setColAnim(upDown);
 		}
 		if(attacking){
-			switch(getDirection()){
-			case RIGHT: setAnim(attackRightAnim); break; 
-			case LEFT: setAnim(attackLeftAnim); break;
-			case UP: setAnim(attackUpAnim); setColAnim(upDown); break;
-			case DOWN: setAnim(attackDownAnim); setColAnim(upDown); break;
+		switch(getDirection()){
+			case RIGHT: possibleNewAnim = attackRightAnim; break; 
+			case LEFT: possibleNewAnim = attackLeftAnim; break;
+			case UP: possibleNewAnim = attackUpAnim; setColAnim(upDown); break;
+			case DOWN: possibleNewAnim = attackDownAnim; setColAnim(upDown); break;
 			}
 		}
-		if(oldAnim != getAnim()){
-			getAnim().reset();
-		}
-		if(oldColAnim != getColAnim() && getColAnim() != null){
-			getColAnim().reset();
-		}
-		if(getColAnim() != null){ getColAnim().update(); }
-		getAnim().update();
-	}
+
+	}*/
 	protected void walkLeft(){ dx = -MOVESPEEDX; }
 	protected void walkRight(){ dx = +MOVESPEEDX; }
 	protected void walkUp(){ dy = -MOVESPEEDY; }

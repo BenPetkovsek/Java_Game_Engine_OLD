@@ -20,6 +20,7 @@ import View.*;
  * @author Michael
  *
  */
+// TODO remove all traces of old attack methods and shit
 public class Player extends Collidable {
 	int HP, totalHP, str, def, intel;
 	String name;
@@ -34,7 +35,6 @@ public class Player extends Collidable {
 	private boolean[] movementDirections;	//puts the above vars in an array
 	
 	//Animator Variables
-	private PlayerAnimator animator;
 	
 	//Physics Engine
 	private PlayerPhysics playerPhysics;
@@ -59,7 +59,7 @@ public class Player extends Collidable {
 	 */
 	public Player(float x,float y){
 		super(x,y);
-		animator = new PlayerAnimator(this);
+		animator = new PlayerAnimator<Player>(this);
 		playerPhysics=  new PlayerPhysics(this);
 		HP =100;
 		setScale(5f);
@@ -74,7 +74,7 @@ public class Player extends Collidable {
 		BufferedImage idle;
 		//current punch attack
 		//xOffset is the difference in the sprite compared to idle animation
-		float offset = getScale()*(animator.getImage("attackRight", 0).getWidth() - animator.getImage("idleRight", 0).getWidth());
+		//float offset = getScale()*(animator.getImage("attackRight", 0).getWidth() - animator.getImage("idleRight", 0).getWidth());
 		//currentAttack = new Attack(this,getWidth(),0f,30,offset,getHeight(), (int) animator.getAnimationCollection("attackLeft").getDuration(),offset);
 	}
 	
@@ -88,23 +88,9 @@ public class Player extends Collidable {
 	 * @param objs list of collidable objects to check for collision
 	 */
 	public void update(ArrayList<Collidable> objs){
+		super.update();
 		playerPhysics.update(objs);
 		animator.update();
-		//attacking updates
-		//TODO Do attack interruption better
-		/*if(currentAttack != null){
-			//if currently attacking, update else dont
-			if(attacking){
-				if(!currentAttack.isActive() || isFrozen()){
-					if(!facingRight()){
-						x+=currentAttack.getOffset();
-					}
-					currentAttack.stop();
-					attacking =false;
-				}
-				currentAttack.update();
-			}
-		}*/
 		weapon.update(calcWeaponAngle());
 	}
 	
@@ -153,18 +139,17 @@ public class Player extends Collidable {
 	/**
 	 * Sets the player to attack
 	 */
-/*	public void attack(){
+	// TODO remove this temp method
+	public void attack(){
 		//cant attack if already attacking or hurt
 		//might change this idk
-		if(!attacking && !isFrozen()){
-			attacking=true;
-			if(!facingRight()){
-				//move the character the offset designated to the attack
-				x-=currentAttack.getOffset();
-			}
-			currentAttack.activate();
-		}
-	}*/
+		attacking=true;
+	}
+	
+	// TODO remove this temp method
+	public void stopAttacking(){
+		attacking=false;
+	}
 	
 	//if the player presses space and the dodge isnt on cooldown
 	public void setDodge(){
@@ -206,9 +191,23 @@ public class Player extends Collidable {
 	 */
 	@Override
 	public Rectangle2D.Float getCollisionBox(){
-		collisionBox.x = x +colXOffset;
-		collisionBox.y = y + colYOffset;
-		return collisionBox;
+		
+/*		collisionBox.x = x +colXOffset + colXOverride;
+		collisionBox.y = y + colYOffset + colYOverride;
+		return collisionBox;*/
+		Rectangle2D.Float colBox;
+		if(currColBoxAnim != null){
+			colBox = currColBoxAnim.getCurrFrame();
+			colBox.x = x + currColBoxAnim.getCurrFrameOffsetX() + colXOverride;
+			colBox.y = y + currColBoxAnim.getCurrFrameOffsetY() + colYOverride;
+		}
+		else{
+			colBox =collisionBox;
+			colBox.x =x + colXOffset + colXOverride;
+			colBox.y =y + colYOffset + colYOverride;
+		}
+		
+		return colBox;
 	}
 	
 	/**
@@ -216,7 +215,7 @@ public class Player extends Collidable {
 	 */
 	@Override
 	public Animation getAnim(){
-		return animator.getCurrentAnim();
+		return animator.getAnim();
 	}
 	
 	/**
@@ -244,7 +243,7 @@ public class Player extends Collidable {
 	/**
 	 * Gets the animator
 	 */
-	public PlayerAnimator getAnimator(){ return animator; }
+//	public PlayerAnimator getAnimator(){ return (PlayerAnimator) animator; }
 	
 	/****State Methods ****/
 	

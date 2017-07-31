@@ -72,12 +72,12 @@ public class PlayerPhysics {
 	 */
 	public void update(ArrayList<Collidable> objs){
 		
-		System.out.println("MaxX: " + maxXHit);
+/*		System.out.println("MaxX: " + maxXHit);
 		System.out.println("MinX: " + minXHit);
 		System.out.println("MaxY: " + maxYHit);
 		System.out.println("MinY: " + minYHit);
 		System.out.println("BgY: " + bgY);
-		System.out.println("if bgY >= " + (bgHeight - windowHeight));
+		System.out.println("if bgY >= " + (bgHeight - windowHeight));*/
 		
 		//LARGE UPDATE OF DELTA MOVEMENT 
 		updateDeltaMovement();
@@ -158,7 +158,6 @@ public class PlayerPhysics {
 
 				}
 				
-			
 			}
 			GameRender.setBackgroundOffset(-Math.round(bgX), -Math.round(bgY));
 		}

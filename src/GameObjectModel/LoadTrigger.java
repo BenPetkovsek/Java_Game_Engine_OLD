@@ -1,6 +1,6 @@
 package GameObjectModel;
 
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.Rectangle2D;	
 
 import MiscModel.Level;
 import MiscModel.LevelManager;

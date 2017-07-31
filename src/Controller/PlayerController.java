@@ -25,6 +25,7 @@ public class PlayerController extends KeyAdapter {
 	int moveUp = KeyEvent.VK_W;
 	int moveDown= KeyEvent.VK_S;
 	int dodgeKey = KeyEvent.VK_SPACE;
+	int test = KeyEvent.VK_CONTROL;
 	
 	int tempKey;	//TEMP DEBUGGING, IGNORE
 	public PlayerController(Player player){
@@ -53,6 +54,9 @@ public class PlayerController extends KeyAdapter {
     	else if(key == dodgeKey){
     		//player.attack();
     		player.setDodge();
+    	}
+    	else if(key == test){
+    		player.attack();
     	}
     	/*else if(key == KeyEvent.VK_ENTER){
     		//DEBUGGING CONSOLE CLEANLINESS

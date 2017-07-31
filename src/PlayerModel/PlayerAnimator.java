@@ -1,26 +1,21 @@
 package PlayerModel;
 
-import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImage;	
 import java.util.HashMap;
 import java.util.Map;
 
 import AnimationModel.Animation;
+import GameObjectModel.Animator;
 import GameObjectModel.Direction;
 import View.ImageStyler;
 /**
  * Models all animation changes done to the player
- * Needed a whole class because the players animator will easily be the most complex
- * Its nice to have out of the player class
+ * Only allows The player class to have
  * @author Michael
  *
  */
-public class PlayerAnimator {
+public class PlayerAnimator<T extends Player> extends Animator<T> {
 	
-	
-	//Animation Variables
-	//holds all animation/images for external pulls in case needed
-	private Map<String,BufferedImage[]> imageCollection = new HashMap<String,BufferedImage[]>();
-	private Map<String,Animation> animationCollection = new HashMap<String,Animation>();
 	
 	private BufferedImage[] walkRight= {ImageStyler.loadImg("heroWalk1.png"),ImageStyler.loadImg("heroWalk2.png"),ImageStyler.loadImg("heroWalk3.png")};
 	private BufferedImage[] walkLeft = ImageStyler.flipImgs(walkRight);
@@ -34,7 +29,7 @@ public class PlayerAnimator {
 	private Animation idleRightAnim;
 	private Animation idleLeftAnim;
 	
-	private BufferedImage[] attackRight = {ImageStyler.loadImg("heroAttack.png")};
+	private BufferedImage[] attackRight = {ImageStyler.loadImg("heroAttack2.png"),ImageStyler.loadImg("heroAttack.png"),ImageStyler.loadImg("heroAttack2.png")};
 	private BufferedImage[] attackLeft =ImageStyler.flipImgs(attackRight);
 	
 	private Animation attackRAnim;
@@ -46,18 +41,14 @@ public class PlayerAnimator {
 	private Animation hurtRightAnim;
 	private Animation hurtLeftAnim;
 	
-	private Animation oldAnim;
-	private Animation currentAnim;
 	
-	//player
-	private Player player;
 	
 	/**
 	 * Creates a player animator for player
 	 * @param player the Player to animate
 	 */
-	public PlayerAnimator(Player player){
-		this.player = player;
+	public PlayerAnimator(T player){
+		super(player);
 		animInit();
 		mapInit();
 	}
@@ -73,14 +64,14 @@ public class PlayerAnimator {
 		idleRightAnim.addFrame(idleRight[0]);
 		idleLeftAnim = new Animation(true,0);
 		idleLeftAnim.addFrame(idleLeft[0]);
-		attackRAnim = new Animation(false,1).addFrame(attackRight[0]);
-		attackLAnim = new Animation(false,1).addFrame(attackLeft[0]);
+		attackRAnim = new Animation(false,1).addFrame(attackRight[0]).addFrame(attackRight[1]).addFrame(attackRight[2]);
+		attackLAnim = new Animation(false,1).addFrame(attackLeft[0],10).addFrame(attackLeft[1],10).addFrame(attackLeft[2],10);
 		hurtRightAnim = new Animation(false,2).addFrame(hurtRight[0],8);
 		hurtLeftAnim = new Animation(false,2).addFrame(hurtLeft[0],8);
 		
 		
 		//init first anim
-		if (player.getDirection() == Direction.RIGHT){
+		if (thisObject.getDirection() == Direction.RIGHT){
 			currentAnim = idleRightAnim;
 		}
 		else{
@@ -91,7 +82,8 @@ public class PlayerAnimator {
 	}
 	
 	//inits the maps and puts all elements in
-	private void mapInit(){
+	@Override
+	protected void mapInit(){
 		imageCollection.put("walkRight", walkRight);
 		imageCollection.put("walkLeft", walkLeft);
 		imageCollection.put("idleRight", idleRight);
@@ -111,87 +103,39 @@ public class PlayerAnimator {
 		animationCollection.put("hurtLeft", hurtLeftAnim);
 	}
 	
+	
 	/**
-	 * Updates the player's animation
+	 * Updates the player's animation, does not use the animation standard update
 	 */
 	public void update(){
-		Animation possibleNewAnim = currentAnim;
 		
-		//these should be in the same order of the priority
-		/*if(player.getDx() <0){
-			possibleNewAnim = walkLeftAnim; 
-		}
-		else if(player.getDx() >0){
-			possibleNewAnim = walkRightAnim;
-		}*/
-		if(player.getDx() != 0){
-			if(player.getDirection() == Direction.RIGHT){
+		// Sets walk anims
+		if(thisObject.getDx() != 0){
+			if(thisObject.getDirection() == Direction.RIGHT){
 				possibleNewAnim = walkRightAnim;
 			}
 			else{
 				possibleNewAnim = walkLeftAnim;
 			}
 		}
-		else if(player.getDx()==0){
-			possibleNewAnim = (player.getDirection() == Direction.RIGHT) ? idleRightAnim : idleLeftAnim;
+		else if(thisObject.getDx()==0){
+			possibleNewAnim = (thisObject.getDirection() == Direction.RIGHT) ? idleRightAnim : idleLeftAnim;
 		}
-		//getting attacked, do better
-		if(player.isFrozen()){
-			possibleNewAnim = (player.getDirection() == Direction.RIGHT) ? hurtRightAnim : hurtLeftAnim;
+		//getting attacked, do better, dont make it dependent on if frozen but if hurt
+		if(thisObject.isFrozen()){
+			possibleNewAnim = (thisObject.getDirection() == Direction.RIGHT) ? hurtRightAnim : hurtLeftAnim;
 		}
 		//attacking overrides movement animation
-		if(player.isAttacking()){
-			possibleNewAnim = (player.getDirection() == Direction.RIGHT) ? attackRAnim: attackLAnim;
-		}
-		
-		
-		//priority checking, animation change
-		if(possibleNewAnim.getPriority() >= currentAnim.getPriority() || currentAnim.isFinished()){
-			currentAnim = possibleNewAnim;
-			if(oldAnim != currentAnim){
-				currentAnim.reset();
+		if(thisObject.isAttacking()){
+			possibleNewAnim = (thisObject.getDirection() == Direction.RIGHT) ? attackRAnim: attackLAnim;
+			// TODO remove this
+			if (currentAnim.isFinished()){
+				thisObject.stopAttacking();
 			}
-			player.setAnim(currentAnim);
 		}
-		oldAnim = currentAnim;
-		currentAnim.update();
+	
 
 	}
 	
-	/**
-	 * Gets image from animation
-	 * @param searchKey the key of the bufferedimage array
-	 * @param index the index in the array
-	 * @return the bufferedimage specified
-	 */
-	public BufferedImage getImage(String searchKey, int index){
-		if(imageCollection.containsKey(searchKey)){
-			return imageCollection.get(searchKey)[index];
-		}
-		else{
-			System.out.println("PlayerAnimator-getImage: Can't find image");
-			return null;
-		}
-	}
-	
-	/**
-	 * Gets animation
-	 * @param searchKey key to find animation in map
-	 * @return the animation specified
-	 */
-	public Animation getAnimationCollection(String searchKey){
-		if(animationCollection.containsKey(searchKey)){
-			return animationCollection.get(searchKey);
-		}
-		else{
-			System.out.println("PlayerAnimator-getAnimationCollection: Can't find image");
-			return null;
-		}
-	}
-	
-	/**
-	 * Gets current animation of the player
-	 * @return current animation
-	 */
-	public Animation getCurrentAnim() { return currentAnim; }
+
 }

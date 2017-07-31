@@ -127,10 +127,10 @@ public class GameRender extends JPanel {
 		if(hero.debug()){ 
 			drawCollisionBox(g,hero);
 		}
-		if (hero.isAttacking()){
+		/*if (hero.isAttacking()){
 			Attack a = hero.getAttack();
 			g.draw3DRect((int) a.getX(),(int) a.getY(),(int) a.getWidth(),(int) a.getHeight(), true);
-		}
+		}*/
 	}
 	/*
 	 * Draws the Weapon attached to the player
